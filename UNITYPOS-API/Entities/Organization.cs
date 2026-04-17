@@ -23,11 +23,9 @@
         public int? State { get; set; }
         public int? PostalCode { get; set; }
         public int? Country { get; set; }
-        public string? Image {  get; set; }
-        public string? ThemeColor { get; set; }
         public string? Remarks { get; set; }
         public bool IsActive { get; set; } = true;
-        public int CreatedBy { get; set; }
+        public int? CreatedBy { get; set; }
         public DateTime CreatedDate { get; set; } = DateTime.Now;
         public int? UpdatedBy { get; set; }
         public DateTime? UpdatedDate { get; set; }

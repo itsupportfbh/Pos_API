@@ -1,11 +1,10 @@
 ﻿namespace UNITYPOS_API.Entities
 {
-    public class EntityMaster:CommonClass
+    public class SubMenu:CommonClass
     {
         public int Id { get; set; }
+        public int MenuId { get; set; }
         public string Name { get; set; }
         public int EntityNo { get; set; }
-        public int BranchId { get; set; }
-        public bool IsMaster { get; set; }
     }
 }

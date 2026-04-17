@@ -5,10 +5,12 @@ namespace UNITYPOS_API.DAL.Interfaces
 {
     public interface IOrganizationservice
     {
+        public String Create(OrganizationDTO organizationDTO);
+        public String Update(OrganizationDTO organizationDTO);
+        public IEnumerable<Object> GetAllOrganization();
+        public Organization GetById(int Id);
+        public string DeleteById(int Id);
+        public string ActiveInActive(int Id, bool IsActive);
 
-        public List<Organization> GetAllOrganization();
-        public Organization GetOrganizationById(int Id);
-        public Organization AddUpdateOrganization(OrganizationDTO organizationDTO);
-        public Organization DeleteOrganizationById(int id);
     }
 }
