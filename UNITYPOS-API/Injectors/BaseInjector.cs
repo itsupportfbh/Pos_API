@@ -1,4 +1,5 @@
 ﻿using UNITYPOS_API.DAL.Interfaces;
+using UNITYPOS_API.DAL.Services;
 using UNITYPOS_API.Data.ORM;
 
 namespace UNITYPOS_API.Injectors
@@ -11,7 +12,7 @@ namespace UNITYPOS_API.Injectors
             _ = services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             _ = services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
             _ = services.AddScoped<IUnitOfWork, UnitOfWork>();
-
+            _=services.AddScoped<ITokenService, TokenService>();
 
 
             //
