@@ -15,173 +15,144 @@ namespace UNITYPOS_API.DAL.Services
             _uow = uow ?? throw new ArgumentNullException(nameof(uow));
         }
 
-
-        public List<Organization> GetAllOrganization()
+        public string Create(OrganizationDTO organizationDTO)
         {
-            return _uow.GenericRepository<Organization>()
-                
-                       .Table()
-                       .Where(x=>x.IsActive==true)
-                       .OrderBy(x => x.Id)
-                       .ToList();
+            int check = _uow.GenericRepository<Organization>().Table()
+                .Count(o => o.Name.ToLower() == organizationDTO.Name.ToLower()
+                         && o.IsDeleted == false);
 
+            if (check > 0)
+            {
+                return "AlreadyExists"; 
+            }
+
+            var entity = new Organization
+            {
+                Code = organizationDTO.Code,
+                Name = organizationDTO.Name,
+                GSTNo = organizationDTO.GSTNo,
+                RegistrationNo = organizationDTO.RegistrationNo,
+                Phone = organizationDTO.Phone,
+                Email = organizationDTO.Email,
+                Website = organizationDTO.Website,
+                ContactPerson = organizationDTO.ContactPerson,
+                ContactMobileNo = organizationDTO.ContactMobileNo,
+                ContactEmail = organizationDTO.ContactEmail,
+                Address1 = organizationDTO.Address1,
+                Address2 = organizationDTO.Address2,
+                City = organizationDTO.City,
+                State = organizationDTO.State,
+                PostalCode = organizationDTO.PostalCode,
+                Country = organizationDTO.Country,
+                Remarks = organizationDTO.Remarks,
+                IsActive = true,
+                CreatedBy = organizationDTO.CreatedBy,
+                CreatedDate = DateTime.UtcNow
+            };
+
+            _uow.GenericRepository<Organization>().Insert(entity);
+            _uow.Save();
+
+            return Convert.ToString(entity.Id);
         }
-        public List<OrganizationDTO> GetAllOrganizationDTO()
+
+        public string Update(OrganizationDTO organizationDTO)
         {
-            var result = (from a in _uow.GenericRepository<Organization>().Table().AsNoTracking()
-                          select new
-                          {
-                             a
+            int check = _uow.GenericRepository<Organization>().Table()
+                .Count(o => o.Name.ToLower() == organizationDTO.Name.ToLower() && o.Id != organizationDTO.Id
+                         && o.IsDeleted == false);
 
-                          }).AsEnumerable().Select(xx => new OrganizationDTO
-                          {
-                              Id = xx.a.Id,
-                              Code = xx.a.Code,
-                              Name = xx.a.Name,
-                              GSTNo = xx.a.GSTNo,
-                              RegistrationNo = xx.a.RegistrationNo,
-                              Phone = xx.a.Phone,
-                              Email = xx.a.Email,
-                              Website = xx.a.Website,
-                              ContactPerson = xx. a.ContactPerson,
-                              ContactMobileNo = xx.a.ContactMobileNo,
-                              ContactEmail = xx. a.ContactEmail,
-                              Address1 = xx. a.Address1,
-                              Address2 = xx.a.Address2,
-                              City = xx. a.City,
-                              State = xx.a.State,
-                              PostalCode = xx.a.PostalCode,
-                              Country = xx. a.Country,
-                              Image = xx.a.Image,
-                              ThemeColor = xx.a.ThemeColor,
-                              Remarks = xx.a.Remarks,
-                              IsActive = xx. a.IsActive
+            if (check > 0)
+            {
+                return "AlreadyExists";
+            }
 
-                          }).OrderBy(x => x.Id).ToList();
+            var entity = new Organization
+            {
+                Id = organizationDTO.Id,
+                Code = organizationDTO.Code,
+                Name = organizationDTO.Name,
+                GSTNo = organizationDTO.GSTNo,
+                RegistrationNo = organizationDTO.RegistrationNo,
+                Phone = organizationDTO.Phone,
+                Email = organizationDTO.Email,
+                Website = organizationDTO.Website,
+                ContactPerson = organizationDTO.ContactPerson,
+                ContactMobileNo = organizationDTO.ContactMobileNo,
+                ContactEmail = organizationDTO.ContactEmail,
+                Address1 = organizationDTO.Address1,
+                Address2 = organizationDTO.Address2,
+                City = organizationDTO.City,
+                State = organizationDTO.State,
+                PostalCode = organizationDTO.PostalCode,
+                Country = organizationDTO.Country,
+                Remarks = organizationDTO.Remarks,
+                IsActive = true,
+                CreatedBy = organizationDTO.CreatedBy,
+                CreatedDate = DateTime.UtcNow
+            };
+
+            _uow.GenericRepository<Organization>().Update(entity);
+            _uow.Save();
+
+            return Convert.ToString(entity.Id);
+        }
+
+        public IEnumerable<Object> GetAllOrganization()
+        {
+            IEnumerable<Object> result = null;
+
+            result = (from o in _uow.GenericRepository<Organization>().Table()
+                      where o.IsActive == true && o.IsDeleted == false
+                      select new
+                      {
+                          Id = o.Id,
+                          Code = o.Code,
+                          Name = o.Name,
+                          IsActive = o.IsActive,
+                      })
+                         .ToList();
+
             return result;
-
-
         }
-       
-        public Organization GetOrganizationById(int Id)
+
+        public Organization GetById(int Id)
         {
             var result = _uow.GenericRepository<Organization>()
                        .Table()
-                       .Where(x => x.Id == Id&& x.IsActive==true)
+                       .Where(x => x.Id == Id && x.IsActive == true && x.IsDeleted == false)
                        .OrderBy(x => x.Id)
                        .FirstOrDefault();
+
             return result;
         }
 
-        public Organization AddUpdateOrganization(OrganizationDTO organizationDTO)
+        public string DeleteById(int Id)
         {
-            var result = _uow.GenericRepository<Organization>().Table().Where(x => x.Id == organizationDTO.Id && x.IsActive==true).FirstOrDefault();
-
-            if (result == null)
-            {
-                result = new Organization();
-
-                result.Id = organizationDTO.Id;
-                result.Code = organizationDTO.Code;
-                result.Name = organizationDTO.Name;
-
-                result.GSTNo = organizationDTO.GSTNo;
-                result.RegistrationNo = organizationDTO.RegistrationNo;
-
-                result.Phone = organizationDTO.Phone;
-                result.Email = organizationDTO.Email;
-                result.Website = organizationDTO.Website;
-
-                result.ContactPerson = organizationDTO.ContactPerson;
-                result.ContactMobileNo = organizationDTO.ContactMobileNo;
-                result.ContactEmail = organizationDTO.ContactEmail;
-
-                result.Address1 = organizationDTO.Address1;
-                result.Address2 = organizationDTO.Address2;
-
-                result.City = organizationDTO.City;
-                result.State = organizationDTO.State;
-                result.PostalCode = organizationDTO.PostalCode;
-                result.Country = organizationDTO.Country;
-
-                result.Image = organizationDTO.Image;
-                result.ThemeColor = organizationDTO.ThemeColor;
-                result.Remarks = organizationDTO.Remarks;
-
-                result.IsActive = organizationDTO.IsActive;
-
-                result.CreatedBy = 1; // pass logged-in user
-                result.CreatedDate = DateTime.Now;
-
-                result.IsDeleted = false;
-
-                _uow.GenericRepository<Organization>().Insert(result);
-
-
-            }
-            else
-            {
-
-                result.Code = organizationDTO.Code;
-                result.Name = organizationDTO.Name;
-
-                result.GSTNo = organizationDTO.GSTNo;
-                result.RegistrationNo = organizationDTO.RegistrationNo;
-
-                result.Phone = organizationDTO.Phone;
-                result.Email = organizationDTO.Email;
-                result.Website = organizationDTO.Website;
-
-                result.ContactPerson = organizationDTO.ContactPerson;
-                result.ContactMobileNo = organizationDTO.ContactMobileNo;
-                result.ContactEmail = organizationDTO.ContactEmail;
-
-                result.Address1 = organizationDTO.Address1;
-                result.Address2 = organizationDTO.Address2;
-
-                result.City = organizationDTO.City;
-                result.State = organizationDTO.State;
-                result.PostalCode = organizationDTO.PostalCode;
-                result.Country = organizationDTO.Country;
-
-                result.Image = organizationDTO.Image;
-                result.ThemeColor = organizationDTO.ThemeColor;
-                result.Remarks = organizationDTO.Remarks;
-
-                result.IsActive = organizationDTO.IsActive;
-
-                result.CreatedBy = 1; // pass logged-in user
-                result.CreatedDate = DateTime.Now;
-
-                result.IsDeleted = false;
-                _uow.GenericRepository<Organization>().Update(result);
-
-            }
-            _uow.Save();
-            return result;
-
-        }
-
-
-        public Organization DeleteOrganizationById(int id)
-        {
-            var result = _uow.GenericRepository<Organization>().Table().Where(x => x.Id== id).FirstOrDefault();
+            var result = _uow.GenericRepository<Organization>().Table().Where(x => x.Id == Id).FirstOrDefault();
             if (result != null)
             {
-                result.IsActive = false;
                 result.IsDeleted = true;
                 _uow.GenericRepository<Organization>().Update(result);
                 _uow.Save();
             }
 
-            return new Organization();
-
-
+            return Convert.ToString(result?.Id ?? 0);
         }
 
 
+        public string ActiveInActive(int Id, bool IsActive)
+        {
+            var result = _uow.GenericRepository<Organization>().Table().Where(x => x.Id == Id).FirstOrDefault();
+            if (result != null)
+            {
+                result.IsActive = IsActive;
+                _uow.GenericRepository<Organization>().Update(result);
+                _uow.Save();
+            }
 
-
+            return Convert.ToString(result?.Id ?? 0);
+        }
 
     }
 }
