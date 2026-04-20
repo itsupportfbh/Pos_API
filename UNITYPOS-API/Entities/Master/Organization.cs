@@ -1,11 +1,11 @@
-﻿namespace UNITYPOS_API.ViewModel
+﻿namespace UNITYPOS_API.Entities.Master
 {
-    public class OrganizationDTO
+    public class Organization
     {
 
         public int Id { get; set; }
-        public string? Code { get; set; } 
-        public string? Name { get; set; } 
+        public string Code { get; set; } = string.Empty;
+        public string Name { get; set; } = string.Empty;
         public string? GSTNo { get; set; }
         public string? RegistrationNo { get; set; }
 
@@ -21,19 +21,15 @@
         public string? Address2 { get; set; }
         public int? City { get; set; }
         public int? State { get; set; }
-        public int? Country { get; set; }
         public int? PostalCode { get; set; }
+        public int? Country { get; set; }
         public string? Remarks { get; set; }
         public bool IsActive { get; set; } = true;
         public int? CreatedBy { get; set; }
-        public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
+        public DateTime CreatedDate { get; set; } = DateTime.Now;
         public int? UpdatedBy { get; set; }
         public DateTime? UpdatedDate { get; set; }
         public bool IsDeleted { get; set; }
-
-
-        //
-        public string? CountryName { get; set; }
 
     }
 }

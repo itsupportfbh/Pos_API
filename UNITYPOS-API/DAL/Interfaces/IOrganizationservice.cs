@@ -1,14 +1,16 @@
-﻿using UNITYPOS_API.Entities;
+﻿using UNITYPOS_API.Entities.Master;
 using UNITYPOS_API.ViewModel;
 
 namespace UNITYPOS_API.DAL.Interfaces
 {
     public interface IOrganizationservice
     {
+        public IEnumerable<Object> GetAllOrganization();
+        public Organization GetById(int Id);
+        public String Create(OrganizationDTO organizationDTO);
+        public String Update(OrganizationDTO organizationDTO);
+        public string DeleteById(int Id);
+        public string ActiveInActive(int Id, bool IsActive);
 
-        public List<Organization> GetAllOrganization();
-        public Organization GetOrganizationById(int Id);
-        public Organization AddUpdateOrganization(OrganizationDTO organizationDTO);
-        public Organization DeleteOrganizationById(int id);
     }
 }

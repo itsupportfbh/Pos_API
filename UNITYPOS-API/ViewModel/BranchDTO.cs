@@ -1,16 +1,16 @@
-﻿namespace UNITYPOS_API.Entities
+﻿using UNITYPOS_API.Entities.Master;
+
+namespace UNITYPOS_API.ViewModel
 {
-    public class Branch:CommonClass
+    public class BranchDTO:CommonClass
     {
-
-
         public int Id { get; set; }
         public string Code { get; set; } = string.Empty;
         public string Name { get; set; } = string.Empty;
-       
+
         public string? Phone { get; set; }
         public string? Email { get; set; }
-       
+
 
         public string? ContactPerson { get; set; }
         public string? ContactMobileNo { get; set; }
@@ -23,7 +23,5 @@
         public int? PostalCode { get; set; }
         public int? Country { get; set; }
         public string? Remarks { get; set; }
-
-
     }
 }
