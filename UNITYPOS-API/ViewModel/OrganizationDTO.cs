@@ -33,5 +33,7 @@
 
 
         //
+        public string? CountryName { get; set; }
+
     }
 }

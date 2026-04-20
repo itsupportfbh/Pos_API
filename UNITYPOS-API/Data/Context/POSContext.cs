@@ -57,6 +57,12 @@ namespace UNITYPOS_API.Data.Context
             modelBuilder.Entity<ErrorLog>().ToTable("ErrorLog", "dbo");
             modelBuilder.Entity<Organization>().ToTable("Organization", "dbo");
             modelBuilder.Entity<Counter>().ToTable("Counter", "dbo");
+            modelBuilder.Entity<CountryMaster>().ToTable("CountryMaster", "dbo");
+            modelBuilder.Entity<UserMaster>().ToTable("UserMaster", "dbo");
+            modelBuilder.Entity<Branch>().ToTable("Branch", "dbo");
+            modelBuilder.Entity<Menu>().ToTable("Menu", "dbo");
+            modelBuilder.Entity<SubMenu>().ToTable("SubMenu", "dbo");
+
 
 
 
