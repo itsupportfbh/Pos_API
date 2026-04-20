@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 using UNITYPOS_API.DAL.Interfaces;
 using UNITYPOS_API.Data.ORM;
 
-namespace UNITYPOS_API.Controllers
+namespace UNITYPOS_API.Controllers.Master
 {
     [Route("api/[controller]")]
     [ApiController]

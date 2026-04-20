@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using UNITYPOS_API.DAL.Interfaces;
 
-namespace UNITYPOS_API.Controllers
+namespace UNITYPOS_API.Controllers.Master
 {
     [Route("[controller]/[action]")]
     [ApiController]

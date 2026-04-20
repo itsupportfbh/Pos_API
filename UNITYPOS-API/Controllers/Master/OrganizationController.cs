@@ -6,7 +6,7 @@ using UNITYPOS_API.DAL.Interfaces;
 using UNITYPOS_API.Entities;
 using UNITYPOS_API.ViewModel;
 
-namespace UNITYPOS_API.Controllers
+namespace UNITYPOS_API.Controllers.Master
 {
     [Route("[controller]/[action]")]
     [ApiController]

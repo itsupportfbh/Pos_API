@@ -10,7 +10,7 @@
         public int FloorId { get; set; }
         public string Image { get; set; }
         public string Remarks { get; set; }
-            
+           
        
         public bool IsOccupied { get; set; }       // current status
         public bool IsReservable { get; set; }     // allow reservation

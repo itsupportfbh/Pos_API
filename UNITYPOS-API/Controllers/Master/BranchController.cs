@@ -7,7 +7,7 @@ using UNITYPOS_API.DAL.Services;
 using UNITYPOS_API.Data.ORM;
 using UNITYPOS_API.Entities.Master;
 
-namespace UNITYPOS_API.Controllers
+namespace UNITYPOS_API.Controllers.Master
 {
     [Route("[controller]/[action]")]
     [ApiController]
