@@ -21,10 +21,8 @@
         public string? Address2 { get; set; }
         public int? City { get; set; }
         public int? State { get; set; }
-        public int? PostalCode { get; set; }
         public int? Country { get; set; }
-        public string? Image { get; set; }
-        public string? ThemeColor { get; set; }
+        public int? PostalCode { get; set; }
         public string? Remarks { get; set; }
         public bool IsActive { get; set; } = true;
         public int? CreatedBy { get; set; }

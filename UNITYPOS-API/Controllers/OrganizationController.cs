@@ -57,7 +57,7 @@ namespace UNITYPOS_API.Controllers
         }
 
         [HttpDelete]
-        public string DeleteId(int id)
+        public string Delete(int id)
         {
             string result = null;
 
