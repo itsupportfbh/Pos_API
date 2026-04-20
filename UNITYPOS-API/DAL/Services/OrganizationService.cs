@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using UNITYPOS_API.DAL.Interfaces;
 using UNITYPOS_API.Data.ORM;
-using UNITYPOS_API.Entities;
+using UNITYPOS_API.Entities.Master;
 using UNITYPOS_API.ViewModel;
 
 namespace UNITYPOS_API.DAL.Services

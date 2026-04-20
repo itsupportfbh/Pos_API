@@ -1,9 +1,11 @@
-﻿namespace UNITYPOS_API.Entities
+﻿namespace UNITYPOS_API.Entities.Master
 {
-    public class CommonClass
+    public class Menu 
     {
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public int DisplayOrder { get; set; }
 
-        public int OrgId { get; set; }
         public bool IsActive { get; set; } = true;
         public int CreatedBy { get; set; }
         public DateTime CreatedDate { get; set; } = DateTime.Now;

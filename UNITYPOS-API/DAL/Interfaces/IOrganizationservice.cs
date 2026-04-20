@@ -1,4 +1,4 @@
-﻿using UNITYPOS_API.Entities;
+﻿using UNITYPOS_API.Entities.Master;
 using UNITYPOS_API.ViewModel;
 
 namespace UNITYPOS_API.DAL.Interfaces

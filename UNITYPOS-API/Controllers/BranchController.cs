@@ -5,13 +5,13 @@ using Newtonsoft.Json;
 using UNITYPOS_API.DAL.Interfaces;
 using UNITYPOS_API.DAL.Services;
 using UNITYPOS_API.Data.ORM;
-using UNITYPOS_API.Entities;
+using UNITYPOS_API.Entities.Master;
 
 namespace UNITYPOS_API.Controllers
 {
     [Route("[controller]/[action]")]
     [ApiController]
-    [Authorize]
+  //  [Authorize]
     public class BranchController : ControllerBase
     {
         private IBranchService _branchservice;

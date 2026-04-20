@@ -1,4 +1,4 @@
-﻿using UNITYPOS_API.Entities;
+﻿using UNITYPOS_API.Entities.Master;
 
 namespace UNITYPOS_API.ViewModel
 {
