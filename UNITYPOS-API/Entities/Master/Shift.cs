@@ -1,4 +1,4 @@
-﻿namespace UNITYPOS_API.Entities
+﻿namespace UNITYPOS_API.Entities.Master
 {
     public class Shift:CommonClass
     {
