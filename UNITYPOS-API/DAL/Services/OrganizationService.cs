@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using UNITYPOS_API.DAL.Interfaces;
 using UNITYPOS_API.Data.ORM;
 using UNITYPOS_API.Entities;
@@ -47,7 +48,7 @@ namespace UNITYPOS_API.DAL.Services
                 Remarks = organizationDTO.Remarks,
                 IsActive = true,
                 CreatedBy = organizationDTO.CreatedBy,
-                CreatedDate = DateTime.UtcNow
+                CreatedDate = DateTime.Now
             };
 
             _uow.GenericRepository<Organization>().Insert(entity);
@@ -88,8 +89,8 @@ namespace UNITYPOS_API.DAL.Services
                 Country = organizationDTO.Country,
                 Remarks = organizationDTO.Remarks,
                 IsActive = true,
-                CreatedBy = organizationDTO.CreatedBy,
-                CreatedDate = DateTime.UtcNow
+                UpdatedBy = organizationDTO.UpdatedBy,
+                UpdatedDate = DateTime.Now
             };
 
             _uow.GenericRepository<Organization>().Update(entity);
@@ -103,7 +104,7 @@ namespace UNITYPOS_API.DAL.Services
             IEnumerable<Object> result = null;
 
             result = (from o in _uow.GenericRepository<Organization>().Table()
-                      where o.IsActive == true && o.IsDeleted == false
+                      where o.IsDeleted == false
                       select new
                       {
                           Id = o.Id,
@@ -127,7 +128,7 @@ namespace UNITYPOS_API.DAL.Services
             return result;
         }
 
-        public string DeleteById(int Id)
+        public string Delete(int Id)
         {
             var result = _uow.GenericRepository<Organization>().Table().Where(x => x.Id == Id).FirstOrDefault();
             if (result != null)

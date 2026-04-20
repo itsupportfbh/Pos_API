@@ -13,7 +13,6 @@ namespace UNITYPOS_API.DAL.Services
         }
 
 
-
         public IEnumerable<object> GetAllMenuAndSubMenu()
         {
             var result = (from m in _uow.GenericRepository<Menu>().Table()

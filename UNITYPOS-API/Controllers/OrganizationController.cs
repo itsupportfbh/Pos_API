@@ -61,7 +61,7 @@ namespace UNITYPOS_API.Controllers
         {
             string result = null;
 
-            result = JsonConvert.SerializeObject(_organizationservice.DeleteById(id));
+            result = JsonConvert.SerializeObject(_organizationservice.Delete(id));
             return Common.Utility.GetResult(result);
         }
 
