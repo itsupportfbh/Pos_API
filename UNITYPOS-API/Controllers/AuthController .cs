@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using UNITYPOS_API.DAL.Interfaces;
 using UNITYPOS_API.Data.ORM;
 using UNITYPOS_API.Entities;
@@ -23,27 +24,18 @@ namespace UNITYPOS_API.Controllers
 
         [AllowAnonymous]
         [HttpPost]
-        public async Task<IActionResult> Login([FromBody] LoginRequest request)
+       
+        public async Task<string> Login([FromBody] LoginRequest request)
         {
+            string result = null;
+
             try
             {
                 if (request == null)
-                {
-                    return BadRequest(new
-                    {
-                        Status = false,
-                        Message = "Request body is required."
-                    });
-                }
+                    return ToResult(new { Status = false, Message = "Request body is required." });
 
                 if (string.IsNullOrWhiteSpace(request.Email) || string.IsNullOrWhiteSpace(request.Password))
-                {
-                    return BadRequest(new
-                    {
-                        Status = false,
-                        Message = "Email and Password are required."
-                    });
-                }
+                    return ToResult(new { Status = false, Message = "Email and Password are required." });
 
                 var email = request.Email.Trim();
 
@@ -51,50 +43,37 @@ namespace UNITYPOS_API.Controllers
                                      .Table()
                                      .FirstOrDefaultAsync(x => x.Email == email && x.IsActive);
 
-                if (user == null)
-                {
-                    return Unauthorized(new
-                    {
-                        Status = false,
-                        Message = "Invalid email or password."
-                    });
-                }
+                if (user == null || user.Password != request.Password)
+                    return ToResult(new { Status = false, Message = "Invalid email or password." });
 
-                // Plain text password check for now
-                // Later you can replace with hashed password verification
-                if (user.Password != request.Password)
-                {
-                    return Unauthorized(new
-                    {
-                        Status = false,
-                        Message = "Invalid email or password."
-                    });
-                }
-
+                // 🔐 Generate Token
                 var tokenResult = _tokenService.GenerateToken(user);
 
-                var response = new LoginResponse
+                // 👤 Prepare Current User Details (same like GetCurrentUser)
+                var currentUser = new
                 {
-                    Id = user.Id,
-                    Code = user.Code,
+                    UserId = user.Id,
+                    OrgId=user.OrgId,
                     Name = user.Name,
                     Email = user.Email,
-                    EmpCode = user.EmpCode,
-                    IsAdmin = user.IsAdmin,
-                    Token = tokenResult.Token,
-                    Expiration = tokenResult.Expiration
+                    IsAdmin = user.IsAdmin ,
+                    EmpCode = user.EmpCode
+
                 };
 
-                return Ok(new
+                // 🎯 Final Response (Token + User Details)
+                return ToResult(new
                 {
-                    Status = true,
-                    Message = "Login successful.",
-                    Data = response
+                   
+                        Token = tokenResult.Token,
+                        Expiration = tokenResult.Expiration,
+                        User = currentUser
+                    
                 });
             }
             catch (Exception ex)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, new
+                return ToResult(new
                 {
                     Status = false,
                     Message = "An error occurred while logging in.",
@@ -103,27 +82,10 @@ namespace UNITYPOS_API.Controllers
             }
         }
 
-        [HttpGet]
-        public IActionResult GetCurrentUser()
+        private string ToResult(object data)
         {
-            var userId = User.FindFirst("UserId")?.Value;
-            var name = User.FindFirst(System.Security.Claims.ClaimTypes.Name)?.Value;
-            var email = User.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value;
-            var role = User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value;
-            var empCode = User.FindFirst("EmpCode")?.Value;
-
-            return Ok(new
-            {
-                Status = true,
-                Data = new
-                {
-                    UserId = userId,
-                    Name = name,
-                    Email = email,
-                    Role = role,
-                    EmpCode = empCode
-                }
-            });
+            string result = JsonConvert.SerializeObject(data);
+            return Common.Utility.GetResult(result);
         }
     }
 }

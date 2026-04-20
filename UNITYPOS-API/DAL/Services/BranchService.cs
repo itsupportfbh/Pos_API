@@ -50,7 +50,6 @@ namespace UNITYPOS_API.DAL.Services
         }
          
 
-
         public string Create(Branch branch)
         {
             if (branch == null)
@@ -98,7 +97,7 @@ namespace UNITYPOS_API.DAL.Services
         }
 
 
-        public Branch Update(Branch branch)
+        public string Update(Branch branch)
         {
             if (branch == null)
                 throw new ArgumentNullException(nameof(branch));
@@ -118,7 +117,7 @@ namespace UNITYPOS_API.DAL.Services
                      x.Name.Trim().ToLower() == branch.Name.Trim().ToLower()));
 
             if (duplicateBranch != null)
-                throw new Exception("Branch code or name already exists for this organization.");
+                return "Branch name already exists.";
 
             existingBranch.Code = branch.Code;
             existingBranch.Name = branch.Name;
@@ -134,7 +133,7 @@ namespace UNITYPOS_API.DAL.Services
             existingBranch.PostalCode = branch.PostalCode;
             existingBranch.Country = branch.Country;
             existingBranch.Remarks = branch.Remarks;
-            existingBranch.OrgId = branch.OrgId;
+          //  existingBranch.OrgId = branch.OrgId;
 
             existingBranch.UpdatedBy = branch.UpdatedBy;
             existingBranch.UpdatedDate = DateTime.Now;
@@ -142,10 +141,10 @@ namespace UNITYPOS_API.DAL.Services
             _uow.GenericRepository<Branch>().Update(existingBranch);
             _uow.Save();
 
-            return existingBranch;
+            return Convert.ToString(existingBranch.Id);
         }
 
-        public Branch DeleteById(int id)
+        public string DeleteById(int id)
         {
             var result = _uow.GenericRepository<Branch>().Table().Where(x => x.Id == id).FirstOrDefault();
             if (result != null)
@@ -156,12 +155,12 @@ namespace UNITYPOS_API.DAL.Services
                 _uow.Save();
             }
 
-            return new Branch();
+            return Convert.ToString(result?.Id ?? 0);
 
 
         }
 
-        public Branch ActiveInActive(int id,bool isActive)
+        public string ActiveInActive(int id,bool isActive)
         {
             var result = _uow.GenericRepository<Branch>().Table().Where(x => x.Id == id).FirstOrDefault();
             if (result != null)
@@ -172,7 +171,7 @@ namespace UNITYPOS_API.DAL.Services
                 _uow.Save();
             }
 
-            return new Branch();
+            return Convert.ToString(result?.Id ?? 0);
 
 
         }
