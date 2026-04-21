@@ -98,50 +98,52 @@ namespace UNITYPOS_API.DAL.Services
         public string Update(Branch branch)
         {
             int check = _uow.GenericRepository<Branch>().Table()
-                .Count(o => o.Name.ToLower() == branch.Name.ToLower() && o.Id != branch.Id
-       && o.IsDeleted == false);
+                .Count(b => (b.Name.Trim().ToLower() == branch.Name.Trim().ToLower()
+                          || b.Code.Trim().ToLower() == branch.Code.Trim().ToLower())
+                         && b.Id != branch.Id
+                         && b.OrgId == branch.OrgId
+                         && b.IsDeleted == false);
 
             if (check > 0)
             {
                 return "AlreadyExists";
             }
 
-            var ExistingBranch = _uow.GenericRepository<Branch>().Table().Where(x => x.IsActive == true && x.IsDeleted == false && x.Id == branch.Id && x.OrgId==branch.OrgId).FirstOrDefault();
+            var existingBranch = _uow.GenericRepository<Branch>().Table()
+                .FirstOrDefault(x => x.Id == branch.Id
+                                  && x.OrgId == branch.OrgId
+                                  && x.IsDeleted == false);
 
-            if (ExistingBranch != null)
+            if (existingBranch != null)
             {
-                ExistingBranch.Code = branch.Code;
-                ExistingBranch.Name = branch.Name;
-                ExistingBranch.Phone = branch.Phone;
-                ExistingBranch.Email = branch.Email;
-                ExistingBranch.ContactPerson = branch.ContactPerson;
-                ExistingBranch.ContactMobileNo = branch.ContactMobileNo;
-                ExistingBranch.ContactEmail = branch.ContactEmail;
-                ExistingBranch.Address1 = branch.Address1;
-                ExistingBranch.Address2 = branch.Address2;
-                ExistingBranch.City = branch.City;
-                ExistingBranch.State = branch.State;
-                ExistingBranch.PostalCode = branch.PostalCode;
-                ExistingBranch.Country = branch.Country;
-                ExistingBranch.Remarks = branch.Remarks;
-                ExistingBranch.OrgId = branch.OrgId;
-                ExistingBranch.IsActive = true;
-                ExistingBranch.IsDeleted = false;
+                existingBranch.Code = branch.Code;
+                existingBranch.Name = branch.Name;
+                existingBranch.Phone = branch.Phone;
+                existingBranch.Email = branch.Email;
+                existingBranch.ContactPerson = branch.ContactPerson;
+                existingBranch.ContactMobileNo = branch.ContactMobileNo;
+                existingBranch.ContactEmail = branch.ContactEmail;
+                existingBranch.Address1 = branch.Address1;
+                existingBranch.Address2 = branch.Address2;
+                existingBranch.City = branch.City;
+                existingBranch.State = branch.State;
+                existingBranch.PostalCode = branch.PostalCode;
+                existingBranch.Country = branch.Country;
+                existingBranch.Remarks = branch.Remarks;
+                existingBranch.OrgId = branch.OrgId;
+                existingBranch.IsActive = true;
+                existingBranch.IsDeleted = false;
+                existingBranch.UpdatedBy = branch.UpdatedBy;
+                existingBranch.UpdatedDate = DateTime.Now;
 
-                ExistingBranch.UpdatedBy = branch.UpdatedBy;
-                ExistingBranch.UpdatedDate = DateTime.Now;
-
-                _uow.GenericRepository<Branch>().Update(ExistingBranch);
+                _uow.GenericRepository<Branch>().Update(existingBranch);
                 _uow.Save();
 
-                return Convert.ToString(ExistingBranch.Id);
+                return Convert.ToString(existingBranch.Id);
             }
-            else
-            {
-                return "0";
-            }
-        }
 
+            return "0";
+        }
         public string DeleteById(int id)
         {
             var result = _uow.GenericRepository<Branch>().Table().Where(x => x.Id == id).FirstOrDefault();

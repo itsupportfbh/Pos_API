@@ -91,19 +91,83 @@ namespace UNITYPOS_API.DAL.Services
 
         public string Update(Counter counter)
         {
-            var existingcounter = _uow.GenericRepository<Counter>().Table()
-               .FirstOrDefault(x =>
-                   x.OrgId == counter.OrgId &&
-                   x.BranchId == counter.BranchId &&
-                   x.Id == counter.Id &&
-                   x.IsDeleted == false &&
-                   (x.Code.Trim().ToLower() == counter.Code.Trim().ToLower()
-                    || x.Name.Trim().ToLower() == counter.Name.Trim().ToLower()));
-            return Convert.ToString(existingcounter.Id);
+            // 🔍 Duplicate check (exclude current record)
+            int check = _uow.GenericRepository<Counter>().Table()
+                .Count(x =>
+                    x.Id != counter.Id &&
+                    x.OrgId == counter.OrgId &&
+                    x.BranchId == counter.BranchId &&
+                    x.IsDeleted == false &&
+                    (                       
+                        x.Name.Trim().ToLower() == counter.Name.Trim().ToLower()
+                    ));
+
+            if (check > 0)
+            {
+                return "AlreadyExists";
+            }
+
+            // 🔍 Get existing record
+            var existingCounter = _uow.GenericRepository<Counter>().Table()
+                .FirstOrDefault(x =>
+                    x.Id == counter.Id &&
+                    x.OrgId == counter.OrgId &&
+                    x.BranchId == counter.BranchId &&
+                    x.IsDeleted == false);
+
+            if (existingCounter != null)
+            {
+                // ✅ Update values
+                existingCounter.Code = counter.Code;
+                existingCounter.Name = counter.Name;
+                existingCounter.Phone = counter.Phone;
+                existingCounter.Remarks = counter.Remarks;
+                existingCounter.IsActive = true;
+                existingCounter.IsDeleted = false;
+
+                existingCounter.UpdatedBy = counter.UpdatedBy;
+                existingCounter.UpdatedDate = DateTime.Now;
+
+                _uow.GenericRepository<Counter>().Update(existingCounter);
+                _uow.Save();
+
+                return existingCounter.Id.ToString();
+            }
+
+            return "0";
+        }
+
+        public string DeleteById(int id)
+        {
+            var result = _uow.GenericRepository<Counter>().Table().Where(x => x.Id == id).FirstOrDefault();
+            if (result != null)
+            {
+
+                result.IsDeleted = true;
+                _uow.GenericRepository<Counter>().Update(result);
+                _uow.Save();
+            }
+
+            return Convert.ToString(result?.Id ?? 0);
+
 
         }
 
 
+        public string ActiveInActive(int id, bool isActive)
+        {
+            var result = _uow.GenericRepository<Counter>().Table().Where(x => x.Id == id).FirstOrDefault();
+            if (result != null)
+            {
 
+                result.IsActive = isActive;
+                _uow.GenericRepository<Counter>().Update(result);
+                _uow.Save();
+            }
+
+            return Convert.ToString(result?.Id ?? 0);
+
+
+        }
     }
 }

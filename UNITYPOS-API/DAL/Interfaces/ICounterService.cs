@@ -9,5 +9,7 @@ namespace UNITYPOS_API.DAL.Interfaces
         public IEnumerable<Object> GetCounterbyId(int id);
         public string Create(Counter counter);
         public string Update(Counter counter);
+        public string DeleteById(int id);
+        public string ActiveInActive(int id, bool isActive);
     }
 }

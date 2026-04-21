@@ -49,6 +49,28 @@ namespace UNITYPOS_API.Controllers
             return Common.Utility.GetResult(result);
         }
 
+        [HttpPut]
+        public string Update(Counter counter)
+        {
+            string result = null;
+            result = JsonConvert.SerializeObject(_counterService.Update(counter));
+            return Common.Utility.GetResult(result);
+        }
+        [HttpDelete]
+        public string Delete(int id)
+        {
+            string result = null;
+            result = JsonConvert.SerializeObject(_counterService.DeleteById(id));
+            return Common.Utility.GetResult(result);
+        }
 
+        [HttpPut]
+        public string ActiveInActive(int Id, bool IsActive)
+        {
+            string result = null;
+
+            result = JsonConvert.SerializeObject(_counterService.ActiveInActive(Id, IsActive));
+            return Common.Utility.GetResult(result);
+        }
     }
 }
