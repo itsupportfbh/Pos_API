@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System;
 using System.Security.Claims;
+using UNITYPOS_API.Entities;
 using UNITYPOS_API.Entities.DBLog;
 using UNITYPOS_API.Entities.Master;
 
@@ -49,9 +50,6 @@ namespace UNITYPOS_API.Data.Context
         {
 
             base.OnModelCreating(modelBuilder);
-
-            //modelBuilder.Entity<RolesMaster>().ToTable("RolesMaster", "master");
-
                        
             modelBuilder.Entity<DBAudit>().ToTable("DBAudit", "dbo");
             modelBuilder.Entity<ErrorLog>().ToTable("ErrorLog", "dbo");
@@ -60,17 +58,11 @@ namespace UNITYPOS_API.Data.Context
             modelBuilder.Entity<CountryMaster>().ToTable("CountryMaster", "dbo");
             modelBuilder.Entity<UserMaster>().ToTable("UserMaster", "dbo");
             modelBuilder.Entity<Branch>().ToTable("Branch", "dbo");
+            modelBuilder.Entity<UserBranchMapping>().ToTable("UserBranchMapping", "dbo");
             modelBuilder.Entity<Menu>().ToTable("Menu", "dbo");
             modelBuilder.Entity<SubMenu>().ToTable("SubMenu", "dbo");
-
-
-
-
-
-
-
-
-
+            modelBuilder.Entity<RoleMaster>().ToTable("RoleMaster", "dbo");
+            modelBuilder.Entity<UserRoleMapping>().ToTable("UserRoleMapping", "dbo");
         }
 
     }

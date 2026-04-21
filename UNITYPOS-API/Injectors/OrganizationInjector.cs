@@ -11,11 +11,7 @@ namespace UNITYPOS_API.Injectors
             _ = services.AddScoped<ICounterService, CounterService>();
             _ = services.AddScoped<IBranchService, BranchService>();
             _ = services.AddScoped<IMenuService, MenuService>();
-
-
-
-
-
+            _ = services.AddScoped<IAuthService, AuthService>();
         }
     }
 }
