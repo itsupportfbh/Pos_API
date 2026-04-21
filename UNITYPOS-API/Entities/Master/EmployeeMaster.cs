@@ -20,7 +20,8 @@
         public string AddressLine1 { get; set; }
         public string IdProofNo { get; set; }         // Aadhaar / PAN / etc.
         public string Remarks { get; set; }
+        public int OrgId { get; set; }
 
-       
+
     }
 }

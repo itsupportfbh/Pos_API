@@ -20,7 +20,7 @@
         public decimal OpeningBalance { get; set; }
         public bool IsMember { get; set; }
         public string Remarks { get; set; }
-              
-       
+        public int OrgId { get; set; }
+
     }
 }
