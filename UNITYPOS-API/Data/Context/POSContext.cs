@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System;
 using System.Security.Claims;
-using UNITYPOS_API.Entities;
 using UNITYPOS_API.Entities.DBLog;
 using UNITYPOS_API.Entities.Master;
 
