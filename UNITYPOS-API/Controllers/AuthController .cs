@@ -10,7 +10,8 @@ namespace UNITYPOS_API.Controllers
 {
     [Route("[controller]/[action]")]
     [ApiController]
-    [Authorize]
+    //[Authorize]
+
     public class AuthController : ControllerBase
     {
         private readonly ITokenService _tokenService;
@@ -24,7 +25,6 @@ namespace UNITYPOS_API.Controllers
 
         [AllowAnonymous]
         [HttpPost]
-       
         public async Task<string> Login([FromBody] LoginRequest request)
         {
             string result = null;
@@ -46,10 +46,9 @@ namespace UNITYPOS_API.Controllers
                 if (user == null || user.Password != request.Password)
                     return ToResult(new { Status = false, Message = "Invalid email or password." });
 
-                // 🔐 Generate Token
+                // Generate Token
                 var tokenResult = _tokenService.GenerateToken(user);
 
-                // 👤 Prepare Current User Details (same like GetCurrentUser)
                 var currentUser = new
                 {
                     UserId = user.Id,
@@ -58,17 +57,13 @@ namespace UNITYPOS_API.Controllers
                     Email = user.Email,
                     IsAdmin = user.IsAdmin ,
                     EmpCode = user.EmpCode
-
                 };
 
-                // 🎯 Final Response (Token + User Details)
                 return ToResult(new
                 {
-                   
                         Token = tokenResult.Token,
                         Expiration = tokenResult.Expiration,
                         User = currentUser
-                    
                 });
             }
             catch (Exception ex)

@@ -14,6 +14,7 @@ namespace UNITYPOS_API.Entities
         public int ContactNo { get; set; }
         public string EmpCode { get; set; }
 
+        public int OrgId { get; set; }
 
 
 

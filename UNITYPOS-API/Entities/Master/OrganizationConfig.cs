@@ -6,5 +6,7 @@
         public string? Image { get; set; }
         public string? ThemeColor { get; set; }
         public int FontSize { get; set; }
+        public int OrgId { get; set; }
+
     }
 }

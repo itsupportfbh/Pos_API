@@ -11,5 +11,7 @@
         public string Suffix { get; set; }
         public int BranchId { get; set; }
         public bool IsMaster { get; set; }
+        public int OrgId { get; set; }
+
     }
 }

@@ -9,7 +9,7 @@
         public int CounterId { get; set; }
         public string? Remarks { get; set; }
         public int? DeviceId { get; set; }
-       
+        public int OrgId { get; set; }
 
 
     }
