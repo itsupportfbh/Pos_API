@@ -9,8 +9,9 @@
         public int? CounterId { get; set; }          // Optional
         public int? TerminalId { get; set; }         // Optional
          public string Remarks { get; set; }
+        public int OrgId { get; set; }
 
-        
+
 
     }
 }

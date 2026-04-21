@@ -21,7 +21,7 @@
         public int? TerminalId { get; set; }
         public int? CounterId { get; set; }
         public string? Remarks { get; set; }
+        public int OrgId { get; set; }
 
-        
     }
 }

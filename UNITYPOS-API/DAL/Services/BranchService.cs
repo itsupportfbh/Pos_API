@@ -1,7 +1,11 @@
-﻿using System.Security.Cryptography;
+﻿using Microsoft.AspNetCore.Http.HttpResults;
+using System.Diagnostics.Metrics;
+using System.Numerics;
+using System.Security.Cryptography;
 using UNITYPOS_API.DAL.Interfaces;
 using UNITYPOS_API.Data.ORM;
 using UNITYPOS_API.Entities.Master;
+using UNITYPOS_API.ViewModel;
 
 namespace UNITYPOS_API.DAL.Services
 {
@@ -48,26 +52,22 @@ namespace UNITYPOS_API.DAL.Services
 
             return result;
         }
-         
+
 
         public string Create(Branch branch)
         {
-            if (branch == null)
-                throw new ArgumentNullException(nameof(branch));
+            int check = _uow.GenericRepository<Branch>().Table()
+                .Count(b => b.Name.Trim().ToLower() == branch.Name.Trim().ToLower()
+                         && b.OrgId == branch.OrgId
+                         && b.IsDeleted == false);
 
-            var existingBranch = _uow.GenericRepository<Branch>().Table()
-                .FirstOrDefault(x =>
-                    x.OrgId == branch.OrgId &&
-                    x.IsDeleted == false &&
-                    (x.Code.Trim().ToLower() == branch.Code.Trim().ToLower()
-                     || x.Name.Trim().ToLower() == branch.Name.Trim().ToLower()));
-
-            if (existingBranch != null)
-              return "AlreadyExists ";
+            if (check > 0)
+            {
+                return "AlreadyExists";
+            }
 
             var entity = new Branch
             {
-
                 Code = branch.Code,
                 Name = branch.Name,
                 Phone = branch.Phone,
@@ -82,7 +82,6 @@ namespace UNITYPOS_API.DAL.Services
                 PostalCode = branch.PostalCode,
                 Country = branch.Country,
                 Remarks = branch.Remarks,
-
                 OrgId = branch.OrgId,
                 IsActive = true,
                 IsDeleted = false,
@@ -96,54 +95,55 @@ namespace UNITYPOS_API.DAL.Services
             return Convert.ToString(entity.Id);
         }
 
-
         public string Update(Branch branch)
         {
-            if (branch == null)
-                throw new ArgumentNullException(nameof(branch));
+            int check = _uow.GenericRepository<Branch>().Table()
+                .Count(b => (b.Name.Trim().ToLower() == branch.Name.Trim().ToLower()
+                          || b.Code.Trim().ToLower() == branch.Code.Trim().ToLower())
+                         && b.Id != branch.Id
+                         && b.OrgId == branch.OrgId
+                         && b.IsDeleted == false);
+
+            if (check > 0)
+            {
+                return "AlreadyExists";
+            }
 
             var existingBranch = _uow.GenericRepository<Branch>().Table()
-                .FirstOrDefault(x => x.Id == branch.Id && x.IsDeleted == false);
+                .FirstOrDefault(x => x.Id == branch.Id
+                                  && x.OrgId == branch.OrgId
+                                  && x.IsDeleted == false);
 
-            if (existingBranch == null)
-                throw new Exception("Branch not found.");
+            if (existingBranch != null)
+            {
+                existingBranch.Code = branch.Code;
+                existingBranch.Name = branch.Name;
+                existingBranch.Phone = branch.Phone;
+                existingBranch.Email = branch.Email;
+                existingBranch.ContactPerson = branch.ContactPerson;
+                existingBranch.ContactMobileNo = branch.ContactMobileNo;
+                existingBranch.ContactEmail = branch.ContactEmail;
+                existingBranch.Address1 = branch.Address1;
+                existingBranch.Address2 = branch.Address2;
+                existingBranch.City = branch.City;
+                existingBranch.State = branch.State;
+                existingBranch.PostalCode = branch.PostalCode;
+                existingBranch.Country = branch.Country;
+                existingBranch.Remarks = branch.Remarks;
+                existingBranch.OrgId = branch.OrgId;
+                existingBranch.IsActive = true;
+                existingBranch.IsDeleted = false;
+                existingBranch.UpdatedBy = branch.UpdatedBy;
+                existingBranch.UpdatedDate = DateTime.Now;
 
-            var duplicateBranch = _uow.GenericRepository<Branch>().Table()
-                .FirstOrDefault(x =>
-                    x.Id != branch.Id &&
-                    x.OrgId == branch.OrgId &&
-                    x.IsDeleted == false &&
-                    (x.Code.Trim().ToLower() == branch.Code.Trim().ToLower() ||
-                     x.Name.Trim().ToLower() == branch.Name.Trim().ToLower()));
+                _uow.GenericRepository<Branch>().Update(existingBranch);
+                _uow.Save();
 
-            if (duplicateBranch != null)
-                return "Branch name already exists.";
+                return Convert.ToString(existingBranch.Id);
+            }
 
-            existingBranch.Code = branch.Code;
-            existingBranch.Name = branch.Name;
-            existingBranch.Phone = branch.Phone;
-            existingBranch.Email = branch.Email;
-            existingBranch.ContactPerson = branch.ContactPerson;
-            existingBranch.ContactMobileNo = branch.ContactMobileNo;
-            existingBranch.ContactEmail = branch.ContactEmail;
-            existingBranch.Address1 = branch.Address1;
-            existingBranch.Address2 = branch.Address2;
-            existingBranch.City = branch.City;
-            existingBranch.State = branch.State;
-            existingBranch.PostalCode = branch.PostalCode;
-            existingBranch.Country = branch.Country;
-            existingBranch.Remarks = branch.Remarks;
-          //  existingBranch.OrgId = branch.OrgId;
-
-            existingBranch.UpdatedBy = branch.UpdatedBy;
-            existingBranch.UpdatedDate = DateTime.Now;
-
-            _uow.GenericRepository<Branch>().Update(existingBranch);
-            _uow.Save();
-
-            return Convert.ToString(existingBranch.Id);
+            return "0";
         }
-
         public string DeleteById(int id)
         {
             var result = _uow.GenericRepository<Branch>().Table().Where(x => x.Id == id).FirstOrDefault();

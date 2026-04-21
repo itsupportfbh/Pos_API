@@ -10,7 +10,6 @@
         public int TerminalId { get; set; }
         public DateTime ValidFrom { get; set; }
         public DateTime ValidTo { get; set; }
-
-        
+        public int OrgId { get; set; }
     }
 }
