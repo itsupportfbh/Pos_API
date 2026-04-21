@@ -52,13 +52,14 @@ namespace UNITYPOS_API.DAL.Services
 
             return result;
         }
-         
+
 
         public string Create(Branch branch)
         {
             int check = _uow.GenericRepository<Branch>().Table()
-               .Count(o => o.Name.ToLower() == branch.Name.ToLower() && o.IsDeleted == false);
-
+                .Count(b => b.Name.Trim().ToLower() == branch.Name.Trim().ToLower()
+                         && b.OrgId == branch.OrgId
+                         && b.IsDeleted == false);
 
             if (check > 0)
             {
@@ -67,7 +68,6 @@ namespace UNITYPOS_API.DAL.Services
 
             var entity = new Branch
             {
-
                 Code = branch.Code,
                 Name = branch.Name,
                 Phone = branch.Phone,
@@ -82,7 +82,6 @@ namespace UNITYPOS_API.DAL.Services
                 PostalCode = branch.PostalCode,
                 Country = branch.Country,
                 Remarks = branch.Remarks,
-
                 OrgId = branch.OrgId,
                 IsActive = true,
                 IsDeleted = false,
@@ -95,7 +94,6 @@ namespace UNITYPOS_API.DAL.Services
 
             return Convert.ToString(entity.Id);
         }
-
 
         public string Update(Branch branch)
         {

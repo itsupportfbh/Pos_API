@@ -57,26 +57,25 @@ namespace UNITYPOS_API.DAL.Services
 
         public string Create(Counter counter)
         {
-           
-            var existingCounter = _uow.GenericRepository<Counter>().Table()
-                .FirstOrDefault(x =>
-                    x.OrgId == counter.OrgId &&
-                    x.BranchId == counter.BranchId &&
-                    x.IsDeleted == false);
-                    
+            int check = _uow.GenericRepository<Counter>().Table()
+                .Count(c => c.Name.ToLower() == counter.Name.ToLower()
+                         && c.OrgId == counter.OrgId
+                         && c.BranchId == counter.BranchId
+                         && c.IsDeleted == false);
 
-            if (existingCounter != null)
-                return "AlreadyExists ";
+            if (check > 0)
+            {
+                return "AlreadyExists";
+            }
 
             var entity = new Counter
             {
-
                 Code = counter.Code,
                 Name = counter.Name,
                 Phone = counter.Phone,
                 Remarks = counter.Remarks,
                 OrgId = counter.OrgId,
-                BranchId=counter.BranchId,
+                BranchId = counter.BranchId,
                 IsActive = true,
                 IsDeleted = false,
                 CreatedBy = counter.CreatedBy,
@@ -88,8 +87,6 @@ namespace UNITYPOS_API.DAL.Services
 
             return Convert.ToString(entity.Id);
         }
-
-
 
 
         public string Update(Counter counter)
