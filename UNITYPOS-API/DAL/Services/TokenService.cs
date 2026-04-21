@@ -5,6 +5,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using UNITYPOS_API.DAL.Interfaces;
 using UNITYPOS_API.Entities;
+using UNITYPOS_API.Entities.Master;
 
 namespace UNITYPOS_API.Data.ORM
 {
