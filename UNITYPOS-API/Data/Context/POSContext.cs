@@ -65,7 +65,8 @@ namespace UNITYPOS_API.Data.Context
             modelBuilder.Entity<Terminal>().ToTable("Terminal", "dbo");
             modelBuilder.Entity<Printer>().ToTable("Printer", "dbo");
             modelBuilder.Entity<FoodMenu>().ToTable("FoodMenu", "dbo");
-
+            modelBuilder.Entity<FoodMenuCategory>().ToTable("FoodMenuCategory", "dbo");
+            modelBuilder.Entity<FoodMenuSubCategory>().ToTable("FoodMenuSubcategory", "dbo");
 
 
 
