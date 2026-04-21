@@ -14,6 +14,8 @@ namespace UNITYPOS_API.Injectors
             _ = services.AddScoped<ITerminalService, TerminalService>();
             _ = services.AddScoped<IPrinterService, PrinterService>();
 
+            _ = services.AddScoped<IFoodmenu, FoodMenuService>();
+           
 
 
 
