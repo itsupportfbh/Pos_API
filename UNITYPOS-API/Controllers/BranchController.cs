@@ -11,7 +11,7 @@ namespace UNITYPOS_API.Controllers
 {
     [Route("[controller]/[action]")]
     [ApiController]
-  //  [Authorize]
+    [Authorize]
     public class BranchController : ControllerBase
     {
         private IBranchService _branchservice;
