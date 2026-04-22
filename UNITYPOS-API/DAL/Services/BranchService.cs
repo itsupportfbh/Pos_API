@@ -23,7 +23,7 @@ namespace UNITYPOS_API.DAL.Services
             IEnumerable<Object> result = null;
 
             result=( from b in _uow.GenericRepository<Branch>().Table()
-                     where b.IsActive== true&&b.IsDeleted==false &&b.OrgId==orgid
+                     where b.IsDeleted==false &&b.OrgId==orgid
                      select new
                      {
                          id = b.Id,
@@ -40,13 +40,33 @@ namespace UNITYPOS_API.DAL.Services
             IEnumerable<Object> result = null;
 
             result = (from b in _uow.GenericRepository<Branch>().Table()
-                      where b.IsActive == true && b.IsDeleted == false && b.Id==id
+                      where  b.IsDeleted == false && b.Id==id
                       select new
                       {
                           id = b.Id,
                           name = b.Name,
                           code = b.Code,
                           isactive = b.IsActive,
+                          Phone=b.Phone,
+                          Email=b.Email,
+                          ContactPerson = b.ContactPerson,
+                          ContactMobileNo = b.ContactMobileNo,
+                          ContactEmail = b.ContactEmail,
+                          Address1 = b.Address1,
+                          Address2 = b.Address2,
+                          City = b.City,
+                          State = b.State,
+                          PostalCode = b.PostalCode,
+                          Country = b.Country,
+                          Remarks = b.Remarks,
+                          OrgId = b.OrgId,
+                          IsActive = b.IsActive,
+                          IsDeleted = b.IsDeleted,
+                          CreatedBy = b.CreatedBy,
+                          CreatedDate = b.CreatedDate,
+                          UpdatedBy = b.UpdatedBy,
+                          UpdatedDate = b.UpdatedDate
+
                       }).ToList();
 
 

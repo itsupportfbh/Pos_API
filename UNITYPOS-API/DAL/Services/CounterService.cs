@@ -45,10 +45,20 @@ namespace UNITYPOS_API.DAL.Services
                       where b.IsActive == true && b.IsDeleted == false && b.Id == id
                       select new
                       {
-                          id = b.Id,
-                          name = b.Name,
-                          code = b.Code,
-                          isactive = b.IsActive,
+                          Id = b.Id,
+                          Code = b.Code,
+                          Name = b.Name,
+                          Phone = b.Phone,
+                          BranchId = b.BranchId,
+                          Remarks = b.Remarks,
+                          OrgId = b.OrgId,
+                          IsActive = b.IsActive,
+                          IsDeleted = b.IsDeleted,
+                          CreatedBy = b.CreatedBy,
+                          CreatedDate = b.CreatedDate,
+                          UpdatedBy = b.UpdatedBy,
+                          UpdatedDate = b.UpdatedDate
+
                       }).ToList();
 
 
