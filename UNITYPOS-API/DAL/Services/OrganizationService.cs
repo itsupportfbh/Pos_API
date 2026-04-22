@@ -107,10 +107,11 @@ namespace UNITYPOS_API.DAL.Services
                       where o.IsDeleted == false
                       select new
                       {
-                          Id = o.Id,
-                          Code = o.Code,
-                          Name = o.Name,
-                          IsActive = o.IsActive,
+                          o.Id,
+                          o.Code,
+                          o.Name,
+                          o.Website,
+                          o.IsActive,
                       })
                          .ToList();
 
