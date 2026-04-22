@@ -17,7 +17,7 @@ namespace UNITYPOS_API.DAL.Services
             IEnumerable<Object> result = null;
 
             result = (from b in _uow.GenericRepository<FoodMenuCategory>().Table()
-                      where b.IsActive == true && b.IsDeleted == false && b.OrgId == orgid
+                      where b.IsDeleted == false && b.OrgId == orgid
                       select new
                       {
                           id = b.Id,
@@ -34,7 +34,7 @@ namespace UNITYPOS_API.DAL.Services
             IEnumerable<Object> result = null;
 
             result = (from b in _uow.GenericRepository<FoodMenuCategory>().Table()
-                      where b.IsActive == true && b.IsDeleted == false && b.Id == id
+                      where b.IsDeleted == false && b.Id == id
                       select new
                       {
                           id = b.Id,
