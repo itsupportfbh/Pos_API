@@ -68,14 +68,9 @@ namespace UNITYPOS_API.Data.Context
             modelBuilder.Entity<FoodMenu>().ToTable("FoodMenu", "dbo");
             modelBuilder.Entity<FoodMenuCategory>().ToTable("FoodMenuCategory", "dbo");
             modelBuilder.Entity<FoodMenuSubCategory>().ToTable("FoodMenuSubcategory", "dbo");
-            modelBuilder.Entity<Tax>().ToTable("Tax", "dbo");
-
-
-
-
-
-
-
+            modelBuilder.Entity<CountryMaster>().ToTable("CountryMaster", "dbo");
+            modelBuilder.Entity<StateMaster>().ToTable("StateMaster", "dbo");
+            modelBuilder.Entity<CityMaster>().ToTable("CityMaster", "dbo");
 
         }
 

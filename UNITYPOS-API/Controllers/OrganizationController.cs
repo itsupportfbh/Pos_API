@@ -15,8 +15,8 @@ namespace UNITYPOS_API.Controllers
     public class OrganizationController : ControllerBase
     {
 
-        private readonly IOrganizationservice _organizationservice;
-        public OrganizationController(IOrganizationservice organizationservice)
+        private readonly IOrganizationService _organizationservice;
+        public OrganizationController(IOrganizationService organizationservice)
         {
             _organizationservice = organizationservice;
         }
