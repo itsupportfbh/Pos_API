@@ -72,29 +72,36 @@ namespace UNITYPOS_API.DAL.Services
 
             var ExistingOrg = _uow.GenericRepository<Organization>().Table().Where(x => x.IsActive == true && x.IsDeleted == false && x.Id == organizationDTO.Id).FirstOrDefault();
 
-            ExistingOrg.Code = organizationDTO.Code;
-            ExistingOrg.Name = organizationDTO.Name;
-            ExistingOrg.GSTNo = organizationDTO.GSTNo;
-            ExistingOrg.RegistrationNo = organizationDTO.RegistrationNo;
-            ExistingOrg.Phone = organizationDTO.Phone;
-            ExistingOrg.Email = organizationDTO.Email;
-            ExistingOrg.Website = organizationDTO.Website;
-            ExistingOrg.ContactPerson = organizationDTO.ContactPerson;
-            ExistingOrg.ContactMobileNo = organizationDTO.ContactMobileNo;
-            ExistingOrg.ContactEmail = organizationDTO.ContactEmail;
-            ExistingOrg.Address1 = organizationDTO.Address1;
-            ExistingOrg.Address2 = organizationDTO.Address2;
-            ExistingOrg.City = organizationDTO.City;
-            ExistingOrg.State = organizationDTO.State;
-            ExistingOrg.PostalCode = organizationDTO.PostalCode;
-            ExistingOrg.Country = organizationDTO.Country;
-            ExistingOrg.Remarks = organizationDTO.Remarks;
-            ExistingOrg.IsActive = true;
-            ExistingOrg.UpdatedBy = organizationDTO.UpdatedBy;
-            ExistingOrg.UpdatedDate = DateTime.Now;
+            if (ExistingOrg != null)
+            {
+                ExistingOrg.Code = organizationDTO.Code;
+                ExistingOrg.Name = organizationDTO.Name;
+                ExistingOrg.GSTNo = organizationDTO.GSTNo;
+                ExistingOrg.RegistrationNo = organizationDTO.RegistrationNo;
+                ExistingOrg.Phone = organizationDTO.Phone;
+                ExistingOrg.Email = organizationDTO.Email;
+                ExistingOrg.Website = organizationDTO.Website;
+                ExistingOrg.ContactPerson = organizationDTO.ContactPerson;
+                ExistingOrg.ContactMobileNo = organizationDTO.ContactMobileNo;
+                ExistingOrg.ContactEmail = organizationDTO.ContactEmail;
+                ExistingOrg.Address1 = organizationDTO.Address1;
+                ExistingOrg.Address2 = organizationDTO.Address2;
+                ExistingOrg.City = organizationDTO.City;
+                ExistingOrg.State = organizationDTO.State;
+                ExistingOrg.PostalCode = organizationDTO.PostalCode;
+                ExistingOrg.Country = organizationDTO.Country;
+                ExistingOrg.Remarks = organizationDTO.Remarks;
+                ExistingOrg.IsActive = true;
+                ExistingOrg.UpdatedBy = organizationDTO.UpdatedBy;
+                ExistingOrg.UpdatedDate = DateTime.Now;
 
-            _uow.GenericRepository<Organization>().Update(ExistingOrg);
-            _uow.Save();
+                _uow.GenericRepository<Organization>().Update(ExistingOrg);
+                _uow.Save();
+            }
+            else
+            {
+                return "";
+            }
 
             return Convert.ToString(ExistingOrg.Id);
         }
@@ -123,7 +130,6 @@ namespace UNITYPOS_API.DAL.Services
             var result = _uow.GenericRepository<Organization>()
                        .Table()
                        .Where(x => x.Id == Id && x.IsActive == true && x.IsDeleted == false)
-                       .OrderBy(x => x.Id)
                        .FirstOrDefault();
 
             return result;

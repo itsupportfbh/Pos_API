@@ -9,7 +9,7 @@ using UNITYPOS_API.ViewModel;
 
 namespace UNITYPOS_API.DAL.Services
 {
-    public class BranchService:IBranchService
+    public class BranchService : IBranchService
     {
 
         private readonly IUnitOfWork _uow;
@@ -18,57 +18,29 @@ namespace UNITYPOS_API.DAL.Services
             _uow = uow ?? throw new ArgumentNullException(nameof(uow));
         }
 
-        public IEnumerable<Object> GetAllBranch( int orgid)
-        {
-            IEnumerable<Object> result = null;
-
-            result=( from b in _uow.GenericRepository<Branch>().Table()
-                     where b.IsDeleted==false &&b.OrgId==orgid
-                     select new
-                     {
-                         id = b.Id,
-                         name=b.Name,
-                         code=b.Code,
-                         isactive=b.IsActive,
-                     }).ToList();
-
-
-            return result;
-        }
-        public IEnumerable<Object> GetBranchbyId(int id)
+        public IEnumerable<Object> GetAllBranch(int orgid)
         {
             IEnumerable<Object> result = null;
 
             result = (from b in _uow.GenericRepository<Branch>().Table()
-                      where  b.IsDeleted == false && b.Id==id
+                      where b.IsDeleted == false && b.OrgId == orgid
                       select new
                       {
-                          id = b.Id,
-                          name = b.Name,
-                          code = b.Code,
-                          isactive = b.IsActive,
-                          Phone=b.Phone,
-                          Email=b.Email,
-                          ContactPerson = b.ContactPerson,
-                          ContactMobileNo = b.ContactMobileNo,
-                          ContactEmail = b.ContactEmail,
-                          Address1 = b.Address1,
-                          Address2 = b.Address2,
-                          City = b.City,
-                          State = b.State,
-                          PostalCode = b.PostalCode,
-                          Country = b.Country,
-                          Remarks = b.Remarks,
-                          OrgId = b.OrgId,
-                          IsActive = b.IsActive,
-                          IsDeleted = b.IsDeleted,
-                          CreatedBy = b.CreatedBy,
-                          CreatedDate = b.CreatedDate,
-                          UpdatedBy = b.UpdatedBy,
-                          UpdatedDate = b.UpdatedDate
-
+                          b.Id,
+                          b.Name,
+                          b.Code,
+                          b.IsActive,
                       }).ToList();
 
+
+            return result;
+        }
+        public Branch GetBranchbyId(int Id)
+        {
+            var result = _uow.GenericRepository<Branch>()
+                       .Table()
+                       .Where(x => x.Id == Id && x.IsActive == true && x.IsDeleted == false)
+                       .FirstOrDefault();
 
             return result;
         }
@@ -118,8 +90,7 @@ namespace UNITYPOS_API.DAL.Services
         public string Update(Branch branch)
         {
             int check = _uow.GenericRepository<Branch>().Table()
-                .Count(b => (b.Name.Trim().ToLower() == branch.Name.Trim().ToLower()
-                          || b.Code.Trim().ToLower() == branch.Code.Trim().ToLower())
+                .Count(b => b.Name.Trim().ToLower() == branch.Name.Trim().ToLower()
                          && b.Id != branch.Id
                          && b.OrgId == branch.OrgId
                          && b.IsDeleted == false);
@@ -159,17 +130,21 @@ namespace UNITYPOS_API.DAL.Services
                 _uow.GenericRepository<Branch>().Update(existingBranch);
                 _uow.Save();
 
-                return Convert.ToString(existingBranch.Id);
+            }
+            else
+            {
+                return "";
             }
 
-            return "0";
+            return Convert.ToString(existingBranch.Id);
+
         }
         public string DeleteById(int id)
         {
             var result = _uow.GenericRepository<Branch>().Table().Where(x => x.Id == id).FirstOrDefault();
             if (result != null)
             {
-               
+
                 result.IsDeleted = true;
                 _uow.GenericRepository<Branch>().Update(result);
                 _uow.Save();
@@ -180,12 +155,12 @@ namespace UNITYPOS_API.DAL.Services
 
         }
 
-        public string ActiveInActive(int id,bool isActive)
+        public string ActiveInActive(int id, bool isActive)
         {
             var result = _uow.GenericRepository<Branch>().Table().Where(x => x.Id == id).FirstOrDefault();
             if (result != null)
             {
-                
+
                 result.IsActive = isActive;
                 _uow.GenericRepository<Branch>().Update(result);
                 _uow.Save();
