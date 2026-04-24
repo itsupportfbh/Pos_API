@@ -1,0 +1,149 @@
+﻿using UNITYPOS_API.DAL.Interfaces;
+using UNITYPOS_API.Data.ORM;
+using UNITYPOS_API.Entities.Master;
+
+namespace UNITYPOS_API.DAL.Services
+{
+    public class TaxService: ITax
+    {
+        private readonly IUnitOfWork _uow;
+        public TaxService(IUnitOfWork uow)
+        {
+            _uow = uow ?? throw new ArgumentNullException(nameof(uow));
+        }
+
+        public IEnumerable<Object> GetAllTax(int orgid)
+        {
+            IEnumerable<Object> result = null;
+
+            result = (from b in _uow.GenericRepository<Tax>().Table()
+                      where b.IsDeleted == false && b.OrgId == orgid
+                      select new
+                      {
+                          id = b.Id,
+                          name = b.Name,
+                          code = b.Code,
+                          rate = b.Percentage,
+                          isactive = b.IsActive,
+                      }).ToList();
+
+
+            return result;
+        }
+        public IEnumerable<Object> GetTaxbyId(int id)
+        {
+            IEnumerable<Object> result = null;
+
+            result = (from b in _uow.GenericRepository<Tax>().Table()
+                      where b.IsDeleted == false && b.Id == id
+                      select new
+                      {
+                          id = b.Id,
+                          name = b.Name,
+                          code = b.Code, 
+                          rate = b.Percentage,
+                          isactive = b.IsActive,
+                      }).ToList();
+
+
+            return result;
+        }
+
+
+        public string Create(Tax tax)
+        {
+            int check = _uow.GenericRepository<Tax>().Table()
+                .Count(b => b.Name.Trim().ToLower() == tax.Name.Trim().ToLower()
+                         && b.OrgId == tax.OrgId
+                         && b.IsDeleted == false);
+
+            if (check > 0)
+            {
+                return "AlreadyExists";
+            }
+
+            var entity = new Tax
+            {
+                Code = tax.Code,
+                Name = tax.Name,
+                Percentage = tax.Percentage,
+                OrgId = tax.OrgId,
+                IsActive = true,
+                IsDeleted = false,
+                CreatedBy = tax.CreatedBy,
+                CreatedDate = DateTime.Now
+            };
+
+            _uow.GenericRepository<Tax>().Insert(entity);
+            _uow.Save();
+
+            return Convert.ToString(entity.Id);
+        }
+
+        public string Update(Tax tax)
+        {
+            int check = _uow.GenericRepository<Tax>().Table()
+                .Count(b => (b.Name.Trim().ToLower() == tax.Name.Trim().ToLower()
+                          || b.Code.Trim().ToLower() == tax.Code.Trim().ToLower())
+                         && b.Id != tax.Id
+                         && b.OrgId == tax.OrgId
+                         && b.IsDeleted == false);
+
+            if (check > 0)
+            {
+                return "AlreadyExists";
+            }
+
+            var existingtax = _uow.GenericRepository<Tax>().Table()
+                .FirstOrDefault(x => x.Id == tax.Id
+                                  && x.OrgId == tax.OrgId
+                                  && x.IsDeleted == false);
+
+            if (existingtax != null)
+            {
+                existingtax.Code = tax.Code;
+                existingtax.Name = tax.Name;
+                existingtax.Percentage = tax.Percentage;
+                existingtax.OrgId = tax.OrgId;
+                existingtax.IsActive = true;
+                existingtax.IsDeleted = false;
+                existingtax.UpdatedBy = tax.UpdatedBy;
+                existingtax.UpdatedDate = DateTime.Now;
+
+                _uow.GenericRepository<Tax>().Update(existingtax);
+                _uow.Save();
+
+                return Convert.ToString(existingtax.Id);
+            }
+
+            return "0";
+        }
+        public string DeleteById(int id)
+        {
+            var result = _uow.GenericRepository<Tax>().Table().Where(x => x.Id == id).FirstOrDefault();
+            if (result != null)
+            {
+
+                result.IsDeleted = true;
+                _uow.GenericRepository<Tax>().Update(result);
+                _uow.Save();
+            }
+
+            return Convert.ToString(result?.Id ?? 0);
+        }
+
+        public string ActiveInActive(int id, bool isActive)
+        {
+            var result = _uow.GenericRepository<Tax>().Table().Where(x => x.Id == id).FirstOrDefault();
+            if (result != null)
+            {
+
+                result.IsActive = isActive;
+                _uow.GenericRepository<Tax>().Update(result);
+                _uow.Save();
+            }
+
+            return Convert.ToString(result?.Id ?? 0);
+        }
+    }
+}
