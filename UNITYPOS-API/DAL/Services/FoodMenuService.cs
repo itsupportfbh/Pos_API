@@ -23,6 +23,7 @@ namespace UNITYPOS_API.DAL.Services
                           id = b.Id,
                           name = b.Name,
                           code = b.Code,
+                          categoryId = b.CategoryId,
                           isactive = b.IsActive,
                       }).ToList();
 
@@ -40,6 +41,7 @@ namespace UNITYPOS_API.DAL.Services
                           id = b.Id,
                           name = b.Name,
                           code = b.Code,
+                          categoryId = b.CategoryId,
                           isactive = b.IsActive,
                       }).ToList();
 
@@ -64,6 +66,7 @@ namespace UNITYPOS_API.DAL.Services
             {
                 Code = foodmenu.Code,
                 Name = foodmenu.Name,
+                CategoryId = foodmenu.CategoryId,
                 Price = foodmenu.Price,
                 OrgId = foodmenu.OrgId,
                 IsActive = true,
@@ -92,26 +95,27 @@ namespace UNITYPOS_API.DAL.Services
                 return "AlreadyExists";
             }
 
-            var existingBranch = _uow.GenericRepository<FoodMenu>().Table()
+            var existingMenu = _uow.GenericRepository<FoodMenu>().Table()
                 .FirstOrDefault(x => x.Id == foodmenu.Id
                                   && x.OrgId == foodmenu.OrgId
                                   && x.IsDeleted == false);
 
-            if (existingBranch != null)
+            if (existingMenu != null)
             {
-                existingBranch.Code = foodmenu.Code;
-                existingBranch.Name = foodmenu.Name;
-                existingBranch.Price = foodmenu.Price;          
-                existingBranch.OrgId = foodmenu.OrgId;
-                existingBranch.IsActive = true;
-                existingBranch.IsDeleted = false;
-                existingBranch.UpdatedBy = foodmenu.UpdatedBy;
-                existingBranch.UpdatedDate = DateTime.Now;
+                existingMenu.Code = foodmenu.Code;
+                existingMenu.Name = foodmenu.Name;
+                existingMenu.Price = foodmenu.Price;
+                existingMenu.CategoryId = foodmenu.CategoryId;
+                existingMenu.OrgId = foodmenu.OrgId;
+                existingMenu.IsActive = true;
+                existingMenu.IsDeleted = false;
+                existingMenu.UpdatedBy = foodmenu.UpdatedBy;
+                existingMenu.UpdatedDate = DateTime.Now;
 
-                _uow.GenericRepository<FoodMenu>().Update(existingBranch);
+                _uow.GenericRepository<FoodMenu>().Update(existingMenu);
                 _uow.Save();
 
-                return Convert.ToString(existingBranch.Id);
+                return Convert.ToString(existingMenu.Id);
             }
 
             return "0";
