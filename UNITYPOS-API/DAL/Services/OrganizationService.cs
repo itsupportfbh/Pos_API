@@ -9,7 +9,7 @@ using UNITYPOS_API.ViewModel;
 
 namespace UNITYPOS_API.DAL.Services
 {
-    public class OrganizationService : IOrganizationservice
+    public class OrganizationService : IOrganizationService
     {
 
         private readonly IUnitOfWork _uow;
