@@ -148,8 +148,6 @@ namespace UNITYPOS_API.DAL.Services
             }
 
             return Convert.ToString(result?.Id ?? 0);
-
-
         }
     }
 }

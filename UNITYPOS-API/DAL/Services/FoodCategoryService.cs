@@ -91,25 +91,25 @@ namespace UNITYPOS_API.DAL.Services
                 return "AlreadyExists";
             }
 
-            var existingBranch = _uow.GenericRepository<FoodMenuCategory>().Table()
+            var existingCategory = _uow.GenericRepository<FoodMenuCategory>().Table()
                 .FirstOrDefault(x => x.Id == foodmenu.Id
                                   && x.OrgId == foodmenu.OrgId
                                   && x.IsDeleted == false);
 
-            if (existingBranch != null)
+            if (existingCategory != null)
             {
-                existingBranch.Code = foodmenu.Code;
-                existingBranch.Name = foodmenu.Name;
-                existingBranch.OrgId = foodmenu.OrgId;
-                existingBranch.IsActive = true;
-                existingBranch.IsDeleted = false;
-                existingBranch.UpdatedBy = foodmenu.UpdatedBy;
-                existingBranch.UpdatedDate = DateTime.Now;
+                existingCategory.Code = foodmenu.Code;
+                existingCategory.Name = foodmenu.Name;
+                existingCategory.OrgId = foodmenu.OrgId;
+                existingCategory.IsActive = true;
+                existingCategory.IsDeleted = false;
+                existingCategory.UpdatedBy = foodmenu.UpdatedBy;
+                existingCategory.UpdatedDate = DateTime.Now;
 
-                _uow.GenericRepository<FoodMenuCategory>().Update(existingBranch);
+                _uow.GenericRepository<FoodMenuCategory>().Update(existingCategory);
                 _uow.Save();
 
-                return Convert.ToString(existingBranch.Id);
+                return Convert.ToString(existingCategory.Id);
             }
 
             return "0";
