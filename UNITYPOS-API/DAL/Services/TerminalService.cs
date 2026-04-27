@@ -6,7 +6,7 @@ using UNITYPOS_API.Entities.Master;
 
 namespace UNITYPOS_API.DAL.Services
 {
-    public class TerminalService:ITerminalService
+    public class TerminalService : ITerminalService
     {
 
 
@@ -16,19 +16,25 @@ namespace UNITYPOS_API.DAL.Services
             _uow = uow ?? throw new ArgumentNullException(nameof(uow));
         }
 
-        public IEnumerable<Object> GetAllTerminal(int orgid,int branchid,int counterid)
+        public IEnumerable<Object> GetAllTerminal(int orgid, int branchid, int counterid)
         {
             IEnumerable<Object> result = null;
 
-            result = (from b in _uow.GenericRepository<Terminal>().Table()
-                      where b.IsActive == true && b.IsDeleted == false && b.OrgId == orgid
-                      &&b.BranchId== branchid&&b.CounterId== counterid
+            result = (from t in _uow.GenericRepository<Terminal>().Table()
+                      join b in _uow.GenericRepository<Branch>().Table()
+                          on t.BranchId equals b.Id
+                      where t.IsDeleted == false
+                            && t.OrgId == orgid
+                            && t.BranchId == branchid
+                            && (counterid == 0 || t.CounterId == counterid)
                       select new
                       {
-                          id = b.Id,
-                          name = b.Name,
-                          code = b.Code,
-                          isactive = b.IsActive,
+                          id = t.Id,
+                          name = t.Name,
+                          code = t.Code,
+                          branchid = t.BranchId,
+                          branchname = b.Name,
+                          isactive = t.IsActive,
                       }).ToList();
 
 
@@ -45,6 +51,9 @@ namespace UNITYPOS_API.DAL.Services
                           id = b.Id,
                           name = b.Name,
                           code = b.Code,
+                          branchId = b.BranchId,
+                          counterId = b.CounterId,
+                          deviceName = b.DeviceName,
                           isactive = b.IsActive,
                       }).ToList();
 
@@ -60,7 +69,7 @@ namespace UNITYPOS_API.DAL.Services
                 .Count(c => c.Name.ToLower() == terminal.Name.ToLower()
                          && c.OrgId == terminal.OrgId
                          && c.BranchId == terminal.BranchId
-                         && c.CounterId==terminal.CounterId
+                         && c.CounterId == terminal.CounterId
                          && c.IsDeleted == false);
 
             if (check > 0)

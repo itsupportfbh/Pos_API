@@ -17,6 +17,8 @@ namespace UNITYPOS_API.DAL.Services
             IEnumerable<Object> result = null;
 
             result = (from b in _uow.GenericRepository<FoodMenuSubCategory>().Table()
+                      join c in _uow.GenericRepository<FoodMenuCategory>().Table()
+                       on b.CategoryId equals c.Id
                       where b.IsDeleted == false && b.OrgId == orgid
                       select new
                       {
@@ -24,6 +26,7 @@ namespace UNITYPOS_API.DAL.Services
                           name = b.Name,
                           code = b.Code,
                           categoryId = b.CategoryId,
+                          categoryname = c.Name,
                           isactive = b.IsActive,
                       }).ToList();
 
