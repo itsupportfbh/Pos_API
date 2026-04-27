@@ -1,11 +1,12 @@
-﻿using UNITYPOS_API.DAL.Interfaces;
+﻿using System.Diagnostics.Metrics;
+using UNITYPOS_API.DAL.Interfaces;
 using UNITYPOS_API.Data.ORM;
 using UNITYPOS_API.Entities;
 using UNITYPOS_API.Entities.Master;
 
 namespace UNITYPOS_API.DAL.Services
 {
-    public class CounterService:ICounterService
+    public class CounterService : ICounterService
     {
         private readonly IUnitOfWork _uow;
         public CounterService(IUnitOfWork uow)
@@ -18,49 +19,37 @@ namespace UNITYPOS_API.DAL.Services
 
         public IEnumerable<object> GetAllCounter(int orgId, int branchId)
         {
-            var result = (from c in _uow.GenericRepository<Counter>().Table()
-                          where c.IsActive == true
-                                && c.IsDeleted == false
-                                && c.OrgId == orgId
-                                && c.BranchId == branchId
-                          select new
-                          {
-                              id = c.Id,
-                              name = c.Name,
-                              code = c.Code,
-                              branchId = c.BranchId,
-                              orgId = c.OrgId,
-                              isActive = c.IsActive
-                          }).ToList();
+            var result =
+                (from c in _uow.GenericRepository<Counter>().Table()
+                 join b in _uow.GenericRepository<Branch>().Table()
+                    on c.BranchId equals b.Id
+                 where c.IsDeleted == false
+                       && c.OrgId == orgId
+                       && (branchId == 0 || c.BranchId == branchId)
+                 select new
+                 {
+                     Id = c.Id,
+                     Code = c.Code,
+                     Name = c.Name,
+                     Phone = c.Phone,
+                     BranchId = c.BranchId,
+                     BranchName = b.Name,
+                     OrgId = c.OrgId,
+                     IsActive = c.IsActive,
+                     IsDeleted = c.IsDeleted,
+                     Remarks = c.Remarks
+                 }).ToList();
 
             return result;
         }
 
 
-        public IEnumerable<Object> GetCounterbyId(int id)
+        public Counter GetCounterbyId(int Id)
         {
-            IEnumerable<Object> result = null;
-
-            result = (from b in _uow.GenericRepository<Counter>().Table()
-                      where b.IsActive == true && b.IsDeleted == false && b.Id == id
-                      select new
-                      {
-                          Id = b.Id,
-                          Code = b.Code,
-                          Name = b.Name,
-                          Phone = b.Phone,
-                          BranchId = b.BranchId,
-                          Remarks = b.Remarks,
-                          OrgId = b.OrgId,
-                          IsActive = b.IsActive,
-                          IsDeleted = b.IsDeleted,
-                          CreatedBy = b.CreatedBy,
-                          CreatedDate = b.CreatedDate,
-                          UpdatedBy = b.UpdatedBy,
-                          UpdatedDate = b.UpdatedDate
-
-                      }).ToList();
-
+            var result = _uow.GenericRepository<Counter>()
+                      .Table()
+                      .Where(x => x.Id == Id && x.IsActive == true && x.IsDeleted == false)
+                      .FirstOrDefault();
 
             return result;
         }
@@ -86,6 +75,7 @@ namespace UNITYPOS_API.DAL.Services
                 Remarks = counter.Remarks,
                 OrgId = counter.OrgId,
                 BranchId = counter.BranchId,
+               
                 IsActive = true,
                 IsDeleted = false,
                 CreatedBy = counter.CreatedBy,
@@ -101,14 +91,13 @@ namespace UNITYPOS_API.DAL.Services
 
         public string Update(Counter counter)
         {
-            // 🔍 Duplicate check (exclude current record)
             int check = _uow.GenericRepository<Counter>().Table()
                 .Count(x =>
                     x.Id != counter.Id &&
                     x.OrgId == counter.OrgId &&
                     x.BranchId == counter.BranchId &&
                     x.IsDeleted == false &&
-                    (                       
+                    (
                         x.Name.Trim().ToLower() == counter.Name.Trim().ToLower()
                     ));
 
@@ -117,34 +106,34 @@ namespace UNITYPOS_API.DAL.Services
                 return "AlreadyExists";
             }
 
-            // 🔍 Get existing record
             var existingCounter = _uow.GenericRepository<Counter>().Table()
                 .FirstOrDefault(x =>
                     x.Id == counter.Id &&
-                    x.OrgId == counter.OrgId &&
-                    x.BranchId == counter.BranchId &&
                     x.IsDeleted == false);
 
             if (existingCounter != null)
             {
-                // ✅ Update values
                 existingCounter.Code = counter.Code;
                 existingCounter.Name = counter.Name;
                 existingCounter.Phone = counter.Phone;
                 existingCounter.Remarks = counter.Remarks;
+                existingCounter.BranchId = counter.BranchId;
                 existingCounter.IsActive = true;
                 existingCounter.IsDeleted = false;
-
                 existingCounter.UpdatedBy = counter.UpdatedBy;
                 existingCounter.UpdatedDate = DateTime.Now;
 
                 _uow.GenericRepository<Counter>().Update(existingCounter);
                 _uow.Save();
 
-                return existingCounter.Id.ToString();
+            }
+            else
+
+            {
+                return "";
             }
 
-            return "0";
+            return Convert.ToString(existingCounter.Id);
         }
 
         public string DeleteById(int id)

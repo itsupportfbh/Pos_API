@@ -17,25 +17,39 @@ namespace UNITYPOS_API.DAL.Services
 
         public IEnumerable<object> GetAll(int orgid, int branchid, int counterid, int terminalid)
         {
-            var result = (from p in _uow.GenericRepository<Printer>().Table()
-                          where p.IsDeleted == false
-                                && p.OrgId == orgid
-                                && (branchid == 0 || p.BranchId == branchid)
-                                && (counterid == 0 || p.CounterId == counterid)
-                                && (terminalid == 0 || p.TerminalId == terminalid)
-                                
-                          select new
-                          {
-                              id = p.Id,
-                              orgId = p.OrgId,
-                              branchId = p.BranchId,
-                              counterId = p.CounterId,
-                              terminalId = p.TerminalId,
-                              code = p.Code,
-                              name = p.Name,
-                              remarks = p.Remarks,
-                              isActive = p.IsActive
-                          }).ToList();
+            var result =
+                (from p in _uow.GenericRepository<Printer>().Table()
+                 join b in _uow.GenericRepository<Branch>().Table()
+                    on p.BranchId equals b.Id
+                 join c in _uow.GenericRepository<Counter>().Table()
+                    on p.CounterId equals c.Id
+                 join t in _uow.GenericRepository<Terminal>().Table()
+                    on p.TerminalId equals t.Id
+
+                 where p.IsDeleted == false
+                       && p.OrgId == orgid
+                       && (branchid == 0 || p.BranchId == branchid)
+                       && (counterid == 0 || p.CounterId == counterid)
+                       && (terminalid == 0 || p.TerminalId == terminalid)
+
+                 select new
+                 {
+                     id = p.Id,
+                     orgId = p.OrgId,
+                     branchId = p.BranchId,
+                     counterId = p.CounterId,
+                     terminalId = p.TerminalId,
+
+                     code = p.Code,
+                     name = p.Name,
+
+                     branchName = b.Name,
+                     counterName = c.Name,
+                     terminalName = t.Name,
+
+                     remarks = p.Remarks,
+                     isActive = p.IsActive
+                 }).ToList();
 
             return result;
         }

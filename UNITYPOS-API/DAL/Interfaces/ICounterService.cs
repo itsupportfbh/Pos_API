@@ -6,7 +6,7 @@ namespace UNITYPOS_API.DAL.Interfaces
     {
 
         public IEnumerable<object> GetAllCounter(int orgId, int branchId);
-        public IEnumerable<Object> GetCounterbyId(int id);
+        public Counter GetCounterbyId(int id);
         public string Create(Counter counter);
         public string Update(Counter counter);
         public string DeleteById(int id);

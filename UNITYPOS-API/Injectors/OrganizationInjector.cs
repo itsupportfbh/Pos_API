@@ -19,6 +19,8 @@ namespace UNITYPOS_API.Injectors
             _ = services.AddScoped<IFoodSubCategory, FoodSubCategoryService>();
             _ = services.AddScoped<ICommonService, CommonService>();
             _ = services.AddScoped<ITax, TaxService>();
+            _ = services.AddScoped<ICustomerService, CustomerService>();
+
 
         }
     }
