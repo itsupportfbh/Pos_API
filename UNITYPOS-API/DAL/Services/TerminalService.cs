@@ -83,7 +83,7 @@ namespace UNITYPOS_API.DAL.Services
                 OrgId = terminal.OrgId,
                 BranchId = terminal.BranchId,
                 CounterId = terminal.CounterId,
-                DeviceName = hostName,
+                DeviceName = terminal.DeviceName,
                 Code = terminal.Code,
                 Name = terminal.Name,
                 Remarks = terminal.Remarks,
@@ -125,7 +125,7 @@ namespace UNITYPOS_API.DAL.Services
                 existingTerminal.OrgId = terminal.OrgId;
                 existingTerminal.BranchId = terminal.BranchId;
                 existingTerminal.CounterId = terminal.CounterId;
-                existingTerminal.DeviceName = hostName; // or terminal.DeviceName
+                existingTerminal.DeviceName = terminal.DeviceName;
                 existingTerminal.Code = terminal.Code;
                 existingTerminal.Name = terminal.Name;
                 existingTerminal.Remarks = terminal.Remarks;
