@@ -1,6 +1,5 @@
 ﻿using UNITYPOS_API.DAL.Interfaces;
 using UNITYPOS_API.Data.ORM;
-using UNITYPOS_API.Entities;
 using UNITYPOS_API.Entities.Master;
 
 namespace UNITYPOS_API.DAL.Services
@@ -25,11 +24,11 @@ namespace UNITYPOS_API.DAL.Services
             {
                 var tokenResult = _tokenService.GenerateToken(user);
 
-                int UserId = (from um in _uow.GenericRepository<UserMaster>().Table()
+                int UserId = (int)(from um in _uow.GenericRepository<UserMaster>().Table()
                               where (um.Email == Email || um.EmpCode == Email) && um.Password == Password && um.IsActive == true && um.IsDeleted == false
                               select um.Id).FirstOrDefault();
 
-                int OrgId = (from um in _uow.GenericRepository<UserMaster>().Table()
+                int OrgId = (int)(from um in _uow.GenericRepository<UserMaster>().Table()
                              where (um.Email == Email || um.EmpCode == Email) && um.Password == Password && um.IsActive == true && um.IsDeleted == false
                              select um.OrgId).FirstOrDefault();
 

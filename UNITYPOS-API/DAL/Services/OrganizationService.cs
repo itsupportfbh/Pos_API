@@ -18,10 +18,10 @@ namespace UNITYPOS_API.DAL.Services
             _uow = uow ?? throw new ArgumentNullException(nameof(uow));
         }
 
-        public string Create(OrganizationDTO organizationDTO)
+        public string Create(Organization Organization)
         {
             int check = _uow.GenericRepository<Organization>().Table()
-                .Count(o => o.Name.ToLower() == organizationDTO.Name.ToLower()
+                .Count(o => o.Name.ToLower() == Organization.Name.ToLower()
                          && o.IsDeleted == false);
 
             if (check > 0)
@@ -31,25 +31,25 @@ namespace UNITYPOS_API.DAL.Services
 
             var entity = new Organization
             {
-                Code = organizationDTO.Code,
-                Name = organizationDTO.Name,
-                GSTNo = organizationDTO.GSTNo,
-                RegistrationNo = organizationDTO.RegistrationNo,
-                Phone = organizationDTO.Phone,
-                Email = organizationDTO.Email,
-                Website = organizationDTO.Website,
-                ContactPerson = organizationDTO.ContactPerson,
-                ContactMobileNo = organizationDTO.ContactMobileNo,
-                ContactEmail = organizationDTO.ContactEmail,
-                Address1 = organizationDTO.Address1,
-                Address2 = organizationDTO.Address2,
-                City = organizationDTO.City,
-                State = organizationDTO.State,
-                PostalCode = organizationDTO.PostalCode,
-                Country = organizationDTO.Country,
-                Remarks = organizationDTO.Remarks,
+                Code = Organization.Code,
+                Name = Organization.Name,
+                GSTNo = Organization.GSTNo,
+                RegistrationNo = Organization.RegistrationNo,
+                Phone = Organization.Phone,
+                Email = Organization.Email,
+                Website = Organization.Website,
+                ContactPerson = Organization.ContactPerson,
+                ContactMobileNo = Organization.ContactMobileNo,
+                ContactEmail = Organization.ContactEmail,
+                Address1 = Organization.Address1,
+                Address2 = Organization.Address2,
+                City = Organization.City,
+                State = Organization.State,
+                PostalCode = Organization.PostalCode,
+                Country = Organization.Country,
+                Remarks = Organization.Remarks,
                 IsActive = true,
-                CreatedBy = organizationDTO.CreatedBy,
+                CreatedBy = Organization.CreatedBy,
                 CreatedDate = DateTime.Now
             };
 
@@ -59,10 +59,10 @@ namespace UNITYPOS_API.DAL.Services
             return Convert.ToString(entity.Id);
         }
 
-        public string Update(OrganizationDTO organizationDTO)
+        public string Update(Organization Organization)
         {
             int check = _uow.GenericRepository<Organization>().Table()
-                .Count(o => o.Name.ToLower() == organizationDTO.Name.ToLower() && o.Id != organizationDTO.Id
+                .Count(o => o.Name.ToLower() == Organization.Name.ToLower() && o.Id != Organization.Id
                          && o.IsDeleted == false);
 
             if (check > 0)
@@ -70,29 +70,29 @@ namespace UNITYPOS_API.DAL.Services
                 return "AlreadyExists";
             }
 
-            var ExistingOrg = _uow.GenericRepository<Organization>().Table().Where(x => x.IsActive == true && x.IsDeleted == false && x.Id == organizationDTO.Id).FirstOrDefault();
+            var ExistingOrg = _uow.GenericRepository<Organization>().Table().Where(x => x.IsActive == true && x.IsDeleted == false && x.Id == Organization.Id).FirstOrDefault();
 
             if (ExistingOrg != null)
             {
-                ExistingOrg.Code = organizationDTO.Code;
-                ExistingOrg.Name = organizationDTO.Name;
-                ExistingOrg.GSTNo = organizationDTO.GSTNo;
-                ExistingOrg.RegistrationNo = organizationDTO.RegistrationNo;
-                ExistingOrg.Phone = organizationDTO.Phone;
-                ExistingOrg.Email = organizationDTO.Email;
-                ExistingOrg.Website = organizationDTO.Website;
-                ExistingOrg.ContactPerson = organizationDTO.ContactPerson;
-                ExistingOrg.ContactMobileNo = organizationDTO.ContactMobileNo;
-                ExistingOrg.ContactEmail = organizationDTO.ContactEmail;
-                ExistingOrg.Address1 = organizationDTO.Address1;
-                ExistingOrg.Address2 = organizationDTO.Address2;
-                ExistingOrg.City = organizationDTO.City;
-                ExistingOrg.State = organizationDTO.State;
-                ExistingOrg.PostalCode = organizationDTO.PostalCode;
-                ExistingOrg.Country = organizationDTO.Country;
-                ExistingOrg.Remarks = organizationDTO.Remarks;
+                ExistingOrg.Code = Organization.Code;
+                ExistingOrg.Name = Organization.Name;
+                ExistingOrg.GSTNo = Organization.GSTNo;
+                ExistingOrg.RegistrationNo = Organization.RegistrationNo;
+                ExistingOrg.Phone = Organization.Phone;
+                ExistingOrg.Email = Organization.Email;
+                ExistingOrg.Website = Organization.Website;
+                ExistingOrg.ContactPerson = Organization.ContactPerson;
+                ExistingOrg.ContactMobileNo = Organization.ContactMobileNo;
+                ExistingOrg.ContactEmail = Organization.ContactEmail;
+                ExistingOrg.Address1 = Organization.Address1;
+                ExistingOrg.Address2 = Organization.Address2;
+                ExistingOrg.City = Organization.City;
+                ExistingOrg.State = Organization.State;
+                ExistingOrg.PostalCode = Organization.PostalCode;
+                ExistingOrg.Country = Organization.Country;
+                ExistingOrg.Remarks = Organization.Remarks;
                 ExistingOrg.IsActive = true;
-                ExistingOrg.UpdatedBy = organizationDTO.UpdatedBy;
+                ExistingOrg.UpdatedBy = Organization.UpdatedBy;
                 ExistingOrg.UpdatedDate = DateTime.Now;
 
                 _uow.GenericRepository<Organization>().Update(ExistingOrg);

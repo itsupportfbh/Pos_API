@@ -13,39 +13,39 @@ namespace UNITYPOS_API.Controllers
     [Route("[controller]/[action]")]
     [ApiController]
     [Authorize]
-    public class OrganizationController : ControllerBase
+    public class UserMasterController : ControllerBase
     {
 
-        private readonly IOrganizationService _organizationservice;
-        public OrganizationController(IOrganizationService organizationservice)
+        private readonly IUserMasterService _userMasterService;
+        public UserMasterController(IUserMasterService userMasterService)
         {
-            _organizationservice = organizationservice;
+            _userMasterService = userMasterService;
         }
 
         [HttpPost]
-        public string Create(Organization organization)
+        public string Create(CreateUserMaster userMaster)
         {
             string result = null;
-            result = JsonConvert.SerializeObject(_organizationservice.Create(organization));
+            result = JsonConvert.SerializeObject(_userMasterService.Create(userMaster));
 
             return Common.Utility.GetResult(result);
         }
 
         [HttpPut]
-        public string Update(Organization organization)
+        public string Update(CreateUserMaster userMaster)
         {
             string result = null;
-            result = JsonConvert.SerializeObject(_organizationservice.Update(organization));
+            result = JsonConvert.SerializeObject(_userMasterService.Update(userMaster));
 
             return Common.Utility.GetResult(result);
         }
 
         [HttpGet]
-        public string GetAllOrganization()
+        public string GetAllUsers(int OrgId)
         {
             string result = null;
 
-            result= JsonConvert.SerializeObject(_organizationservice.GetAllOrganization());
+            result= JsonConvert.SerializeObject(_userMasterService.GetAllUsers(OrgId));
 
             return Common.Utility.GetResult(result);
         }
@@ -55,7 +55,7 @@ namespace UNITYPOS_API.Controllers
         {
             string result = null;
 
-            result = JsonConvert.SerializeObject(_organizationservice.GetById(Id));
+            result = JsonConvert.SerializeObject(_userMasterService.GetById(Id));
             return Common.Utility.GetResult(result);
         }
 
@@ -64,7 +64,7 @@ namespace UNITYPOS_API.Controllers
         {
             string result = null;
 
-            result = JsonConvert.SerializeObject(_organizationservice.Delete(id));
+            result = JsonConvert.SerializeObject(_userMasterService.Delete(id));
             return Common.Utility.GetResult(result);
         }
 
@@ -73,7 +73,7 @@ namespace UNITYPOS_API.Controllers
         {
             string result = null;
 
-            result = JsonConvert.SerializeObject(_organizationservice.ActiveInActive(Id, IsActive));
+            result = JsonConvert.SerializeObject(_userMasterService.ActiveInActive(Id, IsActive));
             return Common.Utility.GetResult(result);
         }
 
