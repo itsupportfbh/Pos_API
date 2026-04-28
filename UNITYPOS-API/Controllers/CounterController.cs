@@ -24,10 +24,10 @@ namespace UNITYPOS_API.Controllers
 
 
         [HttpGet]
-        public string GetAllCounter(int orgId, int branchId)
+        public string GetAllCounter(int orgId, List<int> branchIds)
         {
             string result = null;
-            result= JsonConvert.SerializeObject(_counterService.GetAllCounter(orgId,branchId));
+            result= JsonConvert.SerializeObject(_counterService.GetAllCounter(orgId,branchIds));
             return Common.Utility.GetResult(result);
 
         }

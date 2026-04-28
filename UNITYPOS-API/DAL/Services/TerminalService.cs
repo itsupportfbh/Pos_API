@@ -23,9 +23,11 @@ namespace UNITYPOS_API.DAL.Services
             result = (from t in _uow.GenericRepository<Terminal>().Table()
                       join b in _uow.GenericRepository<Branch>().Table()
                           on t.BranchId equals b.Id
+                      join c in _uow.GenericRepository<Counter>().Table()
+                           on t.CounterId equals c.Id
                       where t.IsDeleted == false
                             && t.OrgId == orgid
-                            && t.BranchId == branchid
+                            && (branchid==0||t.BranchId == branchid)
                             && (counterid == 0 || t.CounterId == counterid)
                       select new
                       {
@@ -34,6 +36,8 @@ namespace UNITYPOS_API.DAL.Services
                           code = t.Code,
                           branchid = t.BranchId,
                           branchname = b.Name,
+                          counterid = c.Id,
+                          countername = c.Name,
                           isactive = t.IsActive,
                       }).ToList();
 
@@ -83,7 +87,7 @@ namespace UNITYPOS_API.DAL.Services
                 OrgId = terminal.OrgId,
                 BranchId = terminal.BranchId,
                 CounterId = terminal.CounterId,
-                DeviceName = hostName,
+                DeviceName = terminal.DeviceName,
                 Code = terminal.Code,
                 Name = terminal.Name,
                 Remarks = terminal.Remarks,
@@ -125,7 +129,7 @@ namespace UNITYPOS_API.DAL.Services
                 existingTerminal.OrgId = terminal.OrgId;
                 existingTerminal.BranchId = terminal.BranchId;
                 existingTerminal.CounterId = terminal.CounterId;
-                existingTerminal.DeviceName = hostName; // or terminal.DeviceName
+                existingTerminal.DeviceName = terminal.DeviceName;
                 existingTerminal.Code = terminal.Code;
                 existingTerminal.Name = terminal.Name;
                 existingTerminal.Remarks = terminal.Remarks;

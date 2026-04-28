@@ -17,7 +17,7 @@ namespace UNITYPOS_API.DAL.Services
 
 
 
-        public IEnumerable<object> GetAllCounter(int orgId, int branchId)
+        public IEnumerable<object> GetAllCounter(int orgId, List<int> branchIds)
         {
             var result =
                 (from c in _uow.GenericRepository<Counter>().Table()
@@ -25,7 +25,7 @@ namespace UNITYPOS_API.DAL.Services
                     on c.BranchId equals b.Id
                  where c.IsDeleted == false
                        && c.OrgId == orgId
-                       && (branchId == 0 || c.BranchId == branchId)
+                       && (!branchIds.Any() || branchIds.Contains(c.BranchId))
                  select new
                  {
                      Id = c.Id,

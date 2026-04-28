@@ -1,4 +1,6 @@
-﻿namespace UNITYPOS_API.Entities.Master
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace UNITYPOS_API.Entities.Master
 {
     public class CustomerMaster : CommonClass
     {
@@ -6,6 +8,8 @@
 
         public string Code { get; set; }
         public string Name { get; set; }
+
+        [StringLength(20)]
         public string MobileNo { get; set; }
         public string EmailId { get; set; }
         public string AddressLine1 { get; set; }
