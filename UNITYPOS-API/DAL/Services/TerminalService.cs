@@ -23,10 +23,12 @@ namespace UNITYPOS_API.DAL.Services
             result = (from t in _uow.GenericRepository<Terminal>().Table()
                       join b in _uow.GenericRepository<Branch>().Table()
                           on t.BranchId equals b.Id
+                      join c in _uow.GenericRepository<Counter>().Table()
+                           on t.CounterId equals c.Id
                       where t.IsDeleted == false
                             && t.OrgId == orgid
                             && t.BranchId == branchid
-                            && (counterid == 0 || t.CounterId == counterid)
+                            && (counterid == 0 || c.Id == counterid)
                       select new
                       {
                           id = t.Id,
@@ -34,6 +36,8 @@ namespace UNITYPOS_API.DAL.Services
                           code = t.Code,
                           branchid = t.BranchId,
                           branchname = b.Name,
+                          counterid = c.Id,
+                          countername = c.Name,
                           isactive = t.IsActive,
                       }).ToList();
 
