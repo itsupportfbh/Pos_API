@@ -118,6 +118,8 @@ namespace UNITYPOS_API.DAL.Services
                           o.Code,
                           o.Name,
                           o.Website,
+                          o.Email,
+                          o.Phone,
                           o.IsActive,
                       })
                          .ToList();

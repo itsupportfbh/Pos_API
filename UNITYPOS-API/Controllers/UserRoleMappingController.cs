@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using UNITYPOS_API.DAL.Interfaces;
+using UNITYPOS_API.DAL.Services;
 using UNITYPOS_API.Entities;
 using UNITYPOS_API.Entities.Master;
 using UNITYPOS_API.ViewModel;
@@ -39,5 +40,15 @@ namespace UNITYPOS_API.Controllers
 
             return Common.Utility.GetResult(result);
         }
+
+        [HttpGet]
+        public string GetByUserId(int UserId)
+        {
+            string result = null;
+
+            result = JsonConvert.SerializeObject(_userRoleMappingService.GetByUserId(UserId));
+            return Common.Utility.GetResult(result);
+        }
+
     }
 }

@@ -12,7 +12,6 @@ namespace UNITYPOS_API.Controllers
 {
     [Route("[controller]/[action]")]
     [ApiController]
-    //[Authorize]
 
     public class AuthController : ControllerBase
     {
@@ -26,7 +25,6 @@ namespace UNITYPOS_API.Controllers
             _AuthService = AuthService;
         }
 
-        //[AllowAnonymous]
         [HttpPost]
         public async Task<string> Login([FromBody] LoginRequest request)
         {

@@ -17,14 +17,23 @@ namespace UNITYPOS_API.Controllers
     {
 
         private readonly IUserMasterService _userMasterService;
-        public UserMasterController(IUserMasterService userMasterService)
+        private readonly ICommonService _commonService;
+
+        public UserMasterController(IUserMasterService userMasterService, ICommonService commonService)
         {
             _userMasterService = userMasterService;
+            _commonService = commonService;
         }
 
         [HttpPost]
-        public string Create(CreateUserMaster userMaster)
+        public async Task<string> Create([FromForm] CreateUserMaster userMaster)
         {
+            if (userMaster.ImageFile != null)
+            {
+                var uploadResult = await _commonService.FileUpload(userMaster.ImageFile, "User");
+                userMaster.Image = uploadResult.FileName;
+            }
+
             string result = null;
             result = JsonConvert.SerializeObject(_userMasterService.Create(userMaster));
 
@@ -32,8 +41,14 @@ namespace UNITYPOS_API.Controllers
         }
 
         [HttpPut]
-        public string Update(CreateUserMaster userMaster)
+        public async Task<string> Update([FromForm] CreateUserMaster userMaster)
         {
+            if (userMaster.ImageFile != null)
+            {
+                var uploadResult = await _commonService.FileUpload(userMaster.ImageFile, "User");
+                userMaster.Image = uploadResult.FileName;
+            }
+
             string result = null;
             result = JsonConvert.SerializeObject(_userMasterService.Update(userMaster));
 

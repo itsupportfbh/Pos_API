@@ -1,6 +1,8 @@
-﻿namespace UNITYPOS_API.Entities.Master
+using Microsoft.AspNetCore.Http;
+
+namespace UNITYPOS_API.Entities.Master
 {
-    public class UserMaster:CommonClass
+    public class UserMaster : CommonClass
     {
         public int? Id { get; set; }
         public string? Code { get; set; }
@@ -46,9 +48,9 @@
         public int? State { get; set; }
         public int? Country { get; set; }
         public int? PostalCode { get; set; }
+        public IFormFile? ImageFile { get; set; }
 
         public List<UserBranchMapping>? UserBranchMapping { get; set; }
         public List<UserRoleMapping>? UserRoleMapping { get; set; }
-
     }
 }

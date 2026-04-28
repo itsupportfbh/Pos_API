@@ -7,5 +7,6 @@ namespace UNITYPOS_API.DAL.Interfaces
     {
         public String Create(List<UserBranchMapping> userBranchMapping);
         public String Update(List<UserBranchMapping> userBranchMapping);
+        public IEnumerable<Object> GetByUserId(int UserId);
     }
 }

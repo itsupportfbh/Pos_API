@@ -17,9 +17,14 @@ namespace UNITYPOS_API.Controllers
     {
 
         private readonly ICommonService _commonService;
-        public CommonController(ICommonService commonService)
+        private readonly ILogger<CommonController> _logger;
+
+        public CommonController(
+            ICommonService commonService,
+            ILogger<CommonController> logger)
         {
             _commonService = commonService;
+            _logger = logger;
         }
 
         [HttpGet]
@@ -27,7 +32,7 @@ namespace UNITYPOS_API.Controllers
         {
             string result = null;
 
-            result= JsonConvert.SerializeObject(_commonService.GetCountry());
+            result = JsonConvert.SerializeObject(_commonService.GetCountry());
 
             return Common.Utility.GetResult(result);
         }
@@ -49,6 +54,35 @@ namespace UNITYPOS_API.Controllers
 
             result = JsonConvert.SerializeObject(_commonService.GetCityByStateId(StateId));
             return Common.Utility.GetResult(result);
+        }
+
+
+
+        [HttpPost]
+        public async Task<IActionResult> FileUpload(String FolderName)
+        {
+            Dictionary<string, object> dict = new Dictionary<string, object>();
+            try
+            {
+                var httpRequest = HttpContext.Request;
+
+                foreach (var file in httpRequest.Form.Files)
+                {
+                    var result = await _commonService.FileUpload(file, FolderName);
+                    return Created("", result);
+                }
+                var res = "Please upload an image or voice recording.";
+                dict.Add("error", res);
+                return NotFound(dict);
+            }
+            catch (Exception ex)
+            {
+                var res = "Some error occurred.";
+                dict.Add("error", res);
+                Exception objErr = ex.GetBaseException();
+                _logger.LogError($"Error: {objErr}, MethodName=PostUserImage");
+                return NotFound(dict);
+            }
         }
 
     }

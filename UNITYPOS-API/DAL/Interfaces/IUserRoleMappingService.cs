@@ -7,5 +7,6 @@ namespace UNITYPOS_API.DAL.Interfaces
     {
         public String Create(List<UserRoleMapping> userRoleMapping);
         public String Update(List<UserRoleMapping> userRoleMapping);
+        public IEnumerable<Object> GetByUserId(int UserId);
     }
 }

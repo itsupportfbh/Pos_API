@@ -18,15 +18,18 @@ namespace UNITYPOS_API.DAL.Services
     {
 
         private readonly IUnitOfWork _uow;
+        private readonly IConfiguration _configuration;
         private readonly IUserBranchMappingService _userBranchMappingService;
         private readonly IUserRoleMappingService _userRoleMappingService;
 
         public UserMasterService(
             IUnitOfWork uow,
+            IConfiguration configuration,
             IUserBranchMappingService userBranchMappingService,
             IUserRoleMappingService userRoleMappingService)
         {
             _uow = uow ?? throw new ArgumentNullException(nameof(uow));
+            _configuration = configuration;
             _userBranchMappingService = userBranchMappingService ?? throw new ArgumentNullException(nameof(userBranchMappingService));
             _userRoleMappingService = userRoleMappingService ?? throw new ArgumentNullException(nameof(userRoleMappingService));
         }
@@ -59,7 +62,7 @@ namespace UNITYPOS_API.DAL.Services
                 Remarks = userMaster.Remarks,
                 IsAdmin = userMaster.IsAdmin,
                 Email = userMaster.Email,
-                Password = userMaster.Password,
+                Password = userMaster.Password ?? "",
                 ContactNo = userMaster.ContactNo,
                 EmpCode = userMaster.EmpCode,
                 OrgId = userMaster.OrgId,
@@ -144,7 +147,7 @@ namespace UNITYPOS_API.DAL.Services
                 try
                 {
                     _uow.BeginTransaction();
-
+ 
                     ExistingUser.Code = userMaster.Code;
                     ExistingUser.Name = userMaster.Name;
                     ExistingUser.Remarks = userMaster.Remarks;
@@ -157,7 +160,9 @@ namespace UNITYPOS_API.DAL.Services
                     ExistingUser.IsActive = true;
                     ExistingUser.UpdatedBy = userMaster.UpdatedBy;
                     ExistingUser.UpdatedDate = DateTime.Now;
-                    ExistingUser.Image = userMaster.Image;
+                    ExistingUser.Image = string.IsNullOrWhiteSpace(userMaster.Image)
+                        ? ExistingUser.Image
+                        : userMaster.Image;
                     ExistingUser.Gender = userMaster.Gender;
                     ExistingUser.DOB = userMaster.DOB;
                     ExistingUser.Age = userMaster.Age;
@@ -214,6 +219,7 @@ namespace UNITYPOS_API.DAL.Services
         public IEnumerable<Object> GetAllUsers(int OrgId)
         {
             IEnumerable<Object> result = null;
+            string fileUploadPathView = _configuration["AppSettings:FileUploadPathView"] ?? string.Empty;
 
             result = (from u in _uow.GenericRepository<UserMaster>().Table()
                       where u.IsDeleted == false && u.OrgId == OrgId
@@ -233,7 +239,9 @@ namespace UNITYPOS_API.DAL.Services
                           u.IsDeleted,
                           u.CreatedBy,
                           u.CreatedDate,
-                          u.Image,
+                          Image = string.IsNullOrWhiteSpace(u.Image)
+                              ? u.Image
+                              : fileUploadPathView + "User/" + u.Image,
                           u.Gender,
                           u.DOB,
                           u.Age,
@@ -251,10 +259,17 @@ namespace UNITYPOS_API.DAL.Services
 
         public UserMaster GetById(int Id)
         {
+            string fileUploadPathView = _configuration["AppSettings:FileUploadPathView"] ?? string.Empty;
+
             var result = _uow.GenericRepository<UserMaster>()
                        .Table()
                        .Where(x => x.Id == Id && x.IsActive == true && x.IsDeleted == false)
                        .FirstOrDefault();
+
+            if (result != null && !string.IsNullOrWhiteSpace(result.Image))
+            {
+                result.Image = fileUploadPathView + "User/" + result.Image;
+            }
 
             return result;
         }

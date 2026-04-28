@@ -38,7 +38,6 @@ namespace UNITYPOS_API.Controllers
             return Common.Utility.GetResult(result);
         }
         [HttpPost]
-
         public string Create(Branch branch)
         {
             string result = null;

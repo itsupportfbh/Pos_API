@@ -66,7 +66,7 @@ namespace UNITYPOS_API.DAL.Services
 
                 var existingRecord = _uow.GenericRepository<UserRoleMapping>()
                     .Table()
-                    .FirstOrDefault(x => x.Id == mapping.Id && x.UserId == userId);
+                    .FirstOrDefault(x => x.RoleId == mapping.RoleId && x.UserId == userId);
 
                 if (existingRecord != null)
                 {
@@ -87,6 +87,27 @@ namespace UNITYPOS_API.DAL.Services
             _uow.Save();
 
             return "Success";
+        }
+
+        public IEnumerable<Object> GetByUserId(int UserId)
+        {
+            IEnumerable<Object> result = null;
+
+            result = (from u in _uow.GenericRepository<UserRoleMapping>().Table()
+                      where u.IsDeleted == false && u.UserId == UserId
+                      select new
+                      {
+                          u.Id,
+                          u.UserId,
+                          u.RoleId,
+                          u.IsActive,
+                          u.IsDeleted,
+                          u.CreatedBy,
+                          u.CreatedDate,
+                      })
+                         .ToList();
+
+            return result;
         }
 
     }
