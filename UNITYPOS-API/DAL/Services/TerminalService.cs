@@ -25,7 +25,7 @@ namespace UNITYPOS_API.DAL.Services
                           on t.BranchId equals b.Id
                       where t.IsDeleted == false
                             && t.OrgId == orgid
-                            && t.BranchId == branchid
+                            && (branchid==0||t.BranchId == branchid)
                             && (counterid == 0 || t.CounterId == counterid)
                       select new
                       {
