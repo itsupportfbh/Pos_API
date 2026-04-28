@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using UNITYPOS_API.DAL.Interfaces;
@@ -10,6 +11,7 @@ namespace UNITYPOS_API.Controllers
 {
     [Route("[controller]/[action]")]
     [ApiController]
+    [Authorize]
     public class TerminalController : ControllerBase
     {
 
@@ -25,7 +27,7 @@ namespace UNITYPOS_API.Controllers
         public string GetAllTerminal(int orgid, int branchid, int counterid)
         {
             string result = null;
-            JsonConvert.SerializeObject(_terminalService.GetAllTerminal(orgid,branchid,counterid));
+            result = JsonConvert.SerializeObject(_terminalService.GetAllTerminal(orgid,branchid,counterid));
 
             return Common.Utility.GetResult(result);
         }
@@ -34,7 +36,7 @@ namespace UNITYPOS_API.Controllers
         public string GetTerminalbyId(int id)
         {
             string result = null;
-            JsonConvert.SerializeObject(_terminalService.GetTerminalbyId(id));
+            result = JsonConvert.SerializeObject(_terminalService.GetTerminalbyId(id));
 
             return Common.Utility.GetResult(result);
         }
@@ -42,7 +44,7 @@ namespace UNITYPOS_API.Controllers
         public string Create(Terminal terminal)
         {
             string result = null;
-            JsonConvert.SerializeObject(_terminalService.Create(terminal));
+            result = JsonConvert.SerializeObject(_terminalService.Create(terminal));
 
             return Common.Utility.GetResult(result);
         }
@@ -50,7 +52,7 @@ namespace UNITYPOS_API.Controllers
         public string Update(Terminal terminal)
         {
             string result = null;
-            JsonConvert.SerializeObject(_terminalService.Update(terminal));
+            result = JsonConvert.SerializeObject(_terminalService.Update(terminal));
 
             return Common.Utility.GetResult(result);
         }

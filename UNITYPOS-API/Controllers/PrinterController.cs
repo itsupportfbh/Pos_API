@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System.Reflection;
@@ -11,6 +12,7 @@ namespace UNITYPOS_API.Controllers
 {
     [Route("[controller]/[action]")]
     [ApiController]
+    [Authorize]
     public class PrinterController : ControllerBase
     {
 
@@ -53,7 +55,7 @@ namespace UNITYPOS_API.Controllers
             return Common.Utility.GetResult(result);
         }
         [HttpDelete]
-        public string DeleteById(int id)
+        public string Delete(int id)
         {
             string result = null;
             result = JsonConvert.SerializeObject(_printerService.DeleteById(id));

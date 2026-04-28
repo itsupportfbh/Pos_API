@@ -71,6 +71,7 @@ namespace UNITYPOS_API.Data.Context
             modelBuilder.Entity<StateMaster>().ToTable("StateMaster", "dbo");
             modelBuilder.Entity<CityMaster>().ToTable("CityMaster", "dbo");
             modelBuilder.Entity<Tax>().ToTable("Tax", "dbo");
+            modelBuilder.Entity<CustomerMaster>().ToTable("CustomerMaster", "dbo");
 
         }
 
