@@ -24,7 +24,7 @@ namespace UNITYPOS_API.Controllers
 
 
         [HttpGet]
-        public string GetAllCounter(int orgId, List<int> branchIds)
+        public string GetAllCounter(int orgId, [FromQuery] List<int> branchIds)
         {
             string result = null;
             result= JsonConvert.SerializeObject(_counterService.GetAllCounter(orgId,branchIds));
