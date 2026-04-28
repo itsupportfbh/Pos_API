@@ -29,8 +29,6 @@ namespace UNITYPOS_API.DAL.Services
                             && t.OrgId == orgid
                             && (branchid==0||t.BranchId == branchid)
                             && (counterid == 0 || t.CounterId == counterid)
-                            && t.BranchId == branchid
-                            && (counterid == 0 || c.Id == counterid)
                       select new
                       {
                           id = t.Id,
