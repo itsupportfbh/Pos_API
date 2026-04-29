@@ -27,7 +27,7 @@ namespace UNITYPOS_API.DAL.Services
                     on p.TerminalId equals t.Id
 
                  where p.IsDeleted == false
-                       && p.OrgId == orgid
+                       && (orgid ==0 || p.OrgId == orgid)
                        && (branchid == 0 || p.BranchId == branchid)
                        && (counterid == 0 || p.CounterId == counterid)
                        && (terminalid == 0 || p.TerminalId == terminalid)

@@ -26,7 +26,7 @@ namespace UNITYPOS_API.DAL.Services
                       join c in _uow.GenericRepository<Counter>().Table()
                            on t.CounterId equals c.Id
                       where t.IsDeleted == false
-                            && t.OrgId == orgid
+                            && (orgid==0||t.OrgId == orgid)
                             && (branchid==0||t.BranchId == branchid)
                             && (counterid == 0 || t.CounterId == counterid)
                       select new
