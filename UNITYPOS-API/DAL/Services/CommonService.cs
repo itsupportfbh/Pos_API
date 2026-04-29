@@ -167,5 +167,22 @@ namespace UNITYPOS_API.DAL.Services
                 FullPath = uploadPathView + url,
             };
         }
+
+        public IEnumerable<Object> GetBranchByUserId(int Userid)
+        {
+            IEnumerable<Object> result = null;
+
+            result = (from x in _uow.GenericRepository<UserBranchMapping>().Table()
+                      join u in _uow.GenericRepository<Branch>().Table()
+                        on x.BranchId equals u.Id
+                      where x.UserId == Userid
+                      select new
+                      {
+                          x.Id,
+                          u.Name
+                      }).ToList();
+
+            return result;
+        }
     }
 }

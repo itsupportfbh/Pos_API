@@ -5,7 +5,7 @@ namespace UNITYPOS_API.DAL.Interfaces
     public interface ICounterService
     {
 
-        public IEnumerable<object> GetAllCounter(int orgId, List<int> branchIds);
+        public IEnumerable<object> GetAllCounter(int orgId, int branchId);
         public Counter GetCounterbyId(int id);
         public string Create(Counter counter);
         public string Update(Counter counter);

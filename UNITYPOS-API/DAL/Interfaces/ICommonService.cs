@@ -11,5 +11,6 @@ namespace UNITYPOS_API.DAL.Interfaces
         public IEnumerable<Object> GetStateByCountryId(int CountryId);
         public IEnumerable<Object> GetCityByStateId(int StateId);
         public Task<FileUploadResult> FileUpload(IFormFile postedFile, string folderName);
+        public IEnumerable<Object> GetBranchByUserId(int StateId);
     }
 }

@@ -85,5 +85,14 @@ namespace UNITYPOS_API.Controllers
             }
         }
 
+        [HttpGet]
+        public string GetBranchByUserId(int UserId)
+        {
+            string result = null;
+
+            result = JsonConvert.SerializeObject(_commonService.GetBranchByUserId(UserId));
+            return Common.Utility.GetResult(result);
+        }
+
     }
 }
