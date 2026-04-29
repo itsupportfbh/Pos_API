@@ -24,7 +24,7 @@ namespace UNITYPOS_API.DAL.Services
                  join b in _uow.GenericRepository<Branch>().Table()
                     on c.BranchId equals b.Id
                  where c.IsDeleted == false
-                       && c.OrgId == orgId
+                       && (orgId==0||c.OrgId == orgId)
                        && (branchId == 0 || c.BranchId == branchId)
                  select new
                  {
