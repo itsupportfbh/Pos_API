@@ -78,9 +78,11 @@ namespace UNITYPOS_API.DAL.Services
         {
             int check = _uow.GenericRepository<Printer>().Table()
                 .Count(p => p.Name.Trim().ToLower() == printer.Name.Trim().ToLower()
+                         && p.Code.Trim().ToLower() == printer.Code.Trim().ToLower()
                          && p.OrgId == printer.OrgId
                          && p.BranchId == printer.BranchId
                          && p.CounterId == printer.CounterId
+                         && p.TerminalId == printer.TerminalId
                          && p.IsDeleted == false);
 
             if (check > 0)
