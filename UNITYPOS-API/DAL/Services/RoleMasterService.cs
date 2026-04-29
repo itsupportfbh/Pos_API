@@ -18,7 +18,8 @@ namespace UNITYPOS_API.DAL.Services
             IEnumerable<Object> result = null;
 
             result = (from r in _uow.GenericRepository<RoleMaster>().Table()
-                      where r.IsDeleted == false && r.OrgId == orgid
+                      join o in _uow.GenericRepository<Organization>().Table() on r.OrgId equals o.Id
+                      where r.IsDeleted == false && o.IsDeleted == false && (orgid == 0 || r.OrgId == orgid)
                       select new
                       {
                           r.Id,
@@ -26,6 +27,7 @@ namespace UNITYPOS_API.DAL.Services
                           r.Name,
                           r.Remarks,
                           r.OrgId,
+                          OrganizationName = o.Name,
                           r.IsActive,
                       }).ToList();
 

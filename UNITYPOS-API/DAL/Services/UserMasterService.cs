@@ -147,13 +147,13 @@ namespace UNITYPOS_API.DAL.Services
                 try
                 {
                     _uow.BeginTransaction();
- 
+
                     ExistingUser.Code = userMaster.Code;
                     ExistingUser.Name = userMaster.Name;
                     ExistingUser.Remarks = userMaster.Remarks;
                     ExistingUser.IsAdmin = userMaster.IsAdmin;
                     ExistingUser.Email = userMaster.Email;
-                    ExistingUser.Password = userMaster.Password;
+                    ExistingUser.Password = userMaster.Password ?? "";
                     ExistingUser.ContactNo = userMaster.ContactNo;
                     ExistingUser.EmpCode = userMaster.EmpCode;
                     ExistingUser.OrgId = userMaster.OrgId;
@@ -222,7 +222,7 @@ namespace UNITYPOS_API.DAL.Services
             string fileUploadPathView = _configuration["AppSettings:FileUploadPathView"] ?? string.Empty;
 
             result = (from u in _uow.GenericRepository<UserMaster>().Table()
-                      where u.IsDeleted == false && u.OrgId == OrgId
+                      where u.IsDeleted == false && (OrgId == 0 || u.OrgId == OrgId)
                       select new
                       {
                           u.Id,
