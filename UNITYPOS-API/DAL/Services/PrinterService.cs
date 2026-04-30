@@ -25,6 +25,8 @@ namespace UNITYPOS_API.DAL.Services
                     on p.CounterId equals c.Id
                  join t in _uow.GenericRepository<Terminal>().Table()
                     on p.TerminalId equals t.Id
+                 join o in _uow.GenericRepository<Organization>().Table()
+                on p.OrgId equals o.Id
 
                  where p.IsDeleted == false
                        && (orgid ==0 || p.OrgId == orgid)
@@ -42,7 +44,7 @@ namespace UNITYPOS_API.DAL.Services
 
                      code = p.Code,
                      name = p.Name,
-
+                     organizationName=o.Name,
                      branchName = b.Name,
                      counterName = c.Name,
                      terminalName = t.Name,
