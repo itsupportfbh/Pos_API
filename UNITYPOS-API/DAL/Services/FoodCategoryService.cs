@@ -17,10 +17,13 @@ namespace UNITYPOS_API.DAL.Services
             IEnumerable<Object> result = null;
 
             result = (from b in _uow.GenericRepository<FoodMenuCategory>().Table()
-                      where b.IsDeleted == false && b.OrgId == orgid
+                      join o in _uow.GenericRepository<Organization>().Table()
+                         on b.OrgId equals o.Id
+                      where b.IsDeleted == false && (orgid == 0 || b.OrgId == orgid)
                       select new
                       {
                           id = b.Id,
+                          organizationname = o.Name,
                           name = b.Name,
                           code = b.Code,
                           isactive = b.IsActive,

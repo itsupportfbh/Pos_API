@@ -19,26 +19,40 @@ namespace UNITYPOS_API.DAL.Services
 
         private readonly IUnitOfWork _uow;
         private readonly IConfiguration _configuration;
+        private readonly ICommonService _commonService;
         private readonly IUserBranchMappingService _userBranchMappingService;
         private readonly IUserRoleMappingService _userRoleMappingService;
+        private readonly ILogger<UserMasterService> _logger;
 
         public UserMasterService(
             IUnitOfWork uow,
             IConfiguration configuration,
+            ICommonService commonService,
             IUserBranchMappingService userBranchMappingService,
-            IUserRoleMappingService userRoleMappingService)
+            IUserRoleMappingService userRoleMappingService,
+            ILogger<UserMasterService> logger)
         {
             _uow = uow ?? throw new ArgumentNullException(nameof(uow));
             _configuration = configuration;
+            _commonService = commonService ?? throw new ArgumentNullException(nameof(commonService));
             _userBranchMappingService = userBranchMappingService ?? throw new ArgumentNullException(nameof(userBranchMappingService));
             _userRoleMappingService = userRoleMappingService ?? throw new ArgumentNullException(nameof(userRoleMappingService));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         public string Create(CreateUserMaster userMaster)
         {
-            int checkEmail = _uow.GenericRepository<UserMaster>().Table()
-                                .Count(o => o.Email.ToLower() == userMaster.Email.ToLower() && o.OrgId == userMaster.OrgId
-                                 && o.IsDeleted == false);
+            string? normalizedEmail = string.IsNullOrWhiteSpace(userMaster.Email)
+                ? null
+                : userMaster.Email.Trim().ToLower();
+
+            int checkEmail = normalizedEmail == null
+                ? 0
+                : _uow.GenericRepository<UserMaster>().Table()
+                    .Count(o => o.Email != null
+                             && o.Email.ToLower() == normalizedEmail
+                             && o.OrgId == userMaster.OrgId
+                             && o.IsDeleted == false);
 
             int checkUser = _uow.GenericRepository<UserMaster>().Table()
                             .Count(o => o.EmpCode.ToLower() == userMaster.EmpCode.ToLower() && o.OrgId == userMaster.OrgId
@@ -55,6 +69,11 @@ namespace UNITYPOS_API.DAL.Services
             }
 
 
+            string generatedPassword = string.IsNullOrWhiteSpace(userMaster.Password)
+                ? GeneratePassword()
+                : userMaster.Password;
+            string hashedPassword = BCrypt.Net.BCrypt.HashPassword(generatedPassword);
+
             var entity = new UserMaster
             {
                 Code = userMaster.Code,
@@ -62,7 +81,7 @@ namespace UNITYPOS_API.DAL.Services
                 Remarks = userMaster.Remarks,
                 IsAdmin = userMaster.IsAdmin,
                 Email = userMaster.Email,
-                Password = userMaster.Password ?? "",
+                Password = hashedPassword,
                 ContactNo = userMaster.ContactNo,
                 EmpCode = userMaster.EmpCode,
                 OrgId = userMaster.OrgId,
@@ -117,14 +136,79 @@ namespace UNITYPOS_API.DAL.Services
                 throw;
             }
 
+            if (!string.IsNullOrWhiteSpace(userMaster.Email))
+            {
+                try
+                {
+                    string subject = "Application Credentials";
+                    string body = $@"
+                        <p>Dear {userMaster.Name ?? "User"},</p>
+                        <p>Your application account has been created successfully.</p>
+                        <p><strong>User Name:</strong> {userMaster.Name ?? "-"}</p>
+                        <p><strong>Emp Code:</strong> {userMaster.EmpCode ?? "-"}</p>
+                        <p><strong>Password:</strong> {generatedPassword}</p>
+                        <p>Please change your password after login.</p>";
+
+                    _commonService.SendEmail(userMaster.Email, null, subject, body).GetAwaiter().GetResult();
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "User created successfully but failed to send credentials email to {Email}.", userMaster.Email);
+                }
+            }
+
             return Convert.ToString(entity.Id);
+        }
+
+        private static string GeneratePassword(int length = 6)
+        {
+            if (length < 4)
+            {
+                throw new ArgumentException("Password length must be at least 4 characters.", nameof(length));
+            }
+
+            const string uppercase = "ABCDEFGHJKLMNPQRSTUVWXYZ";
+            const string lowercase = "abcdefghijkmnpqrstuvwxyz";
+            const string numbers = "23456789";
+            const string special = "@#$%&*";
+            string allChars = uppercase + lowercase + numbers + special;
+
+            var passwordChars = new List<char>
+            {
+                uppercase[RandomNumberGenerator.GetInt32(uppercase.Length)],
+                lowercase[RandomNumberGenerator.GetInt32(lowercase.Length)],
+                numbers[RandomNumberGenerator.GetInt32(numbers.Length)],
+                special[RandomNumberGenerator.GetInt32(special.Length)]
+            };
+
+            for (int i = passwordChars.Count; i < length; i++)
+            {
+                passwordChars.Add(allChars[RandomNumberGenerator.GetInt32(allChars.Length)]);
+            }
+
+            for (int i = passwordChars.Count - 1; i > 0; i--)
+            {
+                int swapIndex = RandomNumberGenerator.GetInt32(i + 1);
+                (passwordChars[i], passwordChars[swapIndex]) = (passwordChars[swapIndex], passwordChars[i]);
+            }
+
+            return new string(passwordChars.ToArray());
         }
 
         public string Update(CreateUserMaster userMaster)
         {
-            int checkEmail = _uow.GenericRepository<UserMaster>().Table()
-                             .Count(o => o.Email.ToLower() == userMaster.Email.ToLower() && o.Id != userMaster.Id && o.OrgId == userMaster.OrgId
-                              && o.IsDeleted == false);
+            string? normalizedEmail = string.IsNullOrWhiteSpace(userMaster.Email)
+                ? null
+                : userMaster.Email.Trim().ToLower();
+
+            int checkEmail = normalizedEmail == null
+                ? 0
+                : _uow.GenericRepository<UserMaster>().Table()
+                    .Count(o => o.Email != null
+                             && o.Email.ToLower() == normalizedEmail
+                             && o.Id != userMaster.Id
+                             && o.OrgId == userMaster.OrgId
+                             && o.IsDeleted == false);
 
             int checkUser = _uow.GenericRepository<UserMaster>().Table()
                             .Count(o => o.EmpCode.ToLower() == userMaster.EmpCode.ToLower() && o.Id != userMaster.Id && o.OrgId == userMaster.OrgId
@@ -153,7 +237,10 @@ namespace UNITYPOS_API.DAL.Services
                     ExistingUser.Remarks = userMaster.Remarks;
                     ExistingUser.IsAdmin = userMaster.IsAdmin;
                     ExistingUser.Email = userMaster.Email;
-                    ExistingUser.Password = userMaster.Password ?? "";
+                    //if (!string.IsNullOrWhiteSpace(userMaster.Password))
+                    //{
+                    //    ExistingUser.Password = BCrypt.Net.BCrypt.HashPassword(userMaster.Password);
+                    //}
                     ExistingUser.ContactNo = userMaster.ContactNo;
                     ExistingUser.EmpCode = userMaster.EmpCode;
                     ExistingUser.OrgId = userMaster.OrgId;
@@ -222,7 +309,8 @@ namespace UNITYPOS_API.DAL.Services
             string fileUploadPathView = _configuration["AppSettings:FileUploadPathView"] ?? string.Empty;
 
             result = (from u in _uow.GenericRepository<UserMaster>().Table()
-                      where u.IsDeleted == false && (OrgId == 0 || u.OrgId == OrgId)
+                      join o in _uow.GenericRepository<Organization>().Table() on u.OrgId equals o.Id
+                      where u.IsDeleted == false && o.IsDeleted ==false && (OrgId == 0 || u.OrgId == OrgId)
                       select new
                       {
                           u.Id,
@@ -235,6 +323,7 @@ namespace UNITYPOS_API.DAL.Services
                           u.ContactNo,
                           u.EmpCode,
                           u.OrgId,
+                          OrganizationName = o.Name,
                           u.IsActive,
                           u.IsDeleted,
                           u.CreatedBy,
