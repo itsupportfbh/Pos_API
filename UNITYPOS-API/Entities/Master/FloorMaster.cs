@@ -7,5 +7,7 @@
         public string Name { get; set; }
         public int BranchId { get; set; }
         public int OrgId { get; set; }
+        public string Remarks { get; set; }
+
     }
 }
