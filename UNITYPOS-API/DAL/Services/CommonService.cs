@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using System.Net;
+using System.Net.Mail;
 using UNITYPOS_API.DAL.Interfaces;
 using UNITYPOS_API.Data.ORM;
 using UNITYPOS_API.Entities;
@@ -168,14 +170,14 @@ namespace UNITYPOS_API.DAL.Services
             };
         }
 
-        public IEnumerable<Object> GetBranchByUserId(int Userid)
+            public IEnumerable<Object> GetBranchByUserId(int Userid)
         {
             IEnumerable<Object> result = null;
 
             result = (from x in _uow.GenericRepository<UserBranchMapping>().Table()
                       join u in _uow.GenericRepository<Branch>().Table()
                         on x.BranchId equals u.Id
-                      where x.UserId == Userid
+                      where x.UserId == Userid && x.IsDeleted == false
                       select new
                       {
                           x.Id,
@@ -184,5 +186,72 @@ namespace UNITYPOS_API.DAL.Services
 
             return result;
         }
+
+        public async Task SendEmail(string toEmail, string? ccEmail, string subject, string body, byte[]? fileBytes = null, string? fileName = null, string? contentType = null)
+        {
+            var smtpHost = _configuration["AppSettings:SmtpSettings:SmtpHost"];
+            var smtpPort = Convert.ToInt32(_configuration["AppSettings:SmtpSettings:SmtpPort"]);
+            var smtpUser = _configuration["AppSettings:SmtpSettings:SmtpUser"];
+            var smtpPass = _configuration["AppSettings:SmtpSettings:SmtpPass"];
+            var fromEmail = _configuration["AppSettings:SmtpSettings:From"];
+            var configuredCc = _configuration["AppSettings:SmtpSettings:Cc"];
+
+            if (string.IsNullOrWhiteSpace(toEmail))
+                throw new Exception("Recipient email address is missing.");
+
+            if (string.IsNullOrWhiteSpace(fromEmail))
+                throw new Exception("AppSettings:SmtpSettings:From is missing in appsettings.json.");
+
+            if (string.IsNullOrWhiteSpace(smtpHost))
+                throw new Exception("AppSettings:SmtpSettings:SmtpHost is missing in appsettings.json.");
+
+            using var message = new MailMessage();
+            message.From = new MailAddress(fromEmail);
+            message.To.Add(toEmail);
+
+            var mergedCc = string.Join(";",
+                new[] { configuredCc, ccEmail }
+                    .Where(x => !string.IsNullOrWhiteSpace(x)));
+
+            if (!string.IsNullOrWhiteSpace(mergedCc))
+            {
+                var ccAddresses = mergedCc
+                    .Split(new[] { ',', ';' }, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+                    .Distinct(StringComparer.OrdinalIgnoreCase);
+
+                foreach (var address in ccAddresses)
+                {
+                    message.CC.Add(address);
+                }
+            }
+
+            message.Subject = subject;
+            message.Body = body;
+            message.IsBodyHtml = true;
+
+            if (fileBytes != null && fileBytes.Length > 0 && !string.IsNullOrWhiteSpace(fileName))
+            {
+                var stream = new MemoryStream(fileBytes);
+                var attachment = new Attachment(
+                    stream,
+                    fileName,
+                    string.IsNullOrWhiteSpace(contentType)
+                        ? "application/octet-stream"
+                        : contentType
+                );
+
+                message.Attachments.Add(attachment);
+            }
+
+            using var client = new SmtpClient(smtpHost, smtpPort)
+            {
+                Credentials = new NetworkCredential(smtpUser, smtpPass),
+                EnableSsl = true
+            };
+
+            await client.SendMailAsync(message);
+        }
+
+    
     }
 }

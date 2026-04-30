@@ -94,5 +94,47 @@ namespace UNITYPOS_API.Controllers
             return Common.Utility.GetResult(result);
         }
 
+        [HttpPost]
+        public async Task<IActionResult> SendEmail([FromForm] SendEmailRequest request)
+        {
+            try
+            {
+                byte[]? fileBytes = null;
+                string? fileName = null;
+                string? contentType = null;
+
+                if (request.Attachment != null && request.Attachment.Length > 0)
+                {
+                    using var memoryStream = new MemoryStream();
+                    await request.Attachment.CopyToAsync(memoryStream);
+                    fileBytes = memoryStream.ToArray();
+                    fileName = request.Attachment.FileName;
+                    contentType = request.Attachment.ContentType;
+                }
+
+                await _commonService.SendEmail(
+                    request.ToEmail ?? string.Empty,
+                    request.CcEmail,
+                    request.Subject ?? string.Empty,
+                    request.Body ?? string.Empty,
+                    fileBytes,
+                    fileName,
+                    contentType);
+
+                return Ok(new
+                {
+                    Message = "Mail sent successfully."
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error while sending email.");
+                return BadRequest(new
+                {
+                    Message = ex.Message
+                });
+            }
+        }
+
     }
 }
