@@ -16,9 +16,11 @@ namespace UNITYPOS_API.DAL.Services
             _uow = uow ?? throw new ArgumentNullException(nameof(uow));
         }
 
-        public IEnumerable<Object> GetAllTerminal(int orgid, int branchid, int counterid)
+        public IEnumerable<Object> GetAllTerminal(int orgid, string branchid, string counterid)
         {
             IEnumerable<Object> result = null;
+            var BranchIds = branchid.Split(',').Select(int.Parse).ToList();
+            var CounterIds = counterid.Split(',').Select(int.Parse).ToList();
 
             result = (from t in _uow.GenericRepository<Terminal>().Table()
                       join b in _uow.GenericRepository<Branch>().Table()
@@ -28,9 +30,10 @@ namespace UNITYPOS_API.DAL.Services
                       join o in _uow.GenericRepository<Organization>().Table()
                           on t.OrgId equals o.Id
                       where t.IsDeleted == false
-                            && (orgid==0||t.OrgId == orgid)
-                            && (branchid==0||t.BranchId == branchid)
-                            && (counterid == 0 || t.CounterId == counterid)
+                            && (orgid == 0 || t.OrgId == orgid)
+                            && (BranchIds.Contains(c.BranchId) || branchid == "0")
+                            && (CounterIds.Contains(t.CounterId) || counterid == "0")
+
                       select new
                       {
                           id = t.Id,

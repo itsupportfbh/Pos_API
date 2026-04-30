@@ -24,7 +24,7 @@ namespace UNITYPOS_API.Controllers
         }
 
         [HttpGet]
-        public string GetAllTerminal(int orgid, int branchid, int counterid)
+        public string GetAllTerminal(int orgid, string branchid, string counterid)
         {
             string result = null;
             result = JsonConvert.SerializeObject(_terminalService.GetAllTerminal(orgid,branchid,counterid));

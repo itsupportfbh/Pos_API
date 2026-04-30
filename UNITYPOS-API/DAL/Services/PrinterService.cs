@@ -36,21 +36,21 @@ namespace UNITYPOS_API.DAL.Services
 
                  select new
                  {
-                     id = p.Id,
-                     orgId = p.OrgId,
-                     branchId = p.BranchId,
-                     counterId = p.CounterId,
-                     terminalId = p.TerminalId,
+                     p.Id,
+                      p.OrgId,
+                     p.BranchId,
+                     p.CounterId,
+                     p.TerminalId,
 
-                     code = p.Code,
-                     name = p.Name,
-                     organizationName=o.Name,
-                     branchName = b.Name,
-                     counterName = c.Name,
-                     terminalName = t.Name,
+                     p.Code,
+                     p.Name,
+                     OrganizationName = o.Name,
+                     BranchName = b.Name,
+                     CounterName = c.Name,
+                     TerminalName = t.Name,
 
-                     remarks = p.Remarks,
-                     isActive = p.IsActive
+                     p.Remarks,
+                     p.IsActive
                  }).ToList();
 
             return result;
@@ -63,14 +63,14 @@ namespace UNITYPOS_API.DAL.Services
                                 && p.Id == id
                           select new
                           {
-                              id = p.Id,
-                              orgId = p.OrgId,
-                              branchId = p.BranchId,
-                              counterId = p.CounterId,
-                              name = p.Name,
-                              code = p.Code,
-                              remarks = p.Remarks,
-                              isActive = p.IsActive
+                              p.Id,
+                              p.OrgId,
+                              p.BranchId,
+                              p.CounterId,
+                              p.Name,
+                              p.Code,
+                              p.Remarks,
+                              p.IsActive
                           }).ToList();
 
             return result;

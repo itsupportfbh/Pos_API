@@ -34,10 +34,10 @@ namespace UNITYPOS_API.Controllers
             return Common.Utility.GetResult(result);
         }
         [HttpGet]
-        public string GetBranchbyId(int id)
+        public string GetById(int Id)
         {
             string result = null;
-            result = JsonConvert.SerializeObject(_printerService.GetById(id));
+            result = JsonConvert.SerializeObject(_printerService.GetById(Id));
             return Common.Utility.GetResult(result);
         }
         [HttpPost]
