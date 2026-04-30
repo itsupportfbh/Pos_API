@@ -25,6 +25,8 @@ namespace UNITYPOS_API.DAL.Services
                           on t.BranchId equals b.Id
                       join c in _uow.GenericRepository<Counter>().Table()
                            on t.CounterId equals c.Id
+                      join o in _uow.GenericRepository<Organization>().Table()
+                          on t.OrgId equals o.Id
                       where t.IsDeleted == false
                             && (orgid==0||t.OrgId == orgid)
                             && (branchid==0||t.BranchId == branchid)
@@ -32,6 +34,7 @@ namespace UNITYPOS_API.DAL.Services
                       select new
                       {
                           id = t.Id,
+                          organizationname = o.Name,
                           name = t.Name,
                           code = t.Code,
                           branchid = t.BranchId,

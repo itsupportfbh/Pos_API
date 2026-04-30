@@ -23,12 +23,15 @@ namespace UNITYPOS_API.DAL.Services
                 (from c in _uow.GenericRepository<Counter>().Table()
                  join b in _uow.GenericRepository<Branch>().Table()
                     on c.BranchId equals b.Id
+                 join o in _uow.GenericRepository<Organization>().Table()
+                    on c.OrgId equals o.Id
                  where c.IsDeleted == false
                        && (orgId==0||c.OrgId == orgId)
                        && (branchId == 0 || c.BranchId == branchId)
                  select new
                  {
                      Id = c.Id,
+                     organizationname = o.Name,
                      Code = c.Code,
                      Name = c.Name,
                      Phone = c.Phone,
