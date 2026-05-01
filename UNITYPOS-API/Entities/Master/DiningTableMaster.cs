@@ -1,6 +1,6 @@
 ﻿namespace UNITYPOS_API.Entities.Master
 {
-    public class TableMaster : CommonClass
+    public class DiningTableMaster : CommonClass
     {
         public int Id { get; set; }
         public string Code { get; set; }      
