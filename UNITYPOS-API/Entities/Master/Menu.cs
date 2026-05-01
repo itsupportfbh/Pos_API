@@ -5,6 +5,8 @@
         public int Id { get; set; }
         public string Name { get; set; }
         public int DisplayOrder { get; set; }
+        public int Menuscope { get; set; }
+        public string MenuIcon { get; set; }
 
         public bool IsActive { get; set; } = true;
         public int CreatedBy { get; set; }

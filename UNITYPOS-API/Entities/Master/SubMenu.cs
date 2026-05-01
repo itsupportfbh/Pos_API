@@ -9,6 +9,8 @@
         public int DisplayOrder { get; set; }
         public string Route { get; set; }
         public string Remarks { get; set; }
+        public int Menuscope { get; set; }
+        public string MenuIcon { get; set; }
         public bool IsActive { get; set; } = true;
         public int CreatedBy { get; set; }
         public DateTime CreatedDate { get; set; } = DateTime.Now;

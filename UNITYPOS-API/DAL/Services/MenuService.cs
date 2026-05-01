@@ -26,6 +26,8 @@ namespace UNITYPOS_API.DAL.Services
                               MenuId = m.Id,
                               MenuName = m.Name,
                               IsActive = m.IsActive,
+                              Menuscope = m.Menuscope,
+                              MenuIcon = m.MenuIcon,
 
                               SubMenus = (from sm in _uow.GenericRepository<SubMenu>().Table()
                                           where sm.MenuId == m.Id
@@ -42,6 +44,8 @@ namespace UNITYPOS_API.DAL.Services
                                               sm.MenuId,
                                               sm.Route,
                                               sm.Remarks,
+                                              Menuscope = sm.Menuscope,
+                                              MenuIcon = sm.MenuIcon,
                                               IsActive = sm.IsActive
                                           }).ToList()
                           }).ToList();
