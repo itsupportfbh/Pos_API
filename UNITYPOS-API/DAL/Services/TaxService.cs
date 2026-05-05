@@ -4,7 +4,7 @@ using UNITYPOS_API.Entities.Master;
 
 namespace UNITYPOS_API.DAL.Services
 {
-    public class TaxService: ITax
+    public class TaxService : ITax
     {
         private readonly IUnitOfWork _uow;
         public TaxService(IUnitOfWork uow)
@@ -22,32 +22,23 @@ namespace UNITYPOS_API.DAL.Services
                       where b.IsDeleted == false && (orgid == 0 || b.OrgId == orgid)
                       select new
                       {
-                          id = b.Id,
-                          organizationname = o.Name,
-                          name = b.Name,
-                          code = b.Code,
-                          rate = b.Percentage,
-                          isactive = b.IsActive,
+                          b.Id,
+                          OrganizationName = o.Name,
+                          b.Name,
+                          b.Code,
+                          b.Percentage,
+                          b.IsActive,
                       }).ToList();
 
 
             return result;
         }
-        public IEnumerable<Object> GetTaxbyId(int id)
+        public Tax GetTaxbyId(int id)
         {
-            IEnumerable<Object> result = null;
-
-            result = (from b in _uow.GenericRepository<Tax>().Table()
-                      where b.IsDeleted == false && b.Id == id
-                      select new
-                      {
-                          id = b.Id,
-                          name = b.Name,
-                          code = b.Code, 
-                          rate = b.Percentage,
-                          isactive = b.IsActive,
-                      }).ToList();
-
+            var result = _uow.GenericRepository<Tax>()
+                     .Table()
+                     .Where(x => x.Id == id && x.IsActive == true && x.IsDeleted == false)
+                     .FirstOrDefault();
 
             return result;
         }

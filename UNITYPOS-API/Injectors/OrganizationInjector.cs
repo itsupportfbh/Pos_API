@@ -25,10 +25,6 @@ namespace UNITYPOS_API.Injectors
             _ = services.AddScoped<IUserRoleMappingService, UserRoleMappingService>();
             _ = services.AddScoped<ICustomerService, CustomerService>();
             _ = services.AddScoped<IFloorService, FloorService>();
-            _ = services.AddScoped<IPaymodeService, PaymodeService>();
-
-
-
         }
     }
 }
