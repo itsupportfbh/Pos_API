@@ -13,9 +13,13 @@ namespace UNITYPOS_API.DAL.Services
     {
 
         private readonly IUnitOfWork _uow;
-        public OrganizationService(IUnitOfWork uow)
+        private readonly IConfiguration _configuration;
+
+        public OrganizationService(IUnitOfWork uow, IConfiguration configuration)
         {
             _uow = uow ?? throw new ArgumentNullException(nameof(uow));
+            _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
+
         }
 
         public string Create(Organization Organization)
@@ -49,6 +53,7 @@ namespace UNITYPOS_API.DAL.Services
                 Country = Organization.Country,
                 Remarks = Organization.Remarks,
                 IsActive = true,
+                IsDeleted = false,
                 CreatedBy = Organization.CreatedBy,
                 CreatedDate = DateTime.Now
             };
@@ -108,9 +113,14 @@ namespace UNITYPOS_API.DAL.Services
 
         public IEnumerable<Object> GetAllOrganization()
         {
+            string fileUploadPathView = _configuration["AppSettings:FileUploadPathView"] ?? string.Empty;
+
             IEnumerable<Object> result = null;
 
             result = (from o in _uow.GenericRepository<Organization>().Table()
+                      join oc in _uow.GenericRepository<OrganizationConfig>().Table().Where(x => x.IsActive == true && x.IsDeleted == false).AsNoTracking() on o.Id equals oc.OrgId into ocGroup
+                      from oc in ocGroup.DefaultIfEmpty()
+
                       where o.IsDeleted == false
                       select new
                       {
@@ -121,6 +131,7 @@ namespace UNITYPOS_API.DAL.Services
                           o.Email,
                           o.Phone,
                           o.IsActive,
+                          Image = fileUploadPathView + "Organization/" + oc.Image
                       })
                          .ToList();
 
@@ -162,6 +173,65 @@ namespace UNITYPOS_API.DAL.Services
             }
 
             return Convert.ToString(result?.Id ?? 0);
+        }
+
+        public string CreateUpdateOrganizationConfig(OrganizationConfig model)
+        {
+            var repo = _uow.GenericRepository<OrganizationConfig>();
+
+            var existing = repo.Table()
+                .FirstOrDefault(o => o.OrgId == model.OrgId && o.IsDeleted == false);
+
+            if (existing != null)
+            {
+                existing.Image = model.Image;
+                existing.ThemeColor = model.ThemeColor;
+                existing.FontSize = model.FontSize;
+                existing.IsActive = true;
+                existing.UpdatedBy = model.UpdatedBy;
+                existing.UpdatedDate = DateTime.Now;
+
+                repo.Update(existing);
+                _uow.Save();
+
+                return Convert.ToString(existing.Id);
+            }
+            else
+            {
+                var entity = new OrganizationConfig
+                {
+                    OrgId = model.OrgId,
+                    Image = model.Image,
+                    ThemeColor = model.ThemeColor,
+                    FontSize = model.FontSize,
+                    IsActive = true,
+                    IsDeleted = false,
+                    CreatedBy = model.CreatedBy,
+                    CreatedDate = DateTime.Now
+                };
+
+                repo.Insert(entity);
+                _uow.Save();
+
+                return Convert.ToString(entity.Id);
+            }
+        }
+
+        public OrganizationConfig GetOrganizationConfigByOrgId(int OrgId)
+        {
+            string fileUploadPathView = _configuration["AppSettings:FileUploadPathView"] ?? string.Empty;
+
+            var result = _uow.GenericRepository<OrganizationConfig>()
+                       .Table()
+                       .Where(x => x.OrgId == OrgId && x.IsActive == true && x.IsDeleted == false)
+                       .FirstOrDefault();
+
+            if (result != null && !string.IsNullOrWhiteSpace(result.Image))
+            {
+                result.Image = fileUploadPathView + "Organization/" + result.Image;
+            }
+
+            return result;
         }
 
     }

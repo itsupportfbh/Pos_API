@@ -11,6 +11,8 @@ namespace UNITYPOS_API.DAL.Interfaces
         public Organization GetById(int Id);
         public string Delete(int Id);
         public string ActiveInActive(int Id, bool IsActive);
+        public String CreateUpdateOrganizationConfig(OrganizationConfig organizationconfig);
+        public OrganizationConfig GetOrganizationConfigByOrgId(int OrgId);
 
     }
 }

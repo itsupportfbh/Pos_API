@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using UNITYPOS_API.DAL.Interfaces;
+using UNITYPOS_API.DAL.Services;
 using UNITYPOS_API.Entities;
 using UNITYPOS_API.Entities.Master;
 using UNITYPOS_API.ViewModel;
@@ -17,9 +18,12 @@ namespace UNITYPOS_API.Controllers
     {
 
         private readonly IOrganizationService _organizationservice;
-        public OrganizationController(IOrganizationService organizationservice)
+        private readonly ICommonService _commonService;
+
+        public OrganizationController(IOrganizationService organizationservice, ICommonService commonService)
         {
             _organizationservice = organizationservice;
+            _commonService = commonService;
         }
 
         [HttpPost]
@@ -74,6 +78,31 @@ namespace UNITYPOS_API.Controllers
             string result = null;
 
             result = JsonConvert.SerializeObject(_organizationservice.ActiveInActive(Id, IsActive));
+            return Common.Utility.GetResult(result);
+        }
+
+        [HttpPost]
+        public async Task<string> CreateUpdateOrganizationConfig([FromForm] OrganizationConfig organizationconfig)
+        {
+            if (organizationconfig.ImageFile != null)
+            {
+                var uploadResult = await _commonService.FileUpload(organizationconfig.ImageFile, "Organization");
+                organizationconfig.Image = uploadResult.FileName;
+            }
+
+            string result = null;
+            result = JsonConvert.SerializeObject(_organizationservice.CreateUpdateOrganizationConfig(organizationconfig));
+
+            return Common.Utility.GetResult(result);
+        }
+
+
+        [HttpGet]
+        public string GetOrganizationConfigByOrgId(int OrgId)
+        {
+            string result = null;
+
+            result = JsonConvert.SerializeObject(_organizationservice.GetOrganizationConfigByOrgId(OrgId));
             return Common.Utility.GetResult(result);
         }
 
