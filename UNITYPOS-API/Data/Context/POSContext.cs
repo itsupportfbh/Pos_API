@@ -73,6 +73,7 @@ namespace UNITYPOS_API.Data.Context
             modelBuilder.Entity<Tax>().ToTable("Tax", "dbo");
             modelBuilder.Entity<CustomerMaster>().ToTable("CustomerMaster", "dbo");
             modelBuilder.Entity<FloorMaster>().ToTable("FloorMaster", "dbo");
+            modelBuilder.Entity<PaymodeMaster>().ToTable("PaymodeMaster", "dbo");
             modelBuilder.Entity<OrganizationConfig>().ToTable("OrganizationConfig", "dbo");
             modelBuilder.Entity<CodeTemplate>().ToTable("CodeTemplate", "dbo");
 

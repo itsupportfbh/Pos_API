@@ -5,7 +5,7 @@ using UNITYPOS_API.Entities.Master;
 
 namespace UNITYPOS_API.DAL.Services
 {
-    public class FloorService:IFloorService
+    public class FloorService : IFloorService
     {
 
         private readonly IUnitOfWork _uow;
@@ -30,10 +30,10 @@ namespace UNITYPOS_API.DAL.Services
                 Code = floor.Code,
                 Name = floor.Name,
                 BranchId = floor.BranchId,
-                OrgId = floor.OrgId,                             
+                OrgId = floor.OrgId,
                 Remarks = floor.Remarks,
                 IsActive = true,
-                IsDeleted=false,
+                IsDeleted = false,
                 CreatedBy = floor.CreatedBy,
                 CreatedDate = DateTime.Now
             };
@@ -55,7 +55,7 @@ namespace UNITYPOS_API.DAL.Services
                 return "AlreadyExists";
             }
 
-            var ExistingFloor= _uow.GenericRepository<FloorMaster>().Table().Where(x => x.IsActive == true && x.IsDeleted == false && x.Id == floor.Id).FirstOrDefault();
+            var ExistingFloor = _uow.GenericRepository<FloorMaster>().Table().Where(x => x.IsActive == true && x.IsDeleted == false && x.Id == floor.Id).FirstOrDefault();
 
             if (ExistingFloor != null)
             {
@@ -81,32 +81,35 @@ namespace UNITYPOS_API.DAL.Services
         }
 
 
-        public IEnumerable<Object> GetAllFloor(int orgid,int branchid)
+        public IEnumerable<Object> GetAllFloor(int orgid, int branchid)
         {
             IEnumerable<Object> result = null;
 
-            result = (from f in _uow.GenericRepository<FloorMaster>().Table() join
-                      b in _uow.GenericRepository<Branch>().Table() on f.BranchId equals b.Id join
-                      o in _uow.GenericRepository<Organization>().Table() on f.OrgId equals o.Id 
-                      where o.IsDeleted == false&&
-                     (orgid==0||f.OrgId==orgid)&&
-                     (branchid==0|| f.BranchId==branchid)
+            result = (from f in _uow.GenericRepository<FloorMaster>().Table()
+                      join
+                      b in _uow.GenericRepository<Branch>().Table() on f.BranchId equals b.Id
+                      join
+                      o in _uow.GenericRepository<Organization>().Table() on f.OrgId equals o.Id
+                      where f.IsDeleted == false &&
+                     (orgid == 0 || f.OrgId == orgid) &&
+                     (branchid == 0 || f.BranchId == branchid)
 
                       select new
                       {
-                        Id=  f.Id,
-                        Code=  f.Code,
-                         Name= f.Name,
-                       BranchId=   f.BranchId,
-                        OrganizationId=  f.OrgId,
-                         IsActive= f.IsActive,
-                         BranchName=b.Name,
-                         OrganizationName=o.Name
+                          Id = f.Id,
+                          Code = f.Code,
+                          Name = f.Name,
+                          BranchId = f.BranchId,
+                          OrganizationId = f.OrgId,
+                          IsActive = f.IsActive,
+                          BranchName = b.Name,
+                          OrganizationName = o.Name
                       })
                          .ToList();
 
             return result;
         }
+
 
         public FloorMaster GetById(int Id)
         {
