@@ -9,14 +9,12 @@
         public int BranchId { get; set; }
         public int FloorId { get; set; }
         public string Image { get; set; }
-        public string Remarks { get; set; }
-           
-       
-        public bool IsOccupied { get; set; }       
-        public bool IsReservable { get; set; }     
-        public bool IsJoinable { get; set; }      
-        public bool IsOrdered { get; set; }
-        public bool IsAvaible { get; set; }
+        public string Remarks { get; set; }    
+        public bool? IsOccupied { get; set; }       
+        public bool? IsReservable { get; set; }     
+        public bool? IsJoinable { get; set; }      
+        public bool? IsOrdered { get; set; }
+        public bool? IsAvailable { get; set; }
         public int DisplayOrder { get; set; }
         public int OrgId { get; set; }
 

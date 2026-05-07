@@ -80,6 +80,7 @@ namespace UNITYPOS_API.Data.Context
             modelBuilder.Entity<OrderHoldItems>().ToTable("OrderHoldItems", "dbo");
             modelBuilder.Entity<CodeTemplate>().ToTable("CodeTemplate", "dbo");
 
+            modelBuilder.Entity<DiningTableMaster>().ToTable("DiningTableMaster", "dbo");
 
         }
 
