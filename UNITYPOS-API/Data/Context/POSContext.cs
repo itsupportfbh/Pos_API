@@ -78,6 +78,7 @@ namespace UNITYPOS_API.Data.Context
             modelBuilder.Entity<OrganizationConfig>().ToTable("OrganizationConfig", "dbo");
             modelBuilder.Entity<OrdersHold>().ToTable("OrdersHold", "dbo");
             modelBuilder.Entity<OrderHoldItems>().ToTable("OrderHoldItems", "dbo");
+            modelBuilder.Entity<CodeTemplate>().ToTable("CodeTemplate", "dbo");
 
 
         }

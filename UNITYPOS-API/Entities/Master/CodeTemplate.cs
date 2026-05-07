@@ -5,13 +5,14 @@
         public int Id { get; set; }
         public int EntityNo { get; set; }
         public string Name { get; set; }
+        public int NoOfDigit { get; set; }
         public int StartValue { get; set; }
         public string Prefix { get; set; }
         public int CurrentValue { get; set; }
         public string Suffix { get; set; }
         public int BranchId { get; set; }
         public bool IsMaster { get; set; }
+        public bool IsDateMonthYearWise { get; set; }
         public int OrgId { get; set; }
-
     }
 }
