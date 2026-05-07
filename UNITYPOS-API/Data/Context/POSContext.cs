@@ -75,7 +75,7 @@ namespace UNITYPOS_API.Data.Context
             modelBuilder.Entity<FloorMaster>().ToTable("FloorMaster", "dbo");
             modelBuilder.Entity<PaymodeMaster>().ToTable("PaymodeMaster", "dbo");
             modelBuilder.Entity<OrganizationConfig>().ToTable("OrganizationConfig", "dbo");
-
+            modelBuilder.Entity<DiningTableMaster>().ToTable("DiningTableMaster", "dbo");
 
         }
 
