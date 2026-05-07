@@ -8,7 +8,7 @@ namespace UNITYPOS_API.Entities
     {
 
         [Key]
-        public long Id { get; set; }
+        public long Itemid { get; set; }
 
         public long Orderid { get; set; }
 

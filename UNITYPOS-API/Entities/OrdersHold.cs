@@ -4,11 +4,11 @@ using UNITYPOS_API.Entities.Master;
 
 namespace UNITYPOS_API.Entities
 {
-    public class OrdersHold:CommonClass
+    public class OrdersHold
     {
 
         [Key]
-        public long Id { get; set; }
+        public long OrderId { get; set; }
 
         [Required]
         [StringLength(50)]
@@ -43,7 +43,12 @@ namespace UNITYPOS_API.Entities
         public string? Shiftid { get; set; }
 
         public int OrgId { get; set; }
+        public int? CreatedBy { get; set; }
+        public DateTime? CreatedDate { get; set; } = DateTime.Now;
+        public int? UpdatedBy { get; set; }
+        public DateTime? UpdatedDate { get; set; }
+        public bool? IsDeleted { get; set; }
 
-       
+
     }
 }

@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System;
 using System.Security.Claims;
+using UNITYPOS_API.Entities;
 using UNITYPOS_API.Entities.DBLog;
 using UNITYPOS_API.Entities.Master;
 
@@ -75,6 +76,8 @@ namespace UNITYPOS_API.Data.Context
             modelBuilder.Entity<FloorMaster>().ToTable("FloorMaster", "dbo");
             modelBuilder.Entity<PaymodeMaster>().ToTable("PaymodeMaster", "dbo");
             modelBuilder.Entity<OrganizationConfig>().ToTable("OrganizationConfig", "dbo");
+            modelBuilder.Entity<OrdersHold>().ToTable("OrdersHold", "dbo");
+            modelBuilder.Entity<OrderHoldItems>().ToTable("OrderHoldItems", "dbo");
 
 
         }
