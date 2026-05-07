@@ -8,14 +8,18 @@ namespace UNITYPOS_API.DAL.Services
     {
         private readonly IUnitOfWork _uow;
         private readonly ITokenService _tokenService;
+        private readonly IConfiguration _configuration;
 
-        public AuthService(IUnitOfWork uow, ITokenService tokenService)
+        public AuthService(IUnitOfWork uow, ITokenService tokenService, IConfiguration configuration)
         {
             _uow = uow ?? throw new ArgumentNullException(nameof(uow));
             _tokenService = tokenService;
+            _configuration = configuration;
         }
         public Object Login(string Email, string Password)
         {
+            string fileUploadPathView = _configuration["AppSettings:FileUploadPathView"] ?? string.Empty;
+
             Object result = null;
 
             var user = _uow.GenericRepository<UserMaster>().Table()
@@ -80,6 +84,7 @@ namespace UNITYPOS_API.DAL.Services
                              RoleId = rm.Id,
                              RoleName = rm.Name,
                              ur.OrgId,
+                             Image = fileUploadPathView + "User/" + ur.Image,
                              OrgCode = org.Code,
                              OrgName = org.Name,
                              BranchId = _uow.GenericRepository<UserBranchMapping>().Table()
