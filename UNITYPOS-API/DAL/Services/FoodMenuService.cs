@@ -29,6 +29,7 @@ namespace UNITYPOS_API.DAL.Services
                           name = b.Name,
                           code = b.Code,
                           categoryId = b.CategoryId,
+                          price = b.Price,
                           categoryname = c.Name,
                           isactive = b.IsActive,
                       }).ToList();
@@ -48,6 +49,7 @@ namespace UNITYPOS_API.DAL.Services
                           name = b.Name,
                           code = b.Code,
                           categoryId = b.CategoryId,
+                          price = b.Price,
                           isactive = b.IsActive,
                       }).ToList();
 

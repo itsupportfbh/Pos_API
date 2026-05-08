@@ -10,7 +10,7 @@ namespace UNITYPOS_API.Controllers
 {
     [Route("[controller]/[action]")]
     [ApiController]
-    [Authorize]
+     
     public class TablesController : ControllerBase
     {
         private IDiningTable _Tableservice;

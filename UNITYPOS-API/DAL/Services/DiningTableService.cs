@@ -16,20 +16,30 @@ namespace UNITYPOS_API.DAL.Services
         {
             IEnumerable<Object> result = null;
 
-            result = (from b in _uow.GenericRepository<DiningTableMaster>().Table()                      
+            result = (from d in _uow.GenericRepository<DiningTableMaster>().Table()                      
                       join o in _uow.GenericRepository<Organization>().Table()
-                        on b.OrgId equals o.Id
-                      where b.IsDeleted == false && (orgid == 0 || b.OrgId == orgid)
+                        on d.OrgId equals o.Id
+                      join b in _uow.GenericRepository<Branch>().Table()
+                        on d.BranchId equals b.Id
+                      join f in _uow.GenericRepository<FloorMaster>().Table()
+                       on d.FloorId equals f.Id
+                      where d.IsDeleted == false && (orgid == 0 || b.OrgId == orgid)
                       select new
                       {
-                          id = b.Id,
+                          id = d.Id,
                           organizationname = o.Name,
-                          name = b.Name,
-                          code = b.Code,
-                          seatingsize = b.SeatingSize,
-                          reservable = b.IsReservable,
-                          occupied = b.IsOccupied,
-                          remarks = b.Remarks,
+                          name = d.Name,
+                          code = d.Code,
+                          branch = d.BranchId,
+                          floor = d.FloorId,
+                          branchname = b.Name,
+                          floorname = f.Name,
+                          seatingsize = d.SeatingSize,
+                          available = d.IsAvailable,
+                          reservable = d.IsReservable,
+                          occupied = d.IsOccupied,
+                          remarks = d.Remarks,
+                          isactive = d.IsActive,
                       }).ToList();
 
 
@@ -71,10 +81,15 @@ namespace UNITYPOS_API.DAL.Services
             {
                 Code = Table.Code,
                 Name = Table.Name,
+                BranchId = Table.BranchId,
+                FloorId = Table.FloorId,
                 SeatingSize = Table.SeatingSize,
                 IsAvailable = Table.IsAvailable,
                 IsReservable = Table.IsReservable,
                 IsOccupied = Table.IsOccupied,
+                Image = Table.Image,
+                Remarks =   Table.Remarks,
+                OrgId   = Table.OrgId,
                 IsActive = true,
                 IsDeleted = false,
                 CreatedBy = Table.CreatedBy,
@@ -101,27 +116,31 @@ namespace UNITYPOS_API.DAL.Services
                 return "AlreadyExists";
             }
 
-            var existingMenu = _uow.GenericRepository<DiningTableMaster>().Table()
+            var existingTable = _uow.GenericRepository<DiningTableMaster>().Table()
                 .FirstOrDefault(x => x.Id == Table.Id
                                   && x.OrgId == Table.OrgId
                                   && x.IsDeleted == false);
 
-            if (existingMenu != null)
+            if (existingTable != null)
             {
-                existingMenu.Code = Table.Code;
-                existingMenu.Name = Table.Name;
-                existingMenu.SeatingSize = Table.SeatingSize;
-                existingMenu.IsOccupied = Table.IsOccupied;
-                existingMenu.OrgId = Table.OrgId;
-                existingMenu.IsActive = true;
-                existingMenu.IsDeleted = false;
-                existingMenu.UpdatedBy = Table.UpdatedBy;
-                existingMenu.UpdatedDate = DateTime.Now;
+                existingTable.Code = Table.Code;
+                existingTable.Name = Table.Name;
+                existingTable.BranchId = Table.BranchId;
+                existingTable.FloorId = Table.FloorId;
+                existingTable.SeatingSize = Table.SeatingSize;
+                existingTable.IsOccupied = Table.IsOccupied;
+                existingTable.Image = Table.Image;
+                existingTable.Remarks = Table.Remarks;
+                existingTable.OrgId = Table.OrgId;
+                existingTable.IsActive = true;
+                existingTable.IsDeleted = false;
+                existingTable.UpdatedBy = Table.UpdatedBy;
+                existingTable.UpdatedDate = DateTime.Now;
 
-                _uow.GenericRepository<DiningTableMaster>().Update(existingMenu);
+                _uow.GenericRepository<DiningTableMaster>().Update(existingTable);
                 _uow.Save();
 
-                return Convert.ToString(existingMenu.Id);
+                return Convert.ToString(existingTable.Id);
             }
 
             return "0";
