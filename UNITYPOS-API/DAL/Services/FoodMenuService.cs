@@ -12,27 +12,40 @@ namespace UNITYPOS_API.DAL.Services
             _uow = uow ?? throw new ArgumentNullException(nameof(uow));
         }
 
-        public IEnumerable<Object> GetAllMenu(int orgid)
+        public IEnumerable<object> GetAllMenu(int orgid)
         {
-            IEnumerable<Object> result = null;
+            var result = (from b in _uow.GenericRepository<FoodMenu>().Table()
 
-            result = (from b in _uow.GenericRepository<FoodMenu>().Table()
-                      join c in _uow.GenericRepository<FoodMenuCategory>().Table()
-                       on b.CategoryId equals c.Id
-                      join o in _uow.GenericRepository<Organization>().Table()
-                        on b.OrgId equals o.Id
-                      where b.IsDeleted == false && (orgid == 0 || b.OrgId == orgid)
-                      select new
-                      {
-                          id = b.Id,
-                          organizationname = o.Name,
-                          name = b.Name,
-                          code = b.Code,
-                          categoryId = b.CategoryId,
-                          categoryname = c.Name,
-                          isactive = b.IsActive,
-                      }).ToList();
+                          join c in _uow.GenericRepository<FoodMenuCategory>().Table()
+                          on b.CategoryId equals c.Id
 
+                          join sc in _uow.GenericRepository<FoodMenuSubCategory>().Table()
+                          on b.SubCategoryId equals sc.Id
+
+                          join o in _uow.GenericRepository<Organization>().Table()
+                          on b.OrgId equals o.Id
+
+                          where b.IsDeleted == false
+                          && (orgid == 0 || b.OrgId == orgid)
+
+                          select new
+                          {
+                              id = b.Id,
+
+                              organizationname = o.Name,
+
+                              name = b.Name,
+                              code = b.Code,
+                              price = b.Price,
+
+                              categoryId = c.Id,
+                              categoryname = c.Name,
+
+                              subCategoryId = sc.Id,
+                              subCategoryName = sc.Name,
+
+                              isactive = b.IsActive,
+                          }).ToList();
 
             return result;
         }
@@ -48,6 +61,7 @@ namespace UNITYPOS_API.DAL.Services
                           name = b.Name,
                           code = b.Code,
                           categoryId = b.CategoryId,
+                          price = b.Price,
                           isactive = b.IsActive,
                       }).ToList();
 
