@@ -18,7 +18,7 @@ namespace UNITYPOS_API.Injectors
             //
 
             OrganizationInjector.InjectInjectors(services);
-
+            OrderInjector.InjectInjectors(services);
 
         }
     }
