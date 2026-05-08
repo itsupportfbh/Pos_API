@@ -25,7 +25,7 @@ namespace UNITYPOS_API.Entities
         [StringLength(20)]
         public string Orderstatus { get; set; } = "OPEN";
 
-        public int? Guestcount { get; set; } = 1;
+        public int? Itemcount { get; set; } = 1;
 
         [Column(TypeName = "decimal(10,2)")]
         public decimal? SubtotalAmount { get; set; } = 0.00m;
@@ -49,6 +49,7 @@ namespace UNITYPOS_API.Entities
         public DateTime? UpdatedDate { get; set; }
         public bool? IsDeleted { get; set; }
 
-
+        [NotMapped]
+        public List<OrderHoldItems>? Items { get; set; }
     }
 }

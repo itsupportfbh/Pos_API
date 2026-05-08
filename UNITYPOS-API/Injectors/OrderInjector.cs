@@ -9,7 +9,7 @@ namespace UNITYPOS_API.Injectors
         public static void InjectInjectors(IServiceCollection services)
         {
             _ = services.AddScoped<IOrderHoldService, OrderHoldService>();
-            //_ = services.AddScoped<IOrderHoldItemsService, OrderHoldService>();
+            _ = services.AddScoped<IOrderHoldItemsService, OrderHoldItemsService>();
 
         }
     }

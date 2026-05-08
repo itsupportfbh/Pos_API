@@ -15,6 +15,48 @@ namespace UNITYPOS_API.DAL.Services
         {
             _uow = uow ?? throw new ArgumentNullException(nameof(uow));
         }
+        //public string Create(OrdersHold ordershold)
+        //{
+        //    int check = _uow.GenericRepository<OrdersHold>().Table()
+        //        .Count(o => o.Ordernumber.ToLower() == ordershold.Ordernumber.ToLower()
+        //                 && o.OrgId == ordershold.OrgId
+        //                 && o.IsDeleted == false);
+
+        //    if (check > 0)
+        //    {
+        //        return "AlreadyExists";
+        //    }
+
+        //    var entity = new OrdersHold
+        //    {
+        //        Ordernumber = ordershold.Ordernumber,
+        //        Tableid = ordershold.Tableid,
+        //        Ordertype = ordershold.Ordertype,
+        //        Orderstatus = string.IsNullOrWhiteSpace(ordershold.Orderstatus)
+        //                        ? "OPEN"
+        //                        : ordershold.Orderstatus,
+
+        //        Guestcount = ordershold.Guestcount ?? 1,
+        //        SubtotalAmount = ordershold.SubtotalAmount ?? 0,
+        //        TaxAmount = ordershold.TaxAmount ?? 0,
+        //        DiscountAmount = ordershold.DiscountAmount ?? 0,
+        //        TotalAmount = ordershold.TotalAmount ?? 0,
+        //        Shiftid = ordershold.Shiftid,
+        //        OrgId = ordershold.OrgId,
+
+
+        //        IsDeleted = false,
+        //        CreatedBy = ordershold.CreatedBy,
+        //        CreatedDate = DateTime.Now
+        //    };
+
+        //    _uow.GenericRepository<OrdersHold>().Insert(entity);
+        //    _uow.Save();
+
+        //    return Convert.ToString(entity.OrderId);
+        //}
+
+
         public string Create(OrdersHold ordershold)
         {
             int check = _uow.GenericRepository<OrdersHold>().Table()
@@ -36,7 +78,7 @@ namespace UNITYPOS_API.DAL.Services
                                 ? "OPEN"
                                 : ordershold.Orderstatus,
 
-                Guestcount = ordershold.Guestcount ?? 1,
+                Itemcount = ordershold.Itemcount ?? 1,
                 SubtotalAmount = ordershold.SubtotalAmount ?? 0,
                 TaxAmount = ordershold.TaxAmount ?? 0,
                 DiscountAmount = ordershold.DiscountAmount ?? 0,
@@ -44,19 +86,96 @@ namespace UNITYPOS_API.DAL.Services
                 Shiftid = ordershold.Shiftid,
                 OrgId = ordershold.OrgId,
 
-              
                 IsDeleted = false,
                 CreatedBy = ordershold.CreatedBy,
                 CreatedDate = DateTime.Now
             };
 
             _uow.GenericRepository<OrdersHold>().Insert(entity);
-            _uow.Save();
+           _uow.Save();
 
+            if (ordershold.Items != null && ordershold.Items.Any())
+            {
+                foreach (var item in ordershold.Items)
+                {
+                    var orderItem = new OrderHoldItems
+                    {
+                        Orderid = entity.OrderId,
+                        Menuitemid = item.Menuitemid,
+                        Itemname = item.Itemname,
+                        Quantity = item.Quantity,
+                        Unitprice = item.Unitprice,
+                        Totalprice = item.Quantity * item.Unitprice,
+                        DiscountAmount = item.DiscountAmount ?? 0,
+                        TaxAmount = item.TaxAmount ?? 0,
+                        Modifierdetails = item.Modifierdetails,
+                        Itemstatus = string.IsNullOrWhiteSpace(item.Itemstatus)
+                                        ? "OPEN"
+                                        : item.Itemstatus,
+                        Notes = item.Notes,
+                        OrgId = item.OrgId > 0 ? item.OrgId : ordershold.OrgId,
+
+                        IsDeleted = false,
+                        CreatedBy = ordershold.CreatedBy,
+                        CreatedDate = DateTime.Now
+                    };
+
+                    _uow.GenericRepository<OrderHoldItems>().Insert(orderItem);
+                }
+
+               
+            }
+            _uow.Save();
             return Convert.ToString(entity.OrderId);
         }
 
+        //public string Update(OrdersHold ordershold)
+        //{
+        //    int check = _uow.GenericRepository<OrdersHold>().Table()
+        //        .Count(o => o.Ordernumber.ToLower() == ordershold.Ordernumber.ToLower()
+        //                 && o.OrderId != ordershold.OrderId
+        //                 && o.OrgId == ordershold.OrgId
+        //                 && o.IsDeleted == false);
 
+        //    if (check > 0)
+        //    {
+        //        return "AlreadyExists";
+        //    }
+
+        //    var existingOrder = _uow.GenericRepository<OrdersHold>().Table()
+        //        .FirstOrDefault(x => x.IsDeleted == false
+        //                          && x.OrderId == ordershold.OrderId);
+
+        //    if (existingOrder == null)
+        //    {
+        //        return "";
+        //    }
+
+        //    existingOrder.Ordernumber = ordershold.Ordernumber;
+        //    existingOrder.Tableid = ordershold.Tableid;
+        //    existingOrder.Ordertype = ordershold.Ordertype;
+        //    existingOrder.Orderstatus = string.IsNullOrWhiteSpace(ordershold.Orderstatus)
+        //                                ? "OPEN"
+        //                                : ordershold.Orderstatus;
+
+        //    existingOrder.Guestcount = ordershold.Guestcount ?? 1;
+        //    existingOrder.SubtotalAmount = ordershold.SubtotalAmount ?? 0;
+        //    existingOrder.TaxAmount = ordershold.TaxAmount ?? 0;
+        //    existingOrder.DiscountAmount = ordershold.DiscountAmount ?? 0;
+        //    existingOrder.TotalAmount = ordershold.TotalAmount ?? 0;
+        //    existingOrder.Shiftid = ordershold.Shiftid;
+        //    existingOrder.OrgId = ordershold.OrgId;
+
+
+        //    existingOrder.IsDeleted = false;
+        //    existingOrder.UpdatedBy = ordershold.UpdatedBy;
+        //    existingOrder.UpdatedDate = DateTime.Now;
+
+        //    _uow.GenericRepository<OrdersHold>().Update(existingOrder);
+        //    _uow.Save();
+
+        //    return Convert.ToString(existingOrder.OrderId);
+        //}
 
 
         public string Update(OrdersHold ordershold)
@@ -68,45 +187,110 @@ namespace UNITYPOS_API.DAL.Services
                          && o.IsDeleted == false);
 
             if (check > 0)
-            {
                 return "AlreadyExists";
-            }
 
             var existingOrder = _uow.GenericRepository<OrdersHold>().Table()
-                .FirstOrDefault(x => x.IsDeleted == false
-                                  && x.OrderId == ordershold.OrderId);
+                .FirstOrDefault(x => x.OrderId == ordershold.OrderId
+                                  && x.IsDeleted == false);
 
             if (existingOrder == null)
-            {
                 return "";
-            }
 
             existingOrder.Ordernumber = ordershold.Ordernumber;
             existingOrder.Tableid = ordershold.Tableid;
             existingOrder.Ordertype = ordershold.Ordertype;
             existingOrder.Orderstatus = string.IsNullOrWhiteSpace(ordershold.Orderstatus)
-                                        ? "OPEN"
-                                        : ordershold.Orderstatus;
+                ? "Hold"
+                : ordershold.Orderstatus;
 
-            existingOrder.Guestcount = ordershold.Guestcount ?? 1;
+            existingOrder.Itemcount = ordershold.Itemcount ?? 1;
             existingOrder.SubtotalAmount = ordershold.SubtotalAmount ?? 0;
             existingOrder.TaxAmount = ordershold.TaxAmount ?? 0;
             existingOrder.DiscountAmount = ordershold.DiscountAmount ?? 0;
             existingOrder.TotalAmount = ordershold.TotalAmount ?? 0;
             existingOrder.Shiftid = ordershold.Shiftid;
             existingOrder.OrgId = ordershold.OrgId;
-
-           
             existingOrder.IsDeleted = false;
             existingOrder.UpdatedBy = ordershold.UpdatedBy;
             existingOrder.UpdatedDate = DateTime.Now;
 
             _uow.GenericRepository<OrdersHold>().Update(existingOrder);
+
+            if (ordershold.Items != null && ordershold.Items.Any())
+            {
+                var existingItems = _uow.GenericRepository<OrderHoldItems>().Table()
+                    .Where(x => x.Orderid == existingOrder.OrderId)
+                    .ToList();
+
+                foreach (var item in ordershold.Items)
+                {
+                    if (item.Itemid > 0)
+                    {
+                        var oldItem = existingItems
+                            .FirstOrDefault(x => x.Itemid == item.Itemid);
+
+                        if (oldItem != null)
+                        {
+                            oldItem.Menuitemid = item.Menuitemid;
+                            oldItem.Itemname = item.Itemname;
+                            oldItem.Quantity = item.Quantity;
+                            oldItem.Unitprice = item.Unitprice;
+                            oldItem.Totalprice = item.Totalprice > 0
+                                ? item.Totalprice
+                                : item.Quantity * item.Unitprice;
+
+                            oldItem.DiscountAmount = item.DiscountAmount ?? 0;
+                            oldItem.TaxAmount = item.TaxAmount ?? 0;
+                            oldItem.Modifierdetails = item.Modifierdetails;
+                            oldItem.Itemstatus = string.IsNullOrWhiteSpace(item.Itemstatus)
+                                ? "Hold"
+                                : item.Itemstatus;
+
+                            oldItem.Notes = item.Notes;
+                            oldItem.OrgId = item.OrgId > 0 ? item.OrgId : existingOrder.OrgId;
+                            oldItem.IsDeleted = false;
+                            oldItem.UpdatedBy = ordershold.UpdatedBy;
+                            oldItem.UpdatedDate = DateTime.Now;
+
+                            _uow.GenericRepository<OrderHoldItems>().Update(oldItem);
+                        }
+                    }
+                    else
+                    {
+                        var newItem = new OrderHoldItems
+                        {
+                            Orderid = existingOrder.OrderId,
+                            Menuitemid = item.Menuitemid,
+                            Itemname = item.Itemname,
+                            Quantity = item.Quantity,
+                            Unitprice = item.Unitprice,
+                            Totalprice = item.Totalprice > 0
+                                ? item.Totalprice
+                                : item.Quantity * item.Unitprice,
+
+                            DiscountAmount = item.DiscountAmount ?? 0,
+                            TaxAmount = item.TaxAmount ?? 0,
+                            Modifierdetails = item.Modifierdetails,
+                            Itemstatus = string.IsNullOrWhiteSpace(item.Itemstatus)
+                                ? "Hold"
+                                : item.Itemstatus,
+
+                            Notes = item.Notes,
+                            OrgId = item.OrgId > 0 ? item.OrgId : existingOrder.OrgId,
+                            IsDeleted = false,
+                            CreatedBy = ordershold.UpdatedBy,
+                            CreatedDate = DateTime.Now
+                        };
+
+                        _uow.GenericRepository<OrderHoldItems>().Insert(newItem);
+                    }
+                }
+            }
+
             _uow.Save();
 
             return Convert.ToString(existingOrder.OrderId);
         }
-
         public IEnumerable<object> GetAll(int orgid)
         {
             var result = (from oh in _uow.GenericRepository<OrdersHold>().Table()
@@ -125,7 +309,7 @@ namespace UNITYPOS_API.DAL.Services
                               Ordertype = oh.Ordertype,
                               Orderstatus = oh.Orderstatus,
 
-                              Guestcount = oh.Guestcount,
+                              Itemcount = oh.Itemcount,
 
                               SubtotalAmount = oh.SubtotalAmount,
                               TaxAmount = oh.TaxAmount,
@@ -145,7 +329,7 @@ namespace UNITYPOS_API.DAL.Services
         }
 
 
-        public IEnumerable<object> GetAllHoldorderDetails(int orgid)
+        public IEnumerable<object> GetAllHoldorderDetails(long orderId)
         {
             var result = (from oh in _uow.GenericRepository<OrdersHold>().Table()
 
@@ -156,7 +340,7 @@ namespace UNITYPOS_API.DAL.Services
                           on oh.OrderId equals item.Orderid into itemGroup
 
                           where oh.IsDeleted == false
-                          && (orgid == 0 || oh.OrgId == 0 || oh.OrgId == orgid)
+                             && oh.OrderId == orderId
 
                           select new
                           {
@@ -166,7 +350,7 @@ namespace UNITYPOS_API.DAL.Services
                               Ordertype = oh.Ordertype,
                               Orderstatus = oh.Orderstatus,
 
-                              Guestcount = oh.Guestcount,
+                              Itemcount = oh.Itemcount,
 
                               SubtotalAmount = oh.SubtotalAmount,
                               TaxAmount = oh.TaxAmount,
@@ -179,22 +363,23 @@ namespace UNITYPOS_API.DAL.Services
                               OrganizationName = o.Name,
 
                               Items = itemGroup
-                                      .Where(x => x.IsDeleted == false)
-                                      .Select(x => new
-                                      {
-                                          Itemid = x.Itemid,
-                                          Menuitemid = x.Menuitemid,
-                                          Itemname = x.Itemname,
-                                          Quantity = x.Quantity,
-                                          Unitprice = x.Unitprice,
-                                          Totalprice = x.Totalprice,
-                                          DiscountAmount = x.DiscountAmount,
-                                          TaxAmount = x.TaxAmount,
-                                          Modifierdetails = x.Modifierdetails,
-                                          Itemstatus = x.Itemstatus,
-                                          Notes = x.Notes
-                                      })
-                                      .ToList()
+                                  .Where(x => x.IsDeleted == false)
+                                  .Select(x => new
+                                  {
+                                      Itemid = x.Itemid,
+                                      Orderid = x.Orderid,
+                                      Menuitemid = x.Menuitemid,
+                                      Itemname = x.Itemname,
+                                      Quantity = x.Quantity,
+                                      Unitprice = x.Unitprice,
+                                      Totalprice = x.Totalprice,
+                                      DiscountAmount = x.DiscountAmount,
+                                      TaxAmount = x.TaxAmount,
+                                      Modifierdetails = x.Modifierdetails,
+                                      Itemstatus = x.Itemstatus,
+                                      Notes = x.Notes
+                                  })
+                                  .ToList()
                           })
                           .ToList();
 

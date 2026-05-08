@@ -9,5 +9,8 @@ namespace UNITYPOS_API.DAL.Interfaces
         public OrdersHold GetById(long orderId);
         public IEnumerable<object> GetAll(int orgid);
         public string Delete(long orderId);
+
+
+        public IEnumerable<object> GetAllHoldorderDetails(long orderId);
     }
 }

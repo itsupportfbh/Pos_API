@@ -71,5 +71,14 @@ namespace UNITYPOS_API.Controllers
             return Common.Utility.GetResult(result);
 
         }
+
+
+        [HttpGet]
+        public string GetAllHoldorderDetails(long orderId)
+        {
+            string result = null;
+            result = JsonConvert.SerializeObject(_orderHoldService.GetAllHoldorderDetails(orderId));
+            return Common.Utility.GetResult(result);
+        }
     }
 }
