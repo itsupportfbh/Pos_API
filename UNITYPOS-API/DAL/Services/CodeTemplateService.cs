@@ -112,7 +112,7 @@ namespace UNITYPOS_API.DAL.Services
             var defaultResult = _uow.GenericRepository<CodeTemplate>().Table()
                 .Where(x => x.IsDeleted == false && x.EntityNo != 2 && x.OrgId == 0
                          && x.IsMaster == IsMaster
-                         && (IsMaster || x.BranchId == BranchId))
+                         && (IsMaster || x.BranchId == 0))
                 .Select(x => new
                 {
                     x.Id,
