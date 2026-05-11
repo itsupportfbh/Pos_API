@@ -50,14 +50,20 @@ namespace UNITYPOS_API.DAL.Services
             IEnumerable<Object> result = null;
 
             result = (from b in _uow.GenericRepository<DiningTableMaster>().Table()
+                      join o in _uow.GenericRepository<Organization>().Table()
+                        on b.OrgId equals o.Id                     
                       where b.IsDeleted == false && b.Id == id
                       select new
                       {
                           id = b.Id,
                           name = b.Name,
                           code = b.Code,
-                          seatingsize = b.SeatingSize,
-                          reservable = b.IsReservable,
+                          branchId = b.BranchId, 
+                          floorId = b.FloorId,
+                          seatingSize = b.SeatingSize,
+                          displayorder = b.DisplayOrder,
+                          remarks = b.Remarks,
+                          isActive = b.IsActive,
                       }).ToList();
 
 
