@@ -87,6 +87,7 @@ namespace UNITYPOS_API.DAL.Services
                 Code = foodmenu.Code,
                 Name = foodmenu.Name,
                 CategoryId = foodmenu.CategoryId,
+                SubCategoryId = foodmenu.SubCategoryId,
                 Price = foodmenu.Price,
                 OrgId = foodmenu.OrgId,
                 IsActive = true,
@@ -127,6 +128,7 @@ namespace UNITYPOS_API.DAL.Services
                 existingMenu.Price = foodmenu.Price;
                 existingMenu.CategoryId = foodmenu.CategoryId;
                 existingMenu.OrgId = foodmenu.OrgId;
+                existingMenu.SubCategoryId = foodmenu.SubCategoryId;
                 existingMenu.IsActive = true;
                 existingMenu.IsDeleted = false;
                 existingMenu.UpdatedBy = foodmenu.UpdatedBy;
