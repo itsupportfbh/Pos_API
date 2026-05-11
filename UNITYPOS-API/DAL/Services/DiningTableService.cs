@@ -1,15 +1,18 @@
-﻿using UNITYPOS_API.Data.ORM;
-using UNITYPOS_API.Entities.Master;
+﻿using System.Text.RegularExpressions;
 using UNITYPOS_API.DAL.Interfaces;
+using UNITYPOS_API.Data.ORM;
+using UNITYPOS_API.Entities.Master;
 
 namespace UNITYPOS_API.DAL.Services
 {
     public class DiningTableService : IDiningTable
     {
         private readonly IUnitOfWork _uow;
-        public DiningTableService(IUnitOfWork uow)
+        private readonly IConfiguration _configuration;
+        public DiningTableService(IUnitOfWork uow, IConfiguration configuration)
         {
             _uow = uow ?? throw new ArgumentNullException(nameof(uow));
+            _configuration = configuration;
         }
 
         public IEnumerable<Object> GetAllDiningTable(int orgid)
@@ -64,6 +67,9 @@ namespace UNITYPOS_API.DAL.Services
                           displayorder = b.DisplayOrder,
                           remarks = b.Remarks,
                           isActive = b.IsActive,
+                          image = string.IsNullOrEmpty(b.Image)
+        ? null
+        : _configuration["AppSettings:FileUploadPathView"] + b.Image
                       }).ToList();
 
 
@@ -93,7 +99,7 @@ namespace UNITYPOS_API.DAL.Services
                 IsAvailable = Table.IsAvailable,
                 IsReservable = Table.IsReservable,
                 IsOccupied = Table.IsOccupied,
-                Image = Table.Image,
+                Image = SaveBase64Image(Table.Image),
                 Remarks =   Table.Remarks,
                 OrgId   = Table.OrgId,
                 IsActive = true,
@@ -135,7 +141,7 @@ namespace UNITYPOS_API.DAL.Services
                 existingTable.FloorId = Table.FloorId;
                 existingTable.SeatingSize = Table.SeatingSize;
                 existingTable.IsOccupied = Table.IsOccupied;
-                existingTable.Image = Table.Image;
+                existingTable.Image = SaveBase64Image(Table.Image);
                 existingTable.Remarks = Table.Remarks;
                 existingTable.OrgId = Table.OrgId;
                 existingTable.IsActive = true;
@@ -179,6 +185,43 @@ namespace UNITYPOS_API.DAL.Services
             }
 
             return Convert.ToString(result?.Id ?? 0);
+        }
+
+        private string SaveBase64Image(string base64Image)
+        {
+            if (string.IsNullOrEmpty(base64Image))
+                return null;
+
+            // Remove base64 header
+            var matches = Regex.Match(base64Image, @"data:image/(?<type>.+?),(?<data>.+)");
+
+            if (!matches.Success)
+                return null;
+
+            string extension = matches.Groups["type"].Value.Split(';')[0];
+
+            string base64Data = matches.Groups["data"].Value;
+
+            byte[] imageBytes = Convert.FromBase64String(base64Data);
+
+            string fileName = $"table_{Guid.NewGuid()}.{extension}";
+
+            string folderPath = Path.Combine(
+                Directory.GetCurrentDirectory(),
+                "wwwroot",
+                "FileUpload"
+            );
+
+            if (!Directory.Exists(folderPath))
+            {
+                Directory.CreateDirectory(folderPath);
+            }
+
+            string filePath = Path.Combine(folderPath, fileName);
+
+            File.WriteAllBytes(filePath, imageBytes);
+
+            return fileName;
         }
     }
 }
