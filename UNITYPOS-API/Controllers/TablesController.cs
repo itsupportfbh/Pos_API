@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using UNITYPOS_API.DAL.Interfaces;
+using UNITYPOS_API.DAL.Services;
 using UNITYPOS_API.Data.ORM;
 using UNITYPOS_API.Entities.Master;
 
@@ -15,10 +16,12 @@ namespace UNITYPOS_API.Controllers
     {
         private IDiningTable _Tableservice;
         private readonly IUnitOfWork _uow;
-        public TablesController(IDiningTable TableService, IUnitOfWork uow)
+        private readonly ICommonService _commonService;
+        public TablesController(IDiningTable TableService, IUnitOfWork uow, ICommonService commonService)
         {
             _uow = uow;
             _Tableservice = TableService;
+            _commonService = commonService;
         }
         [HttpGet]
         public string GetAllTable(int orgid)
@@ -37,15 +40,27 @@ namespace UNITYPOS_API.Controllers
             return Common.Utility.GetResult(result);
         }
         [HttpPost]
-        public string Create(DiningTableMaster Table)
+        public async Task<string> Create(DiningTableMaster Table)
         {
-            string result = null;
-            result = JsonConvert.SerializeObject(_Tableservice.Create(Table));
+            if (Table.ImageFile != null)
+            {
+                var uploadResult = await _commonService.FileUpload(Table.ImageFile, "Table");
+                Table.Image = uploadResult.FileName;
+            }
+
+            string result = JsonConvert.SerializeObject(_Tableservice.Create(Table));
+
             return Common.Utility.GetResult(result);
         }
         [HttpPut]
-        public string Update(DiningTableMaster Table)
+        public async Task<string> Update(DiningTableMaster Table)
         {
+            if (Table.ImageFile != null)
+            {
+                var uploadResult = await _commonService.FileUpload(Table.ImageFile, "Table");
+                Table.Image = uploadResult.FileName;
+            }
+
             string result = null;
             result = JsonConvert.SerializeObject(_Tableservice.Update(Table));
             return Common.Utility.GetResult(result);

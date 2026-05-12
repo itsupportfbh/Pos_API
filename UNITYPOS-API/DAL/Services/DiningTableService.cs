@@ -9,6 +9,8 @@ namespace UNITYPOS_API.DAL.Services
     {
         private readonly IUnitOfWork _uow;
         private readonly IConfiguration _configuration;
+        private readonly ICommonService _commonService;
+
         public DiningTableService(IUnitOfWork uow, IConfiguration configuration)
         {
             _uow = uow ?? throw new ArgumentNullException(nameof(uow));
@@ -33,8 +35,9 @@ namespace UNITYPOS_API.DAL.Services
                           organizationname = o.Name,
                           name = d.Name,
                           code = d.Code,
-                          branch = d.BranchId,
-                          floor = d.FloorId,
+                          branchid = d.BranchId,
+                          floorid = d.FloorId,
+                          displayorder = d.DisplayOrder,
                           branchname = b.Name,
                           floorname = f.Name,
                           seatingsize = d.SeatingSize,
@@ -88,7 +91,7 @@ namespace UNITYPOS_API.DAL.Services
             {
                 return "AlreadyExists";
             }
-
+        
             var entity = new DiningTableMaster
             {
                 Code = Table.Code,
@@ -99,7 +102,7 @@ namespace UNITYPOS_API.DAL.Services
                 IsAvailable = Table.IsAvailable,
                 IsReservable = Table.IsReservable,
                 IsOccupied = Table.IsOccupied,
-                Image = SaveBase64Image(Table.Image),
+                Image = Table.Image,
                 Remarks =   Table.Remarks,
                 OrgId   = Table.OrgId,
                 IsActive = true,
@@ -141,7 +144,7 @@ namespace UNITYPOS_API.DAL.Services
                 existingTable.FloorId = Table.FloorId;
                 existingTable.SeatingSize = Table.SeatingSize;
                 existingTable.IsOccupied = Table.IsOccupied;
-                existingTable.Image = SaveBase64Image(Table.Image);
+                existingTable.Image = Table.Image;
                 existingTable.Remarks = Table.Remarks;
                 existingTable.OrgId = Table.OrgId;
                 existingTable.IsActive = true;
@@ -191,8 +194,7 @@ namespace UNITYPOS_API.DAL.Services
         {
             if (string.IsNullOrEmpty(base64Image))
                 return null;
-
-            // Remove base64 header
+            
             var matches = Regex.Match(base64Image, @"data:image/(?<type>.+?),(?<data>.+)");
 
             if (!matches.Success)
