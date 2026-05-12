@@ -191,8 +191,7 @@ namespace UNITYPOS_API.DAL.Services
         {
             if (string.IsNullOrEmpty(base64Image))
                 return null;
-
-            // Remove base64 header
+            
             var matches = Regex.Match(base64Image, @"data:image/(?<type>.+?),(?<data>.+)");
 
             if (!matches.Success)
