@@ -1,4 +1,6 @@
-﻿namespace UNITYPOS_API.Entities.Master
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace UNITYPOS_API.Entities.Master
 {
     public class Tax:CommonClass
     {
@@ -8,6 +10,7 @@
         public string Name { get; set; }
         public decimal Percentage { get; set; }
         public int OrgId { get; set; }
-
+        [NotMapped]
+        public int EntityNo { get; set; }
     }
 }

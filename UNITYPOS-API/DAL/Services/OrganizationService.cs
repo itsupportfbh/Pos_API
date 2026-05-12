@@ -14,12 +14,13 @@ namespace UNITYPOS_API.DAL.Services
 
         private readonly IUnitOfWork _uow;
         private readonly IConfiguration _configuration;
+        private readonly ICodeTemplateService _codeTemplateService;
 
-        public OrganizationService(IUnitOfWork uow, IConfiguration configuration)
+        public OrganizationService(IUnitOfWork uow, IConfiguration configuration, ICodeTemplateService codeTemplateService)
         {
             _uow = uow ?? throw new ArgumentNullException(nameof(uow));
             _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
-
+            _codeTemplateService = codeTemplateService;
         }
 
         public string Create(Organization Organization)
@@ -33,9 +34,11 @@ namespace UNITYPOS_API.DAL.Services
                 return "AlreadyExists";
             }
 
+            string Code = _codeTemplateService.GetLatestCode(Organization.EntityNo, 0, 0);
+
             var entity = new Organization
             {
-                Code = Organization.Code,
+                Code = Code,
                 Name = Organization.Name,
                 GSTNo = Organization.GSTNo,
                 RegistrationNo = Organization.RegistrationNo,
@@ -59,6 +62,19 @@ namespace UNITYPOS_API.DAL.Services
             };
 
             _uow.GenericRepository<Organization>().Insert(entity);
+
+            var codeTemplate = _uow.GenericRepository<CodeTemplate>().Table()
+                               .FirstOrDefault(x => x.EntityNo == Organization.EntityNo
+                                                 && x.OrgId == 0
+                                                 && x.BranchId == 0
+                                                 && x.IsMaster == true);
+
+            if (codeTemplate != null)
+            {
+                codeTemplate.CurrentValue = codeTemplate.CurrentValue + 1;
+                _uow.GenericRepository<CodeTemplate>().Update(codeTemplate);
+            }
+
             _uow.Save();
 
             return Convert.ToString(entity.Id);

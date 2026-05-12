@@ -7,9 +7,12 @@ namespace UNITYPOS_API.DAL.Services
     public class TaxService : ITax
     {
         private readonly IUnitOfWork _uow;
-        public TaxService(IUnitOfWork uow)
+        private readonly ICodeTemplateService _codeTemplateService;
+
+        public TaxService(IUnitOfWork uow, ICodeTemplateService codeTemplateService)
         {
             _uow = uow ?? throw new ArgumentNullException(nameof(uow));
+            _codeTemplateService = codeTemplateService;
         }
 
         public IEnumerable<Object> GetAllTax(int orgid)
@@ -56,9 +59,11 @@ namespace UNITYPOS_API.DAL.Services
                 return "AlreadyExists";
             }
 
+            string Code = _codeTemplateService.GetLatestCode(tax.EntityNo, tax.OrgId, 0);
+
             var entity = new Tax
             {
-                Code = tax.Code,
+                Code = Code,
                 Name = tax.Name,
                 Percentage = tax.Percentage,
                 OrgId = tax.OrgId,
@@ -69,6 +74,19 @@ namespace UNITYPOS_API.DAL.Services
             };
 
             _uow.GenericRepository<Tax>().Insert(entity);
+
+            var codeTemplate = _uow.GenericRepository<CodeTemplate>().Table()
+                             .FirstOrDefault(x => x.EntityNo == tax.EntityNo
+                                               && x.OrgId == tax.OrgId
+                                               && x.BranchId == 0
+                                               && x.IsMaster == true);
+
+            if (codeTemplate != null)
+            {
+                codeTemplate.CurrentValue = codeTemplate.CurrentValue + 1;
+                _uow.GenericRepository<CodeTemplate>().Update(codeTemplate);
+            }
+
             _uow.Save();
 
             return Convert.ToString(entity.Id);

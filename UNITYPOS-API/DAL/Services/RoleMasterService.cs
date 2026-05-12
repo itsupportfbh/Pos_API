@@ -7,10 +7,12 @@ namespace UNITYPOS_API.DAL.Services
     public class RoleMasterService : IRoleMasterService
     {
         private readonly IUnitOfWork _uow;
+        private readonly ICodeTemplateService _codeTemplateService;
 
-        public RoleMasterService(IUnitOfWork uow)
+        public RoleMasterService(IUnitOfWork uow, ICodeTemplateService codeTemplateService)
         {
             _uow = uow ?? throw new ArgumentNullException(nameof(uow));
+            _codeTemplateService = codeTemplateService;
         }
 
         public IEnumerable<Object> GetAllRole(int orgid)
@@ -56,9 +58,11 @@ namespace UNITYPOS_API.DAL.Services
                 return "AlreadyExists";
             }
 
+            string Code = _codeTemplateService.GetLatestCode(roleMaster.EntityNo, roleMaster.OrgId, 0);
+
             var entity = new RoleMaster
             {
-                Code = roleMaster.Code,
+                Code = Code,
                 Name = roleMaster.Name,
                 Remarks = roleMaster.Remarks,
                 OrgId = roleMaster.OrgId,
@@ -69,6 +73,19 @@ namespace UNITYPOS_API.DAL.Services
             };
 
             _uow.GenericRepository<RoleMaster>().Insert(entity);
+
+            var codeTemplate = _uow.GenericRepository<CodeTemplate>().Table()
+                               .FirstOrDefault(x => x.EntityNo == roleMaster.EntityNo
+                                                 && x.OrgId == roleMaster.OrgId
+                                                 && x.BranchId == 0
+                                                 && x.IsMaster == true);
+
+            if(codeTemplate != null)
+            {
+                codeTemplate.CurrentValue = codeTemplate.CurrentValue + 1;
+                _uow.GenericRepository<CodeTemplate>().Update(codeTemplate);
+            }
+
             _uow.Save();
 
             return Convert.ToString(entity.Id);

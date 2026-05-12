@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Http;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace UNITYPOS_API.Entities.Master
 {
@@ -11,7 +12,7 @@ namespace UNITYPOS_API.Entities.Master
         public bool? IsAdmin { get; set; }
         public string? Email { get; set; }
         public string? Password { get; set; }
-        public int? ContactNo { get; set; }
+        public string? ContactNo { get; set; }
         public string? EmpCode { get; set; }
         public int? OrgId { get; set; }
         public string? Image { get; set; }
@@ -35,9 +36,9 @@ namespace UNITYPOS_API.Entities.Master
         public bool? IsAdmin { get; set; }
         public string? Email { get; set; }
         public string? Password { get; set; }
-        public int? ContactNo { get; set; }
+        public string? ContactNo { get; set; }
         public string? EmpCode { get; set; }
-        public int? OrgId { get; set; }
+        public int OrgId { get; set; }
         public string? Image { get; set; }
         public int? Gender { get; set; }
         public DateTime? DOB { get; set; }
@@ -48,6 +49,8 @@ namespace UNITYPOS_API.Entities.Master
         public int? State { get; set; }
         public int? Country { get; set; }
         public int? PostalCode { get; set; }
+        [NotMapped]
+        public int EntityNo { get; set; }
         public IFormFile? ImageFile { get; set; }
 
         public List<UserBranchMapping>? UserBranchMapping { get; set; }

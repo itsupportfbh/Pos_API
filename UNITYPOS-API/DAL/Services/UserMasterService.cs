@@ -23,6 +23,7 @@ namespace UNITYPOS_API.DAL.Services
         private readonly IUserBranchMappingService _userBranchMappingService;
         private readonly IUserRoleMappingService _userRoleMappingService;
         private readonly ILogger<UserMasterService> _logger;
+        private readonly ICodeTemplateService _codeTemplateService;
 
         public UserMasterService(
             IUnitOfWork uow,
@@ -30,7 +31,8 @@ namespace UNITYPOS_API.DAL.Services
             ICommonService commonService,
             IUserBranchMappingService userBranchMappingService,
             IUserRoleMappingService userRoleMappingService,
-            ILogger<UserMasterService> logger)
+            ILogger<UserMasterService> logger,
+            ICodeTemplateService codeTemplateService)
         {
             _uow = uow ?? throw new ArgumentNullException(nameof(uow));
             _configuration = configuration;
@@ -38,6 +40,8 @@ namespace UNITYPOS_API.DAL.Services
             _userBranchMappingService = userBranchMappingService ?? throw new ArgumentNullException(nameof(userBranchMappingService));
             _userRoleMappingService = userRoleMappingService ?? throw new ArgumentNullException(nameof(userRoleMappingService));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _codeTemplateService = codeTemplateService;
+
         }
 
         public string Create(CreateUserMaster userMaster)
@@ -74,9 +78,11 @@ namespace UNITYPOS_API.DAL.Services
                 : userMaster.Password;
             string hashedPassword = BCrypt.Net.BCrypt.HashPassword(generatedPassword);
 
+            string Code = _codeTemplateService.GetLatestCode(userMaster.EntityNo, userMaster.OrgId, 0);
+
             var entity = new UserMaster
             {
-                Code = userMaster.Code,
+                Code = Code,
                 Name = userMaster.Name,
                 Remarks = userMaster.Remarks,
                 IsAdmin = userMaster.IsAdmin,
@@ -106,7 +112,21 @@ namespace UNITYPOS_API.DAL.Services
                 _uow.BeginTransaction();
 
                 _uow.GenericRepository<UserMaster>().Insert(entity);
+
+                var codeTemplate = _uow.GenericRepository<CodeTemplate>().Table()
+                               .FirstOrDefault(x => x.EntityNo == userMaster.EntityNo
+                                                 && x.OrgId == userMaster.OrgId
+                                                 && x.BranchId == 0
+                                                 && x.IsMaster == true);
+
+                if (codeTemplate != null)
+                {
+                    codeTemplate.CurrentValue = codeTemplate.CurrentValue + 1;
+                    _uow.GenericRepository<CodeTemplate>().Update(codeTemplate);
+                }
+
                 _uow.Save();
+
 
                 if (entity.Id.HasValue && userMaster.UserBranchMapping != null && userMaster.UserBranchMapping.Count > 0)
                 {

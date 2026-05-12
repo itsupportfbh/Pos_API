@@ -1,4 +1,6 @@
-﻿namespace UNITYPOS_API.Entities.Master
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace UNITYPOS_API.Entities.Master
 {
     public class RoleMaster : CommonClass
     {
@@ -8,6 +10,9 @@
         public string Name { get; set; }
         public string Remarks { get; set; }
         public int OrgId { get; set; }
+
+        [NotMapped]
+        public int EntityNo { get; set; }
 
     }
 }

@@ -13,9 +13,12 @@ namespace UNITYPOS_API.DAL.Services
     {
 
         private readonly IUnitOfWork _uow;
-        public BranchService(IUnitOfWork uow)
+        private readonly ICodeTemplateService _codeTemplateService;
+
+        public BranchService(IUnitOfWork uow, ICodeTemplateService codeTemplateService)
         {
             _uow = uow ?? throw new ArgumentNullException(nameof(uow));
+            _codeTemplateService = codeTemplateService;
         }
 
         public IEnumerable<Object> GetAllBranch(int orgid)
@@ -61,9 +64,11 @@ namespace UNITYPOS_API.DAL.Services
                 return "AlreadyExists";
             }
 
+            string Code = _codeTemplateService.GetLatestCode(branch.EntityNo, branch.OrgId, 0);
+
             var entity = new Branch
             {
-                Code = branch.Code,
+                Code = Code,
                 Name = branch.Name,
                 Phone = branch.Phone,
                 Email = branch.Email,
@@ -85,7 +90,21 @@ namespace UNITYPOS_API.DAL.Services
             };
 
             _uow.GenericRepository<Branch>().Insert(entity);
+
+            var codeTemplate = _uow.GenericRepository<CodeTemplate>().Table()
+                               .FirstOrDefault(x => x.EntityNo == branch.EntityNo
+                                                 && x.OrgId == branch.OrgId
+                                                 && x.BranchId == 0
+                                                 && x.IsMaster == true);
+
+            if (codeTemplate != null)
+            {
+                codeTemplate.CurrentValue = codeTemplate.CurrentValue + 1;
+                _uow.GenericRepository<CodeTemplate>().Update(codeTemplate);
+            }
+
             _uow.Save();
+
 
             return Convert.ToString(entity.Id);
         }
