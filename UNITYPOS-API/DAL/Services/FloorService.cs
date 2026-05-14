@@ -17,7 +17,8 @@ namespace UNITYPOS_API.DAL.Services
         public string Create(FloorMaster floor)
         {
             int check = _uow.GenericRepository<FloorMaster>().Table()
-                .Count(o => o.Name.ToLower() == floor.Name.ToLower()
+                .Count(o => o.Code.ToLower() == floor.Code.ToLower()
+                         && o.OrgId == floor.OrgId
                          && o.IsDeleted == false);
 
             if (check > 0)
