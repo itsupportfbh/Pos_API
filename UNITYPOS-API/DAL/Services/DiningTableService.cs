@@ -21,6 +21,9 @@ namespace UNITYPOS_API.DAL.Services
         {
             IEnumerable<Object> result = null;
 
+            string fileUploadPathView = _configuration["AppSettings:FileUploadPathView"] ?? string.Empty;
+
+
             result = (from d in _uow.GenericRepository<DiningTableMaster>().Table()                      
                       join o in _uow.GenericRepository<Organization>().Table()
                         on d.OrgId equals o.Id
@@ -46,6 +49,9 @@ namespace UNITYPOS_API.DAL.Services
                           occupied = d.IsOccupied,
                           remarks = d.Remarks,
                           isactive = d.IsActive,
+                          image = string.IsNullOrWhiteSpace(d.Image)
+                              ? d.Image
+                              : fileUploadPathView + "DiningTable/" + d.Image,
                       }).ToList();
 
 
@@ -54,6 +60,8 @@ namespace UNITYPOS_API.DAL.Services
         public IEnumerable<Object> GetDiningTablebyId(int id)
         {
             IEnumerable<Object> result = null;
+            string fileUploadPathView = _configuration["AppSettings:FileUploadPathView"] ?? string.Empty;
+
 
             result = (from b in _uow.GenericRepository<DiningTableMaster>().Table()
                       join o in _uow.GenericRepository<Organization>().Table()
@@ -70,9 +78,9 @@ namespace UNITYPOS_API.DAL.Services
                           displayorder = b.DisplayOrder,
                           remarks = b.Remarks,
                           isActive = b.IsActive,
-                          image = string.IsNullOrEmpty(b.Image)
-        ? null
-        : _configuration["AppSettings:FileUploadPathView"] + b.Image
+                          image = string.IsNullOrWhiteSpace(b.Image)
+                              ? b.Image
+                              : fileUploadPathView + "DiningTable/" + b.Image,
                       }).ToList();
 
 
@@ -190,40 +198,6 @@ namespace UNITYPOS_API.DAL.Services
             return Convert.ToString(result?.Id ?? 0);
         }
 
-        private string SaveBase64Image(string base64Image)
-        {
-            if (string.IsNullOrEmpty(base64Image))
-                return null;
-            
-            var matches = Regex.Match(base64Image, @"data:image/(?<type>.+?),(?<data>.+)");
 
-            if (!matches.Success)
-                return null;
-
-            string extension = matches.Groups["type"].Value.Split(';')[0];
-
-            string base64Data = matches.Groups["data"].Value;
-
-            byte[] imageBytes = Convert.FromBase64String(base64Data);
-
-            string fileName = $"table_{Guid.NewGuid()}.{extension}";
-
-            string folderPath = Path.Combine(
-                Directory.GetCurrentDirectory(),
-                "wwwroot",
-                "FileUpload"
-            );
-
-            if (!Directory.Exists(folderPath))
-            {
-                Directory.CreateDirectory(folderPath);
-            }
-
-            string filePath = Path.Combine(folderPath, fileName);
-
-            File.WriteAllBytes(filePath, imageBytes);
-
-            return fileName;
-        }
     }
 }

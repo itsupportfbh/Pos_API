@@ -44,7 +44,7 @@ namespace UNITYPOS_API.Controllers
         {
             if (Table.ImageFile != null)
             {
-                var uploadResult = await _commonService.FileUpload(Table.ImageFile, "Table");
+                var uploadResult = await _commonService.FileUpload(Table.ImageFile, "DiningTable");
                 Table.Image = uploadResult.FileName;
             }
 
