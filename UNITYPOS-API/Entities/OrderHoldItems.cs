@@ -12,8 +12,9 @@ namespace UNITYPOS_API.Entities
 
         public long Orderid { get; set; }
 
-        [StringLength(50)]
-        public string? Menuitemid { get; set; }
+       
+        public int? Menuitemid { get; set; }
+        public int? ComboMenuItemId { get; set; }
 
         [Required]
         [StringLength(255)]
@@ -36,7 +37,7 @@ namespace UNITYPOS_API.Entities
 
         public string? Modifierdetails { get; set; }
 
-        [StringLength(20)]
+
         public string? Itemstatus { get; set; } 
 
        
