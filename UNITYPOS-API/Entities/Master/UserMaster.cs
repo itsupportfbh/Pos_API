@@ -25,6 +25,7 @@ namespace UNITYPOS_API.Entities.Master
         public int? State { get; set; }
         public int? Country { get; set; }
         public int? PostalCode { get; set; }
+        public int? PinNo { get; set; }
     }
 
     public class CreateUserMaster : CommonClass
