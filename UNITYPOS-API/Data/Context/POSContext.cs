@@ -82,6 +82,7 @@ namespace UNITYPOS_API.Data.Context
 
             modelBuilder.Entity<DiningTableMaster>().ToTable("DiningTableMaster", "dbo");
             modelBuilder.Entity<ComboMenu>().ToTable("ComboMenu", "dbo");
+            modelBuilder.Entity<Reservations>().ToTable("Reservations", "dbo");
 
         }
 
