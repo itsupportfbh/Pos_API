@@ -1,4 +1,6 @@
-﻿namespace UNITYPOS_API.Entities.Master
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace UNITYPOS_API.Entities.Master
 {
     public class Organization
     {
@@ -30,6 +32,7 @@
         public int? UpdatedBy { get; set; }
         public DateTime? UpdatedDate { get; set; }
         public bool IsDeleted { get; set; }
-
+        [NotMapped]
+        public int EntityNo { get; set; }
     }
 }

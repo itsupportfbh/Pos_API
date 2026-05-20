@@ -11,7 +11,7 @@ namespace UNITYPOS_API.Controllers
 {
     [Route("[controller]/[action]")]
     [ApiController]
-  //  [Authorize]
+    [Authorize]
     public class BranchController : ControllerBase
     {
         private IBranchService _branchservice;
@@ -38,7 +38,6 @@ namespace UNITYPOS_API.Controllers
             return Common.Utility.GetResult(result);
         }
         [HttpPost]
-
         public string Create(Branch branch)
         {
             string result = null;

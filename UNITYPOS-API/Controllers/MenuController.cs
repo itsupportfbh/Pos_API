@@ -1,14 +1,16 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using UNITYPOS_API.DAL.Interfaces;
+using UNITYPOS_API.DAL.Services;
 using UNITYPOS_API.Data.ORM;
 
 namespace UNITYPOS_API.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("[controller]/[action]")]
     [ApiController]
-    
+    [Authorize]
     public class MenuController : ControllerBase
     {
 
@@ -17,7 +19,7 @@ namespace UNITYPOS_API.Controllers
         public MenuController(IMenuService menuService, IUnitOfWork uow)
         {
             _uow = uow;
-            _menuService =menuService;
+            _menuService = menuService;
         }
 
         [HttpGet]
@@ -25,23 +27,9 @@ namespace UNITYPOS_API.Controllers
         {
             string result = null;
 
-            try
-            {
-                var data = _menuService.GetAllMenuAndSubMenu();
-                result = JsonConvert.SerializeObject(data);
-                return Common.Utility.GetResult(result);
-            }
-            catch (Exception ex)
-            {
-                result = JsonConvert.SerializeObject(new
-                {
-                    Status = false,
-                    Message = "An error occurred while fetching menu and submenu details.",
-                    Error = ex.Message
-                });
+            result = JsonConvert.SerializeObject(_menuService.GetAllMenuAndSubMenu());
 
-                return Common.Utility.GetResult(result);
-            }
+            return Common.Utility.GetResult(result);
         }
     }
 

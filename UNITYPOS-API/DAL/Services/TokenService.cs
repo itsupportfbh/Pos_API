@@ -5,6 +5,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using UNITYPOS_API.DAL.Interfaces;
 using UNITYPOS_API.Entities;
+using UNITYPOS_API.Entities.Master;
 
 namespace UNITYPOS_API.Data.ORM
 {
@@ -32,7 +33,6 @@ namespace UNITYPOS_API.Data.ORM
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
                 new Claim(ClaimTypes.Name, user.Name ?? string.Empty),
                 new Claim(ClaimTypes.Email, user.Email ?? string.Empty),
-                new Claim(ClaimTypes.Role, user.IsAdmin ? "Admin" : "User"),
                 new Claim("UserId", user.Id.ToString()),
                 new Claim("Code", user.Code ?? string.Empty),
                 new Claim("EmpCode", user.EmpCode ?? string.Empty),
