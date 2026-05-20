@@ -34,5 +34,15 @@ namespace UNITYPOS_API.Controllers
 
             return Common.Utility.GetResult(result);
         }
+
+        [HttpPost]
+        public async Task<string> Loginwithpin([FromBody] LoginWithPin request)
+        {
+            string result = null;
+
+            result = JsonConvert.SerializeObject(_AuthService.Login(request.Pin));
+
+            return Common.Utility.GetResult(result);
+        }
     }
 }

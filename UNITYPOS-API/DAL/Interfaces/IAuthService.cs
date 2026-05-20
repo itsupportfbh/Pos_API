@@ -6,6 +6,7 @@ namespace UNITYPOS_API.DAL.Interfaces
     public interface IAuthService
     {
         public object Login(string Email, string Password);
-       
+        public object Login(int Pin);
+
     }
 }

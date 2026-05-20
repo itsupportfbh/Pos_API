@@ -87,6 +87,8 @@ namespace UNITYPOS_API.Data.Context
             modelBuilder.Entity<CodeTemplate>().ToTable("CodeTemplate", "dbo");
             modelBuilder.Entity<DiningTableMaster>().ToTable("DiningTableMaster", "dbo");
             modelBuilder.Entity<ComboMenu>().ToTable("ComboMenu", "dbo");
+            modelBuilder.Entity<Reservations>().ToTable("Reservations", "dbo");
+
             modelBuilder.Entity<Orders>().ToTable("Orders", "dbo");
             modelBuilder.Entity<Orderitems>().ToTable("Orderitems", "dbo");
         }
