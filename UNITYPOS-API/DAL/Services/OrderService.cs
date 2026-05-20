@@ -47,12 +47,13 @@ namespace UNITYPOS_API.DAL.Services
                 OrderStatus = ord.OrderStatus,
 
                 ItemCount = ord.ItemCount ?? 0,
-
+                
                 SubtotalAmount = ord.SubtotalAmount ?? 0,
                 TaxAmount = ord.TaxAmount ?? 0,
                 DiscountAmount = ord.DiscountAmount ?? 0,
                 TotalAmount = ord.TotalAmount ?? 0,
-
+                CustomerName=ord.CustomerName,
+                ContactNumber=ord.ContactNumber,
                 ShiftId = ord.ShiftId,
                 OrganizationId = ord.OrgId,
                 BranchId = ord.BranchId,
@@ -125,17 +126,11 @@ namespace UNITYPOS_API.DAL.Services
                 if (order.Items == null || !order.Items.Any())
                     return "NoItemsFound";
 
-                int check = _uow.GenericRepository<Orders>().Table()
-                    .Count(o => o.OrderNumber.ToLower() == order.OrderNumber.ToLower()
-                             && o.OrgId == order.OrgId
-                             && o.BranchId == order.BranchId
-                             && o.IsDeleted == false);
-
-                if (check > 0)
-                    return "AlreadyExists";
+                string newOrderNo = !string.IsNullOrWhiteSpace(order.OrderNumber) ? order.OrderNumber : GenerateOrderNumber(order.OrgId, order.BranchId);
 
                 var entity = new Orders
                 {
+                    // OrderNumber = newOrderNo,
                     OrderNumber = order.OrderNumber,
                     TableId = order.TableId,
                     OrderType = order.OrderType,
@@ -149,7 +144,8 @@ namespace UNITYPOS_API.DAL.Services
                     TaxAmount = order.TaxAmount ?? 0,
                     DiscountAmount = order.DiscountAmount ?? 0,
                     TotalAmount = order.TotalAmount ?? 0,
-
+                    CustomerName = order.CustomerName,
+                    ContactNumber = order.ContactNumber,
                     ShiftId = order.ShiftId,
                     OrgId = order.OrgId,
                     BranchId = order.BranchId,
@@ -167,7 +163,6 @@ namespace UNITYPOS_API.DAL.Services
                     var orderItem = new Orderitems
                     {
                         Orderid = entity.Orderid,
-
                         Menuitemid = item.Menuitemid,
                         ComboMenuItemId = item.ComboMenuItemId,
                         Itemname = item.Itemname,
@@ -185,7 +180,7 @@ namespace UNITYPOS_API.DAL.Services
                         Itemstatus = "In Kitchen",
                         Notes = item.Notes,
 
-                        OrgId = item.OrgId > 0 ? item.OrgId : order.OrgId,
+                        OrgId = item.Itemid > 0 ? item.OrgId : order.OrgId,
 
                         IsDeleted = false,
                         CreatedBy = order.CreatedBy,
@@ -197,8 +192,7 @@ namespace UNITYPOS_API.DAL.Services
 
                 _uow.Save();
 
-                // ✅ Order created successfully, now permanently delete hold order
-                DeleteHoldOrderPermanently(order);
+                DeleteHoldOrderPermanently(entity);
 
                 return entity.Orderid.ToString();
             }
@@ -207,7 +201,6 @@ namespace UNITYPOS_API.DAL.Services
                 return "Database save failed: " + ex.Message;
             }
         }
-
         private void DeleteHoldOrderPermanently(Orders order)
         {
             var holdOrder = _uow.GenericRepository<OrdersHold>().Table()
@@ -267,6 +260,8 @@ namespace UNITYPOS_API.DAL.Services
                 existingOrder.ShiftId = order.ShiftId;
                 existingOrder.UpdatedBy = order.CreatedBy;
                 existingOrder.UpdatedDate = now;
+                existingOrder.ContactNumber= order.ContactNumber;
+                existingOrder.CustomerName = order.CustomerName;
 
                 _uow.GenericRepository<Orders>().Update(existingOrder);
 
@@ -377,152 +372,66 @@ namespace UNITYPOS_API.DAL.Services
                 return ex.Message;
             }
         }
-        //private void UpdateHoldOrderAsKitchen(Orders order)
+      
+
+        public string GenerateOrderNumber(int orgId, int branchId)
+        {
+            var template = _uow.GenericRepository<CodeTemplate>().Table()
+                .Where(x => x.Name == "Order Screen"
+                         && x.IsActive == true
+                         && x.IsDeleted == false
+                         && x.OrgId == orgId
+                         && x.BranchId == branchId)
+                .OrderByDescending(x => x.Id)
+                .FirstOrDefault();
+
+            if (template == null)
+                throw new Exception("CodeTemplate not found for Order Screen");
+
+            int currentValue = template.CurrentValue ;
+            int startValue = template.StartValue ;
+
+            int nextValue = currentValue > 0
+                ? currentValue + 1
+                : startValue;
+
+            string prefix = template.Prefix ?? "";
+            string suffix = template.Suffix ?? "";
+            int noOfDigit = template.NoOfDigit ;
+
+            string orderNo = prefix + nextValue.ToString().PadLeft(noOfDigit, '0') + suffix;
+
+            template.CurrentValue = nextValue;
+           //template.UpdatedBy = template.us
+            template.UpdatedDate = DateTime.Now;
+
+            _uow.GenericRepository<CodeTemplate>().Update(template);
+            _uow.Save();
+
+            return orderNo;
+        }
+
+        
+        //private string NormalizeText(string value)
         //{
-        //    var holdOrder = _uow.GenericRepository<OrdersHold>().Table()
-        //        .FirstOrDefault(x => x.Ordernumber == order.OrderNumber
-        //                          && x.OrgId == order.OrgId
-        //                          && x.BranchId == order.BranchId
-        //                          && x.IsDeleted == false);
-
-        //    if (holdOrder == null)
-        //        return;
-
-        //    holdOrder.Tableid = Convert.ToInt32(order.TableId);
-        //    holdOrder.Ordertype = order.OrderType;
-        //    holdOrder.Orderstatus = "In Kitchen";
-        //    holdOrder.Itemcount = order.Items?.Count ?? 0;
-
-        //    holdOrder.SubtotalAmount = order.SubtotalAmount ?? 0;
-        //    holdOrder.TaxAmount = order.TaxAmount ?? 0;
-        //    holdOrder.DiscountAmount = order.DiscountAmount ?? 0;
-        //    holdOrder.TotalAmount = order.TotalAmount ?? 0;
-
-        //    holdOrder.Shiftid = Convert.ToInt32(order.ShiftId);
-        //    holdOrder.OrgId = order.OrgId;
-        //    holdOrder.BranchId = order.BranchId;
-        //    holdOrder.IsDeleted = false;
-        //    holdOrder.UpdatedBy = order.CreatedBy;
-        //    holdOrder.UpdatedDate = DateTime.Now;
-
-        //    _uow.GenericRepository<OrdersHold>().Update(holdOrder);
-
-        //    var oldHoldItems = _uow.GenericRepository<OrderHoldItems>().Table()
-        //        .Where(x => x.Orderid == holdOrder.OrderId
-        //                 && x.OrgId == order.OrgId)
-        //        .ToList();
-
-        //    var incomingItems = order.Items ?? new List<Orderitems>();
-
-        //    foreach (var item in incomingItems)
-        //    {
-        //        var modifierDetails = SafeJson(item.Modifierdetails);
-
-        //        var existingItem = oldHoldItems.FirstOrDefault(x =>
-        //            x.Menuitemid == item.Menuitemid &&
-        //            (x.ComboMenuItemId ?? 0) == (item.ComboMenuItemId ?? 0) &&
-        //            NormalizeText(x.Modifierdetails) == NormalizeText(modifierDetails) &&
-        //            NormalizeText(x.Notes) == NormalizeText(item.Notes) &&
-        //            x.IsDeleted == false
-        //        );
-
-        //        if (existingItem != null)
-        //        {
-        //            existingItem.Itemname = item.Itemname;
-        //            existingItem.Quantity = item.Quantity;
-        //            existingItem.Unitprice = item.Unitprice;
-        //            existingItem.Totalprice = item.Totalprice > 0
-        //                ? item.Totalprice
-        //                : item.Quantity * item.Unitprice;
-
-        //            existingItem.DiscountAmount = item.DiscountAmount ?? 0;
-        //            existingItem.TaxAmount = item.TaxAmount ?? 0;
-        //            existingItem.Modifierdetails = modifierDetails;
-        //            existingItem.Itemstatus = "In Kitchen";
-        //            existingItem.Notes = item.Notes;
-        //            existingItem.OrgId = item.OrgId > 0 ? item.OrgId : order.OrgId;
-        //            existingItem.IsDeleted = false;
-        //            existingItem.UpdatedBy = order.CreatedBy;
-        //            existingItem.UpdatedDate = DateTime.Now;
-
-        //            _uow.GenericRepository<OrderHoldItems>().Update(existingItem);
-        //        }
-        //        else
-        //        {
-        //            var holdItem = new OrderHoldItems
-        //            {
-        //                Orderid = holdOrder.OrderId,
-        //                Menuitemid = item.Menuitemid,
-        //                ComboMenuItemId = item.ComboMenuItemId,
-        //                Itemname = item.Itemname,
-        //                Quantity = item.Quantity,
-        //                Unitprice = item.Unitprice,
-        //                Totalprice = item.Totalprice > 0
-        //                    ? item.Totalprice
-        //                    : item.Quantity * item.Unitprice,
-
-        //                DiscountAmount = item.DiscountAmount ?? 0,
-        //                TaxAmount = item.TaxAmount ?? 0,
-        //                Modifierdetails = modifierDetails,
-        //                Itemstatus = "In Kitchen",
-        //                Notes = item.Notes,
-        //                OrgId = item.OrgId > 0 ? item.OrgId : order.OrgId,
-        //                IsDeleted = false,
-        //                CreatedBy = order.CreatedBy,
-        //                CreatedDate = DateTime.Now
-        //            };
-
-        //            _uow.GenericRepository<OrderHoldItems>().Insert(holdItem);
-        //        }
-        //    }
-
-        //    // ✅ Payload-la illaadha old items soft delete
-        //    foreach (var oldItem in oldHoldItems.Where(x => x.IsDeleted == false))
-        //    {
-        //        bool stillExistsInPayload = incomingItems.Any(item =>
-        //        {
-        //            var modifierDetails = SafeJson(item.Modifierdetails);
-
-        //            return oldItem.Menuitemid == item.Menuitemid &&
-        //                   (oldItem.ComboMenuItemId ?? 0) == (item.ComboMenuItemId ?? 0) &&
-        //                   NormalizeText(oldItem.Modifierdetails) == NormalizeText(modifierDetails) &&
-        //                   NormalizeText(oldItem.Notes) == NormalizeText(item.Notes);
-        //        });
-
-        //        if (!stillExistsInPayload)
-        //        {
-        //            oldItem.IsDeleted = true;
-        //            oldItem.UpdatedBy = order.CreatedBy;
-        //            oldItem.UpdatedDate = DateTime.Now;
-
-        //            _uow.GenericRepository<OrderHoldItems>().Update(oldItem);
-        //        }
-        //    }
-
-        //    _uow.Save();
+        //    return string.IsNullOrWhiteSpace(value)
+        //        ? string.Empty
+        //        : value.Trim();
         //}
+        //private string SafeJson(string value)
+        //{
+        //    if (string.IsNullOrWhiteSpace(value) || value.Trim() == ".")
+        //        return "[]";
 
-
-        private string NormalizeText(string value)
-        {
-            return string.IsNullOrWhiteSpace(value)
-                ? string.Empty
-                : value.Trim();
-        }
-        private string SafeJson(string value)
-        {
-            if (string.IsNullOrWhiteSpace(value) || value.Trim() == ".")
-                return "[]";
-
-            try
-            {
-                System.Text.Json.JsonDocument.Parse(value);
-                return value;
-            }
-            catch
-            {
-                return "[]";
-            }
-        }
+        //    try
+        //    {
+        //        System.Text.Json.JsonDocument.Parse(value);
+        //        return value;
+        //    }
+        //    catch
+        //    {
+        //        return "[]";
+        //    }
+        //}
     }
 }

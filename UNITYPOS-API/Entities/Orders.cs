@@ -9,13 +9,13 @@ namespace UNITYPOS_API.Entities
         [Key]
         public long Orderid { get; set; }
 
-        public string OrderNumber { get; set; } = string.Empty;
+        public string? OrderNumber { get; set; } 
 
         public int? TableId { get; set; }
 
         public string OrderType { get; set; } = string.Empty;
 
-        public string OrderStatus { get; set; } 
+        public string? OrderStatus { get; set; } 
 
         public int? ItemCount { get; set; } = 1;
 
@@ -26,6 +26,8 @@ namespace UNITYPOS_API.Entities
         public decimal? DiscountAmount { get; set; } = 0.00m;
 
         public decimal? TotalAmount { get; set; } = 0.00m;
+        public string? CustomerName { get; set; }
+        public string? ContactNumber { get; set; }
 
         public int? ShiftId { get; set; }
         public int? CreatedBy { get; set; }
@@ -39,4 +41,7 @@ namespace UNITYPOS_API.Entities
       
         public List<Orderitems>? Items { get; set; }
     }
+
+
+    
 }

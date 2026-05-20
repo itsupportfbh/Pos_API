@@ -10,5 +10,7 @@ namespace UNITYPOS_API.DAL.Interfaces
         IEnumerable<object> GetAllOrderDetails(long orderId, long branchId);
         Orders? GetById(long orderId);
         string Delete(long orderId);
+
+        public string GenerateOrderNumber(int orgId, int branchId);
     }
 }
