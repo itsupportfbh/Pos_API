@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using UNITYPOS_API.Entities.Master;
 
 namespace UNITYPOS_API.Entities
 {
@@ -10,11 +11,10 @@ namespace UNITYPOS_API.Entities
         public long Itemid { get; set; }
 
         public long Orderid { get; set; }
+        
+        public int? Menuitemid { get; set; }
 
-       
-        public string? Menuitemid { get; set; }
-
-     
+        public int? ComboMenuItemId { get; set; }
         public string Itemname { get; set; } = string.Empty;
 
        
@@ -40,10 +40,14 @@ namespace UNITYPOS_API.Entities
         public string? Notes { get; set; }
 
         public int OrgId { get; set; }
-         
-              
 
-       
+        public int? CreatedBy { get; set; }
+        public DateTime? CreatedDate { get; set; } = DateTime.Now;
+        public int? UpdatedBy { get; set; }
+        public DateTime? UpdatedDate { get; set; }
+        public bool? IsDeleted { get; set; }
+        //public int BranchId { get; set; }
+
         public Orders? Order { get; set; }
     }
 }

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using UNITYPOS_API.DAL.Interfaces;
@@ -11,6 +12,7 @@ namespace UNITYPOS_API.Controllers
 {
     [Route("[controller]/[action]")]
     [ApiController]
+    [Authorize]
     public class OrderHoldController : ControllerBase
     {
 
@@ -27,24 +29,41 @@ namespace UNITYPOS_API.Controllers
 
 
 
+        //[HttpPost]
+        //public string Create(OrdersHold ordershold)
+        //{
+        //    string result = null;
+        //    result = JsonConvert.SerializeObject(_orderHoldService.Create(ordershold));
+
+        //    return Common.Utility.GetResult(result);
+        //}
+
+
+        [AllowAnonymous]
         [HttpPost]
-        public string Create(OrdersHold ordershold)
+        public async Task<string> Create( OrdersHold ordershold)
         {
-            string result = null;
-            result = JsonConvert.SerializeObject(_orderHoldService.Create(ordershold));
+            var serviceResult = await _orderHoldService.Create(ordershold);
 
-            return Common.Utility.GetResult(result);
+            return Common.Utility.GetResult(serviceResult);
         }
-
-
         [HttpPut]
-        public string Update(OrdersHold ordershold)
+        public async Task<string> Update( OrdersHold ordershold)
         {
-            string result = null;
-            result = JsonConvert.SerializeObject(_orderHoldService.Update(ordershold));
+            var result = await _orderHoldService.Update(ordershold);
 
-            return Common.Utility.GetResult(result);
+            return Common.Utility.GetResult(JsonConvert.SerializeObject(result));
         }
+
+
+        //[HttpPut]
+        //public string Update(OrdersHold ordershold)
+        //{
+        //    string result = null;
+        //    result = JsonConvert.SerializeObject(_orderHoldService.Update(ordershold));
+
+        //    return Common.Utility.GetResult(result);
+        //}
 
         [HttpGet]
         public string GetAll(int orgid)

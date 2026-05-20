@@ -12,44 +12,45 @@ namespace UNITYPOS_API.Controllers
     [Route("[controller]/[action]")]
     [ApiController]
     [Authorize]
-    public class OrderHoldItemsController : ControllerBase
+    public class OrdersController : ControllerBase
     {
 
-        private IOrderHoldItemsService _orderHoldItemService;
+        private IOrderService _orderService;
         private readonly IUnitOfWork _uow;
-        public OrderHoldItemsController(IOrderHoldItemsService orderHoldItemService, IUnitOfWork uow)
+        public OrdersController(IOrderService orderService, IUnitOfWork uow)
         {
             _uow = uow;
-            _orderHoldItemService = orderHoldItemService;
+            _orderService = orderService;
         }
 
 
 
+
         [HttpPost]
-        public string Create(OrderHoldItems ordersholditems)
+        public string Create(Orders orders)
         {
             string result = null;
-            result = JsonConvert.SerializeObject(_orderHoldItemService.Create(ordersholditems));
+            result = JsonConvert.SerializeObject(_orderService.Create(orders));
 
             return Common.Utility.GetResult(result);
         }
 
 
         [HttpPut]
-        public string Update(OrderHoldItems ordersholditems)
+        public string Update(Orders orders)
         {
             string result = null;
-            result = JsonConvert.SerializeObject(_orderHoldItemService.Update(ordersholditems));
+            result = JsonConvert.SerializeObject(_orderService.Update(orders));
 
             return Common.Utility.GetResult(result);
         }
 
         [HttpGet]
-        public string GetAll(int orgid)
+        public string GetAll(long orgid, long branchId)
         {
             string result = null;
 
-            result = JsonConvert.SerializeObject(_orderHoldItemService.GetAll(orgid));
+            result = JsonConvert.SerializeObject(_orderService.GetAllOrderDetails(orgid, branchId));
 
             return Common.Utility.GetResult(result);
         }
@@ -57,7 +58,7 @@ namespace UNITYPOS_API.Controllers
         public string GetById(int id)
         {
             string result = null;
-            result = JsonConvert.SerializeObject(_orderHoldItemService.GetById(id));
+            result = JsonConvert.SerializeObject(_orderService.GetById(id));
             return Common.Utility.GetResult(result);
         }
 
@@ -65,9 +66,18 @@ namespace UNITYPOS_API.Controllers
         public string Delete(int id)
         {
             string result = null;
-            result = JsonConvert.SerializeObject(_orderHoldItemService.Delete(id));
+            result = JsonConvert.SerializeObject(_orderService.Delete(id));
             return Common.Utility.GetResult(result);
 
         }
+
+
+        //[HttpGet]
+        //public string GetAllHoldorderDetails(long orderId)
+        //{
+        //    string result = null;
+        //    result = JsonConvert.SerializeObject(_orderService.GetAllHoldorderDetails(orderId));
+        //    return Common.Utility.GetResult(result);
+        //}
     }
 }

@@ -10,20 +10,16 @@ namespace UNITYPOS_API.Entities
         [Key]
         public long OrderId { get; set; }
 
-        [Required]
-        [StringLength(50)]
-        public string Ordernumber { get; set; } = string.Empty;
+        
+        public string? Ordernumber { get; set; } 
 
-        [StringLength(20)]
-        public string? Tableid { get; set; }
+      
+        public int? Tableid { get; set; }
 
-        [Required]
-        [StringLength(20)]
-        public string Ordertype { get; set; } 
+        public string? Ordertype { get; set; } 
 
-        [Required]
-        [StringLength(20)]
-        public string Orderstatus { get; set; } = "OPEN";
+        
+        public string? Orderstatus { get; set; } 
 
         public int? Itemcount { get; set; } = 1;
 
@@ -39,8 +35,9 @@ namespace UNITYPOS_API.Entities
         [Column(TypeName = "decimal(10,2)")]
         public decimal? TotalAmount { get; set; } = 0.00m;
 
-        [StringLength(50)]
-        public string? Shiftid { get; set; }
+        public string? CustomerName { get; set; }
+        public string? ContactNumber { get; set; }
+        public int? Shiftid { get; set; }
 
         public int OrgId { get; set; }
         public int? CreatedBy { get; set; }
@@ -48,8 +45,14 @@ namespace UNITYPOS_API.Entities
         public int? UpdatedBy { get; set; }
         public DateTime? UpdatedDate { get; set; }
         public bool? IsDeleted { get; set; }
+        public int BranchId { get; set; }
 
         [NotMapped]
         public List<OrderHoldItems>? Items { get; set; }
+
+        [NotMapped]
+        public int EntityNo { get; set; }
     }
+
+    
 }

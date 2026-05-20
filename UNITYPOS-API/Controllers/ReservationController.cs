@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using UNITYPOS_API.DAL.Interfaces;
 using UNITYPOS_API.Data.ORM;
+using UNITYPOS_API.Entities;
 using UNITYPOS_API.Entities.Master;
 
 namespace UNITYPOS_API.Controllers
@@ -11,54 +12,56 @@ namespace UNITYPOS_API.Controllers
     [Route("[controller]/[action]")]
     [ApiController]
     [Authorize]
-    public class FoodMenuController : ControllerBase
+    public class ReservationController : ControllerBase
     {
-        private IFoodmenu _Foodservice;
+        private IReservation _Resservice;
         private readonly IUnitOfWork _uow;
-        public FoodMenuController(IFoodmenu FoodService, IUnitOfWork uow)
+        public ReservationController(IReservation ResService, IUnitOfWork uow)
         {
             _uow = uow;
-            _Foodservice = FoodService;
+            _Resservice = ResService;
         }
+
         [HttpGet]
-        public string GetAllMenu(int orgid)
+        public string GetAllReservation(int orgid)
         {
             string result = null;
 
-            result = JsonConvert.SerializeObject(_Foodservice.GetAllMenu(orgid));
+            result = JsonConvert.SerializeObject(_Resservice.GetAllReservation(orgid));
 
             return Common.Utility.GetResult(result);
         }
+
         [HttpGet]
-        public string GetMenubyId(int id)
+        public string GetReservationbyId(int id)
         {
             string result = null;
-            result = JsonConvert.SerializeObject(_Foodservice.GetMenubyId(id));
+            result = JsonConvert.SerializeObject(_Resservice.GetReservationbyId(id));
             return Common.Utility.GetResult(result);
         }
+
         [HttpPost]
-
-        public string Create(FoodMenu foodmenu)
+        public string Create(Reservations reservations)
         {
             string result = null;
-            result = JsonConvert.SerializeObject(_Foodservice.Create(foodmenu));
+            result = JsonConvert.SerializeObject(_Resservice.Create(reservations));
             return Common.Utility.GetResult(result);
         }
+
         [HttpPut]
-        public string Update(FoodMenu foodmenu)
+        public string Update(Reservations reservations)
         {
             string result = null;
-            result = JsonConvert.SerializeObject(_Foodservice.Update(foodmenu));
+            result = JsonConvert.SerializeObject(_Resservice.Update(reservations));
             return Common.Utility.GetResult(result);
         }
-        [HttpDelete]
 
+        [HttpDelete]
         public string DeleteById(int id)
         {
             string result = null;
-            result = JsonConvert.SerializeObject(_Foodservice.DeleteById(id));
+            result = JsonConvert.SerializeObject(_Resservice.DeleteById(id));
             return Common.Utility.GetResult(result);
-
         }
 
         [HttpPut]
@@ -66,7 +69,7 @@ namespace UNITYPOS_API.Controllers
         {
             string result = null;
 
-            result = JsonConvert.SerializeObject(_Foodservice.ActiveInActive(Id, IsActive));
+            result = JsonConvert.SerializeObject(_Resservice.ActiveInActive(Id, IsActive));
             return Common.Utility.GetResult(result);
         }
     }

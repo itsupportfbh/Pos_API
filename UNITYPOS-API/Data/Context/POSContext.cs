@@ -1,20 +1,26 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System;
 using System.Security.Claims;
 using UNITYPOS_API.Entities;
 using UNITYPOS_API.Entities.DBLog;
 using UNITYPOS_API.Entities.Master;
+using UNITYPOS_API.Common;
+
 
 namespace UNITYPOS_API.Data.Context
 {
-    public class POSContext:DbContext
+    public class POSContext : DbContext
     {
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IConfiguration _configuration;
 
-        //public static string ConnectionString { get; set; }
-        public readonly IHttpContextAccessor _httpContextAccessor;
-        public readonly IConfiguration _configuration;
         public static string connectionString { get; set; }
-        public POSContext(DbContextOptions<POSContext> options, IHttpContextAccessor httpContextAccessor, IConfiguration configuration)
+
+        public DbSet<Response> Responses { get; set; }
+
+        public POSContext(
+            DbContextOptions<POSContext> options,
+            IHttpContextAccessor httpContextAccessor,
+            IConfiguration configuration)
             : base(options)
         {
             _httpContextAccessor = httpContextAccessor;
@@ -24,33 +30,34 @@ namespace UNITYPOS_API.Data.Context
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             var claimsIdentity = _httpContextAccessor.HttpContext?.User.Identity as ClaimsIdentity;
-            Claim? nameClaim = claimsIdentity?.FindFirst("DataBaseName");
-            if (nameClaim != null || connectionString != null)
+            var nameClaim = claimsIdentity?.FindFirst("DataBaseName");
+
+            if (nameClaim != null || !string.IsNullOrWhiteSpace(connectionString))
             {
-                string dbName = nameClaim != null ? nameClaim.Value : null ?? connectionString;
-                string? ConnectionString = _configuration["ConnectionStrings:ConnectionString"];
-                string? con = ConnectionString?.Replace("_DynamicCustomDB_", dbName);
-                if (!string.IsNullOrEmpty(con))
-                {
-                    _ = optionsBuilder.UseSqlServer(con);
-                }
+                var dbName = nameClaim != null ? nameClaim.Value : connectionString;
+                var baseConnection = _configuration["ConnectionStrings:ConnectionString"];
+                var finalConnection = baseConnection?.Replace("_DynamicCustomDB_", dbName);
+
+                if (!string.IsNullOrWhiteSpace(finalConnection))
+                    optionsBuilder.UseSqlServer(finalConnection);
             }
             else
             {
-                string? ConnectionString = _configuration["ConnectionStrings:ConnectionString"];
-                if (!string.IsNullOrEmpty(ConnectionString))
-                {
-                    _ = optionsBuilder.UseSqlServer(ConnectionString);
-                }
-            }
+                var connection = _configuration["ConnectionStrings:ConnectionString"];
 
+                if (!string.IsNullOrWhiteSpace(connection))
+                    optionsBuilder.UseSqlServer(connection);
+            }
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-
             base.OnModelCreating(modelBuilder);
-                       
+
+            modelBuilder.Ignore<System.IO.Stream>();
+
+            modelBuilder.Entity<Response>().HasNoKey();
+
             modelBuilder.Entity<DBAudit>().ToTable("DBAudit", "dbo");
             modelBuilder.Entity<ErrorLog>().ToTable("ErrorLog", "dbo");
             modelBuilder.Entity<Organization>().ToTable("Organization", "dbo");
@@ -68,7 +75,6 @@ namespace UNITYPOS_API.Data.Context
             modelBuilder.Entity<FoodMenu>().ToTable("FoodMenu", "dbo");
             modelBuilder.Entity<FoodMenuCategory>().ToTable("FoodMenuCategory", "dbo");
             modelBuilder.Entity<FoodMenuSubCategory>().ToTable("FoodMenuSubcategory", "dbo");
-            modelBuilder.Entity<CountryMaster>().ToTable("CountryMaster", "dbo");
             modelBuilder.Entity<StateMaster>().ToTable("StateMaster", "dbo");
             modelBuilder.Entity<CityMaster>().ToTable("CityMaster", "dbo");
             modelBuilder.Entity<Tax>().ToTable("Tax", "dbo");
@@ -79,12 +85,13 @@ namespace UNITYPOS_API.Data.Context
             modelBuilder.Entity<OrdersHold>().ToTable("OrdersHold", "dbo");
             modelBuilder.Entity<OrderHoldItems>().ToTable("OrderHoldItems", "dbo");
             modelBuilder.Entity<CodeTemplate>().ToTable("CodeTemplate", "dbo");
-
             modelBuilder.Entity<DiningTableMaster>().ToTable("DiningTableMaster", "dbo");
             modelBuilder.Entity<ComboMenu>().ToTable("ComboMenu", "dbo");
             modelBuilder.Entity<EmployeeMaster>().ToTable("EmployeeMaster", "dbo");
+            modelBuilder.Entity<Reservations>().ToTable("Reservations", "dbo");
 
+            modelBuilder.Entity<Orders>().ToTable("Orders", "dbo");
+            modelBuilder.Entity<Orderitems>().ToTable("Orderitems", "dbo");
         }
-
     }
 }
