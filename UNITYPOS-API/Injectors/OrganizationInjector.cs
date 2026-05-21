@@ -29,6 +29,7 @@ namespace UNITYPOS_API.Injectors
             _ = services.AddScoped<ICodeTemplateService, CodeTemplateService>();
             _ = services.AddScoped<IDiningTable, DiningTableService>();
             _ = services.AddScoped<IComboMenu, ComboMenuService>();
+            _ = services.AddScoped<IEmployeeMasterService, EmployeeMasterService>();
         }
     }
 }
