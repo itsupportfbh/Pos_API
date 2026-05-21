@@ -44,7 +44,7 @@ namespace UNITYPOS_API.Entities
         public DateTime? CreatedDate { get; set; } = DateTime.Now;
         public int? UpdatedBy { get; set; }
         public DateTime? UpdatedDate { get; set; }
-        public bool? IsDeleted { get; set; }
+        public bool IsDeleted { get; set; }
         public int BranchId { get; set; }
 
         [NotMapped]
