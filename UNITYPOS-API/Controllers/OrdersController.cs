@@ -25,24 +25,19 @@ namespace UNITYPOS_API.Controllers
 
 
 
-
         [HttpPost]
-        public string Create(Orders orders)
+        public async Task<string> Create(Orders order)
         {
-            string result = null;
-            result = JsonConvert.SerializeObject(_orderService.Create(orders));
+            var serviceResult = await _orderService.Create(order);
 
-            return Common.Utility.GetResult(result);
+            return Common.Utility.GetResult(serviceResult);
         }
-
-
         [HttpPut]
-        public string Update(Orders orders)
+        public async Task<string> Update(Orders order)
         {
-            string result = null;
-            result = JsonConvert.SerializeObject(_orderService.Update(orders));
+            var result = await _orderService.Update(order);
 
-            return Common.Utility.GetResult(result);
+            return Common.Utility.GetResult(JsonConvert.SerializeObject(result));
         }
 
         [HttpGet]
