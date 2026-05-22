@@ -104,6 +104,19 @@ namespace UNITYPOS_API.DAL.Services
             };
 
             _uow.GenericRepository<Terminal>().Insert(entity);
+
+            var codeTemplate = _uow.GenericRepository<CodeTemplate>().Table()
+                              .FirstOrDefault(x => x.EntityNo == terminal.EntityNo
+                                                && x.OrgId == terminal.OrgId
+                                                && x.BranchId == terminal.BranchId
+                                                );
+
+            if (codeTemplate != null)
+            {
+                codeTemplate.CurrentValue = codeTemplate.CurrentValue + 1;
+                _uow.GenericRepository<CodeTemplate>().Update(codeTemplate);
+            }
+
             _uow.Save();
 
             return Convert.ToString(entity.Id);

@@ -1,4 +1,5 @@
-﻿using UNITYPOS_API.DAL.Interfaces;
+﻿using Azure.Core;
+using UNITYPOS_API.DAL.Interfaces;
 using UNITYPOS_API.Data.ORM;
 using UNITYPOS_API.Entities;
 using UNITYPOS_API.Entities.Master;
@@ -25,14 +26,14 @@ namespace UNITYPOS_API.DAL.Services
 
                           select new
                           {
-                              id = b.ReservationNo,
+                              Id = b.Id,
+                              ReservationNo = b.ReservationNo,
                               organizationname = o.Name,
-                              Customernam = b.CustomerName,
-                              name = b.CustomerMobile,
-                              code = b.ReservationDate,
-                              price = b.Reservationtime,
-                              categoryId = b.Guestcount,
-                              categoryname = b.Status,
+                              CustomerName = b.CustomerName,
+                              CustomerMobile = b.CustomerMobile,
+                              ReservationDate = b.ReservationDate,
+                              Reservationtime = b.Reservationtime,
+                              Guestcount = b.Guestcount
                           }).ToList();
 
             return result;
@@ -42,16 +43,28 @@ namespace UNITYPOS_API.DAL.Services
         {
             IEnumerable<Object> result = null;
 
-            result = (from b in _uow.GenericRepository<FoodMenu>().Table()
+            result = (from b in _uow.GenericRepository<Reservations>().Table()
                       where b.IsDeleted == false && b.Id == id
                       select new
                       {
-                          id = b.Id,
-                          name = b.Name,
-                          code = b.Code,
-                          categoryId = b.CategoryId,
-                          price = b.Price,
-                          isactive = b.IsActive,
+                          Id = b.Id,
+                          ReservationNo = b.ReservationNo,
+                          CustomerName = b.CustomerName,
+                          CustomerMobile = b.CustomerMobile,
+                          CustomerEmail = b.CustomerEmail,
+                          ReservationDate = b.ReservationDate,
+                          Reservationtime = b.Reservationtime,
+                          Guestcount = b.Guestcount,
+                          TableIds = _uow
+                          .GenericRepository<ReservationTablesMapping>()
+                          .Table()
+                          .Where(x =>
+                              x.ReservationId == b.Id
+                              && x.IsDeleted == false)
+                          .Select(x => new
+                          {
+                              tableId = x.TableId
+                          }).ToList()
                       }).ToList();
 
 
@@ -81,17 +94,48 @@ namespace UNITYPOS_API.DAL.Services
                 Reservationtime = Reservation.Reservationtime,
                 ExpectedDuration = Reservation.ExpectedDuration,
                 Guestcount = Reservation.Guestcount,
-                Status = Reservation.Status,
                 Specialrequests = Reservation.Specialrequests,
                 Bookingsource = Reservation.Bookingsource,
                 OrgId = Reservation.OrgId,
-                IsActive = true,
                 IsDeleted = false,
                 CreatedBy = Reservation.CreatedBy,
                 CreatedDate = DateTime.Now
             };
 
             _uow.GenericRepository<Reservations>().Insert(entity);
+            _uow.Save();
+
+            if (Reservation.TableIds != null && Reservation.TableIds.Count > 0)
+            {
+                foreach (var tableId in Reservation.TableIds)
+                {
+                    var mapping = new ReservationTablesMapping
+                    {
+                        ReservationId = entity.Id,
+                        TableId = tableId.TableId,
+                        OrgId = Reservation.OrgId,
+                        IsDeleted = false,
+                        CreatedBy = Reservation.CreatedBy,
+                        CreatedDate = DateTime.Now
+                    };
+
+                    _uow.GenericRepository<ReservationTablesMapping>()
+                        .Insert(mapping);
+                }                
+            }
+
+            var codeTemplate = _uow.GenericRepository<CodeTemplate>().Table()
+                               .FirstOrDefault(x => x.EntityNo == Reservation.EntityNo
+                                                 && x.OrgId == Reservation.OrgId
+                                                 && x.BranchId == Reservation.branchId
+                                                 );
+
+            if (codeTemplate != null)
+            {
+                codeTemplate.CurrentValue = codeTemplate.CurrentValue + 1;
+                _uow.GenericRepository<CodeTemplate>().Update(codeTemplate);
+            }
+
             _uow.Save();
 
             return Convert.ToString(entity.Id);
@@ -124,11 +168,9 @@ namespace UNITYPOS_API.DAL.Services
                 existingRes.ExpectedDuration  = reservations.ExpectedDuration;
                 existingRes.Reservationtime = reservations.Reservationtime;
                 existingRes.Guestcount = reservations.Guestcount;
-                existingRes.Status = reservations.Status;
                 existingRes.Specialrequests = reservations.Specialrequests;
                 existingRes.Bookingsource = reservations.Bookingsource;
                 existingRes.OrgId = reservations.OrgId;
-                existingRes.IsActive = true;
                 existingRes.IsDeleted = false;
                 existingRes.UpdatedBy = reservations.UpdatedBy;
                 existingRes.UpdatedDate = DateTime.Now;
@@ -151,7 +193,19 @@ namespace UNITYPOS_API.DAL.Services
                 _uow.GenericRepository<Reservations>().Update(result);
                 _uow.Save();
             }
-             
+
+            var mappings = _uow.GenericRepository<ReservationTablesMapping>().Table().Where(x => x.ReservationId == id).ToList();
+            if (mappings != null && mappings.Count > 0)
+            {
+                foreach (var item in mappings)
+                {
+                    item.IsDeleted = true;
+
+                    _uow.GenericRepository<ReservationTablesMapping>()
+                        .Update(item);
+                }
+            }
+
             return Convert.ToString(result?.Id ?? 0);
 
 
@@ -163,7 +217,7 @@ namespace UNITYPOS_API.DAL.Services
             if (result != null)
             {
 
-                result.IsActive = isActive;
+                //result.Status = "isActive";
                 _uow.GenericRepository<Reservations>().Update(result);
                 _uow.Save();
             }

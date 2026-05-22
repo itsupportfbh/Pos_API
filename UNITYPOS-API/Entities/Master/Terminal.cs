@@ -1,4 +1,6 @@
-﻿namespace UNITYPOS_API.Entities.Master
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace UNITYPOS_API.Entities.Master
 {
     public class Terminal:CommonClass
     {
@@ -10,7 +12,7 @@
         public string? Remarks { get; set; }
         public string  DeviceName { get; set; }
         public int OrgId { get; set; }
-
-
+        [NotMapped]
+        public int EntityNo { get; set; }
     }
 }
