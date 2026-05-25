@@ -146,6 +146,32 @@ namespace UNITYPOS_API.DAL.Services
             return order.OrderId.ToString();
         }
 
+        public string Deletepermanantly(long orderId)
+        {
+            var orderRepo = _uow.GenericRepository<OrdersHold>();
+            var itemRepo = _uow.GenericRepository<OrderHoldItems>();
+
+            var order = orderRepo.Table()
+                .FirstOrDefault(x => x.OrderId == orderId);
+
+            if (order == null)
+                return "OrderNotFound";
+
+            var items = itemRepo.Table()
+                .Where(x => x.Orderid == orderId)
+                .ToList();
+
+            foreach (var item in items)
+            {
+                itemRepo.Delete(item);
+            }
+
+            orderRepo.Delete(order);
+
+            _uow.Save();
+
+            return orderId.ToString();
+        }
 
         public async Task<string> Create(OrdersHold ordershold)
         {

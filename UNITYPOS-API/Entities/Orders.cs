@@ -42,6 +42,8 @@ namespace UNITYPOS_API.Entities
         public List<Orderitems>? Items { get; set; }
         [NotMapped]
         public int EntityNo { get; set; }
+        [NotMapped]
+        public int HoldOrderId { get; set; }
     }
 
 
