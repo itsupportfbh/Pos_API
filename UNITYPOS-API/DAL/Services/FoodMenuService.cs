@@ -97,6 +97,19 @@ namespace UNITYPOS_API.DAL.Services
             };
 
             _uow.GenericRepository<FoodMenu>().Insert(entity);
+
+            var codeTemplate = _uow.GenericRepository<CodeTemplate>().Table()
+                              .FirstOrDefault(x => x.EntityNo == foodmenu.EntityNo
+                                                && x.OrgId == foodmenu.OrgId
+                                                && x.BranchId == foodmenu.BranchId
+                                                );
+
+            if (codeTemplate != null)
+            {
+                codeTemplate.CurrentValue = codeTemplate.CurrentValue + 1;
+                _uow.GenericRepository<CodeTemplate>().Update(codeTemplate);
+            }
+
             _uow.Save();
 
             return Convert.ToString(entity.Id);
