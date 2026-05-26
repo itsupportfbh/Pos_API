@@ -13,7 +13,48 @@ namespace UNITYPOS_API.DAL.Services
         }
 
 
-        public IEnumerable<object> GetAllMenuAndSubMenu()
+        //public IEnumerable<object> GetAllMenuAndSubMenu()
+        //{
+        //    var result = (from m in _uow.GenericRepository<Menu>().Table()
+        //                  where m.IsActive == true
+        //                        && m.IsDeleted == false
+
+        //                  orderby m.DisplayOrder ascending
+
+        //                  select new
+        //                  {
+        //                      MenuId = m.Id,
+        //                      MenuName = m.Name,
+        //                      IsActive = m.IsActive,
+        //                      Menuscope = m.Menuscope,
+        //                      MenuIcon = m.MenuIcon,
+
+        //                      SubMenus = (from sm in _uow.GenericRepository<SubMenu>().Table()
+        //                                  where sm.MenuId == m.Id
+        //                                        && sm.IsActive == true
+        //                                        && sm.IsDeleted == false
+
+        //                                  orderby sm.DisplayOrder ascending
+
+        //                                  select new
+        //                                  {
+        //                                      SubMenuId = sm.Id,
+        //                                      SubMenuName = sm.Name,
+        //                                      sm.EntityNo,
+        //                                      sm.MenuId,
+        //                                      sm.Route,
+        //                                      sm.Remarks,
+        //                                      Menuscope = sm.Menuscope,
+        //                                      MenuIcon = sm.MenuIcon,
+        //                                      IsActive = sm.IsActive
+        //                                  }).ToList()
+        //                  }).ToList();
+
+        //    return result;
+        //}
+
+
+        public IEnumerable<object> GetAllMenuAndSubMenu(int OrgId, int RoleId)
         {
             var result = (from m in _uow.GenericRepository<Menu>().Table()
                           where m.IsActive == true
@@ -30,9 +71,13 @@ namespace UNITYPOS_API.DAL.Services
                               MenuIcon = m.MenuIcon,
 
                               SubMenus = (from sm in _uow.GenericRepository<SubMenu>().Table()
+                                          join rp in _uow.GenericRepository<RolePermission>().Table() on sm.EntityNo equals rp.EntityNo
                                           where sm.MenuId == m.Id
                                                 && sm.IsActive == true
                                                 && sm.IsDeleted == false
+                                                && rp.OrgId == OrgId
+                                                && rp.RoleId == RoleId
+                                                && rp.View == true
 
                                           orderby sm.DisplayOrder ascending
 
