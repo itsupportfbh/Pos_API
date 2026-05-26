@@ -46,7 +46,7 @@ namespace UNITYPOS_API.Entities
         public DateTime? UpdatedDate { get; set; }
         public bool IsDeleted { get; set; }
         public int BranchId { get; set; }
-
+        public string? Notes { get; set; }
         [NotMapped]
         public List<OrderHoldItems>? Items { get; set; }
 

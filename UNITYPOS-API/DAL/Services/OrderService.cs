@@ -1,4 +1,5 @@
-﻿using Microsoft.Data.SqlClient;
+﻿using Microsoft.AspNetCore.Razor.TagHelpers;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using System.Data;
 using UNITYPOS_API.Common;
@@ -32,9 +33,7 @@ namespace UNITYPOS_API.DAL.Services
             var orderList = _uow.GenericRepository<Orders>().Table()
                 .Where(x => x.IsDeleted == false
                          && x.OrgId == org
-                         && x.BranchId == branch
-                         && x.OrderStatus == "In Kitchen"
-                         )
+                         && x.BranchId == branch)
                 .OrderByDescending(x => x.Orderid)
                 .ToList();
 
@@ -46,52 +45,70 @@ namespace UNITYPOS_API.DAL.Services
                          && orderIds.Contains(x.Orderid))
                 .ToList();
 
-            var result = orderList.Select(ord => new
+            // ✅ Dining table list
+            var diningTables = _uow.GenericRepository<DiningTableMaster>().Table()
+                .Where(x => x.IsDeleted == false
+                         && x.OrgId == org
+                         && x.BranchId == branch)
+                .ToList();
+
+            var result = orderList.Select(ord =>
             {
-                OrderId = ord.Orderid,
-                OrderNumber = ord.OrderNumber,
-                TableId = ord.TableId,
-                OrderType = ord.OrderType,
-                OrderStatus = ord.OrderStatus,
+                var table = diningTables.FirstOrDefault(t => t.Id == ord.TableId);
 
-                ItemCount = ord.ItemCount ?? 0,
-                
-                SubtotalAmount = ord.SubtotalAmount ?? 0,
-                TaxAmount = ord.TaxAmount ?? 0,
-                DiscountAmount = ord.DiscountAmount ?? 0,
-                TotalAmount = ord.TotalAmount ?? 0,
-                CustomerName=ord.CustomerName,
-                ContactNumber=ord.ContactNumber,
-                ShiftId = ord.ShiftId,
-                OrganizationId = ord.OrgId,
-                BranchId = ord.BranchId,
+                return new
+                {
+                    OrderId = ord.Orderid,
+                    OrderNumber = ord.OrderNumber,
 
-                Items = itemList
-                    .Where(item => item.Orderid == ord.Orderid)
-                    .Select(item => new
-                    {
-                        Itemid = item.Itemid,
-                        Orderid = item.Orderid,
+                    TableId = ord.TableId,
+                    TableName = table != null ? table.Name : "", // ✅ added
 
-                        Menuitemid = item.Menuitemid,
-                        ComboMenuItemId = item.ComboMenuItemId,
+                    OrderType = ord.OrderType,
+                    OrderStatus = ord.OrderStatus,
 
-                        Itemname = item.Itemname,
+                    ItemCount = ord.ItemCount ?? 0,
 
-                        Quantity = item.Quantity,
-                        Unitprice = item.Unitprice,
-                        Totalprice = item.Totalprice,
+                    SubtotalAmount = ord.SubtotalAmount ?? 0,
+                    TaxAmount = ord.TaxAmount ?? 0,
+                    DiscountAmount = ord.DiscountAmount ?? 0,
+                    TotalAmount = ord.TotalAmount ?? 0,
+                    CustomerName = ord.CustomerName,
+                    ContactNumber = ord.ContactNumber,
+                    ShiftId = ord.ShiftId,
+                    OrganizationId = ord.OrgId,
+                    Notes = ord.Notes,
+                    BranchId = ord.BranchId,
+                    CreatedBy = ord.CreatedBy,
+                    CreatedDate = ord.CreatedDate,
 
-                        DiscountAmount = item.DiscountAmount ?? 0,
-                        TaxAmount = item.TaxAmount ?? 0,
+                    Items = itemList
+                        .Where(item => item.Orderid == ord.Orderid)
+                        .Select(item => new
+                        {
+                            Itemid = item.Itemid,
+                            Orderid = item.Orderid,
 
-                        Modifierdetails = item.Modifierdetails,
-                        Itemstatus = item.Itemstatus,
-                        Notes = item.Notes,
+                            Menuitemid = item.Menuitemid,
+                            ComboMenuItemId = item.ComboMenuItemId,
 
-                        OrgId = item.OrgId
-                    })
-                    .ToList()
+                            Itemname = item.Itemname,
+
+                            Quantity = item.Quantity,
+                            Unitprice = item.Unitprice,
+                            Totalprice = item.Totalprice,
+
+                            DiscountAmount = item.DiscountAmount ?? 0,
+                            TaxAmount = item.TaxAmount ?? 0,
+
+                            Modifierdetails = item.Modifierdetails,
+                            Itemstatus = item.Itemstatus,
+                            Notes = item.Notes,
+
+                            OrgId = item.OrgId
+                        })
+                        .ToList()
+                };
             }).ToList();
 
             return result;
@@ -215,6 +232,7 @@ namespace UNITYPOS_API.DAL.Services
                     @"EXEC dbo.sp_Order_Create
                 @EntityNo        = @EntityNo,
                 @HoldOrderId = @HoldOrderId,
+                @Notes         = @Notes,
                 @OrderNumber     = @OrderNumber,
                 @TableId         = @TableId,
                 @OrderType       = @OrderType,
@@ -233,6 +251,7 @@ namespace UNITYPOS_API.DAL.Services
                 @Items           = @Items",
                     new SqlParameter("@EntityNo", order.EntityNo),
                     new SqlParameter("@HoldOrderId", order.HoldOrderId),
+                     new SqlParameter("@Notes", string.IsNullOrWhiteSpace(order.Notes) ? "----" : order.Notes),
                     new SqlParameter("@OrderNumber", string.IsNullOrWhiteSpace(order.OrderNumber) ? DBNull.Value : order.OrderNumber),
                     new SqlParameter("@TableId", order.TableId == 0 ? DBNull.Value : order.TableId),
                     new SqlParameter("@OrderType", order.OrderType ?? (object)DBNull.Value),
@@ -317,7 +336,7 @@ namespace UNITYPOS_API.DAL.Services
                     @"EXEC dbo.sp_Order_Update
                 @OrderId         = @OrderId,
                 @TableId         = @TableId,
-                @HoldOrderId = @HoldOrderId,
+                @Notes         = @Notes,
                 @OrderType       = @OrderType,
                 @OrderStatus     = @OrderStatus,
                 @Itemcount       = @Itemcount,
@@ -332,11 +351,12 @@ namespace UNITYPOS_API.DAL.Services
                 @BranchId        = @BranchId,
                 @UpdatedBy       = @UpdatedBy,
                 @Items           = @Items",
-                    new SqlParameter("@HoldOrderId", order.HoldOrderId),
+                  
                     new SqlParameter("@OrderId", order.Orderid),
                     new SqlParameter("@TableId", order.TableId == 0 ? DBNull.Value : order.TableId),
                     new SqlParameter("@OrderType", order.OrderType ?? (object)DBNull.Value),
                     new SqlParameter("@OrderStatus", string.IsNullOrWhiteSpace(order.OrderStatus) ? "In Kitchen" : order.OrderStatus),
+                    new SqlParameter("@Notes", string.IsNullOrWhiteSpace(order.Notes) ? "----" : order.Notes),
                     new SqlParameter("@Itemcount", order.ItemCount == 0 ? order.Items.Count : order.ItemCount),
                     new SqlParameter("@SubtotalAmount", order.SubtotalAmount ?? 0),
                     new SqlParameter("@TaxAmount", order.TaxAmount ?? 0),
@@ -361,6 +381,135 @@ namespace UNITYPOS_API.DAL.Services
             return result.Result == "Success"
                 ? result.OrderId?.ToString() ?? order.Orderid.ToString()
                 : result.Result;
+        }
+
+
+        
+        
+
+
+        public string StatusChange(Orders order)
+        {
+            if (order == null)
+                return "InvalidOrder";
+
+            if (order.Orderid <= 0)
+                return "OrderIdRequired";
+
+            var existingOrder = _uow.GenericRepository<Orders>()
+                .Table()
+                .FirstOrDefault(x =>
+                    x.Orderid == order.Orderid &&
+                    x.IsDeleted == false);
+
+            if (existingOrder == null)
+                return "OrderNotFound";
+
+            var status = string.IsNullOrWhiteSpace(order.OrderStatus)
+                ? "In Kitchen"
+                : order.OrderStatus.Trim();
+
+            var updatedBy = order.UpdatedBy ?? order.CreatedBy ?? 0;
+
+            // Header update
+            existingOrder.OrderStatus = status;
+            existingOrder.UpdatedBy = updatedBy;
+            existingOrder.UpdatedDate = DateTime.Now;
+
+            _uow.GenericRepository<Orders>().Update(existingOrder);
+
+            // Item update
+            var items = _uow.GenericRepository<Orderitems>()
+                .Table()
+                .Where(x =>
+                    x.Orderid == existingOrder.Orderid &&
+                    x.IsDeleted == false)
+                .ToList();
+
+            foreach (var item in items)
+            {
+                item.Itemstatus = status;
+                item.UpdatedBy = updatedBy;
+                item.UpdatedDate = DateTime.Now;
+
+                _uow.GenericRepository<Orderitems>().Update(item);
+            }
+
+            _uow.Save();
+
+            return existingOrder.Orderid.ToString();
+        }
+
+
+        public string KitchenItemStatusChange(Orderitems orderItem)
+        {
+            if (orderItem == null)
+                return "InvalidItem";
+
+            if (orderItem.Orderid <= 0)
+                return "OrderIdRequired";
+
+            if (orderItem.Itemid <= 0)
+                return "ItemIdRequired";
+
+            var status = string.IsNullOrWhiteSpace(orderItem.Itemstatus)
+                ? "Preparing"
+                : orderItem.Itemstatus.Trim();
+
+            var updatedBy = orderItem.UpdatedBy ?? orderItem.CreatedBy ?? 0;
+
+            var existingItem = _uow.GenericRepository<Orderitems>()
+                .Table()
+                .FirstOrDefault(x =>
+                    x.Orderid == orderItem.Orderid &&
+                    x.Itemid == orderItem.Itemid &&
+                    x.IsDeleted == false);
+
+            if (existingItem == null)
+                return "ItemNotFound";
+
+            existingItem.Itemstatus = status;
+            existingItem.UpdatedBy = updatedBy;
+            existingItem.UpdatedDate = DateTime.Now;
+
+            _uow.GenericRepository<Orderitems>().Update(existingItem);
+
+            // ✅ Check all active items in this order
+            var allItems = _uow.GenericRepository<Orderitems>()
+                .Table()
+                .Where(x =>
+                    x.Orderid == orderItem.Orderid &&
+                    x.IsDeleted == false)
+                .ToList();
+
+            bool allSameStatus = allItems.Any() &&
+                                 allItems.All(x =>
+                                     string.Equals(
+                                         x.Itemstatus?.Trim(),
+                                         status,
+                                         StringComparison.OrdinalIgnoreCase));
+
+            if (allSameStatus)
+            {
+                var existingOrder = _uow.GenericRepository<Orders>()
+                    .Table()
+                    .FirstOrDefault(x =>
+                        x.Orderid == orderItem.Orderid &&
+                        x.IsDeleted == false);
+
+                if (existingOrder != null)
+                {
+                    existingOrder.OrderStatus = status;
+                    existingOrder.UpdatedBy = updatedBy;
+                    existingOrder.UpdatedDate = DateTime.Now;
+
+                    _uow.GenericRepository<Orders>().Update(existingOrder);
+                }
+            }
+
+            _uow.Save();
+
+            return existingItem.Itemid.ToString();
         }
     }
 }

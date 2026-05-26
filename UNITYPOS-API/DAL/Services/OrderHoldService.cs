@@ -56,7 +56,30 @@ namespace UNITYPOS_API.DAL.Services
                         oh.TotalAmount,
                         oh.Shiftid,
                         OrganizationId = oh.OrgId,
-                        OrganizationName = o.Name
+                        OrganizationName = o.Name,
+                        Items = _uow.GenericRepository<OrderHoldItems>().Table()
+                            .Where(x => x.Orderid == oh.OrderId && x.IsDeleted != true)
+                            .Select(x => new
+                            {
+                                x.Itemid,
+                                x.Orderid,
+                                x.Menuitemid,
+                                x.ComboMenuItemId,
+                                x.Itemname,
+                                x.Quantity,
+                                x.Unitprice,
+                                x.Totalprice,
+                                x.DiscountAmount,
+                                x.TaxAmount,
+                                x.Modifierdetails,
+                                x.Itemstatus,
+                                x.Notes,
+                                x.OrgId,
+                                x.CreatedBy,
+                                x.CreatedDate,
+                                x.UpdatedBy,
+                                x.UpdatedDate
+                            }).ToList()
                     }).ToList();
         }
 
@@ -223,6 +246,7 @@ namespace UNITYPOS_API.DAL.Services
     .FromSqlRaw(
         @"EXEC sp_OrderHold_Create
             @EntityNo       = @EntityNo,
+             @Notes         = @Notes,
             @OrderNumber    = @OrderNumber,
             @TableId        = @TableId,
             @OrderType      = @OrderType,
@@ -249,6 +273,7 @@ namespace UNITYPOS_API.DAL.Services
       //new SqlParameter("@EntityNo", ordershold.EntityNo ?? 0),
         new SqlParameter("@OrderNumber",string.IsNullOrWhiteSpace(ordershold.Ordernumber)? (object)DBNull.Value : ordershold.Ordernumber),
         new SqlParameter("@TableId", ordershold.Tableid ?? (object)DBNull.Value),
+         new SqlParameter("@Notes", string.IsNullOrWhiteSpace(ordershold.Notes) ? "----" : ordershold.Notes),
         new SqlParameter("@OrderType", ordershold.Ordertype ?? (object)DBNull.Value),
         new SqlParameter("@OrderStatus", ordershold.Orderstatus ?? (object)DBNull.Value),
         new SqlParameter("@Itemcount", ordershold.Itemcount ?? (object)DBNull.Value),
@@ -372,5 +397,12 @@ namespace UNITYPOS_API.DAL.Services
                 ? result.OrderId?.ToString() ?? "Failed"
                 : result.Result;
         }
+
+
+
+
+
+
+       
     }
 }

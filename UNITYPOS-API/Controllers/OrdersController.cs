@@ -40,6 +40,26 @@ namespace UNITYPOS_API.Controllers
             return Common.Utility.GetResult(JsonConvert.SerializeObject(result));
         }
 
+        [HttpPut]
+        public string KitchenStatusChange(Orders order)
+        {
+            var result =  _orderService.StatusChange(order);
+
+            return Common.Utility.GetResult(JsonConvert.SerializeObject(result));
+        }
+
+        [HttpPut]
+        public string KitchenItemStatusChange(Orderitems orderitems)
+        {
+            var result = _orderService.KitchenItemStatusChange(orderitems);
+
+            return Common.Utility.GetResult(JsonConvert.SerializeObject(result));
+        }
+
+
+
+
+
         [HttpGet]
         public string GetAll(long orgid, long branchId)
         {
