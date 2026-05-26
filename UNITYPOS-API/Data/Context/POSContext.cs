@@ -92,8 +92,8 @@ namespace UNITYPOS_API.Data.Context
             modelBuilder.Entity<ReservationTablesMapping>().ToTable("ReservationTablesMapping", "dbo");
             modelBuilder.Entity<Orders>().ToTable("Orders", "dbo");
             modelBuilder.Entity<Orderitems>().ToTable("Orderitems", "dbo");
-            modelBuilder.Entity<JoinTables>().ToTable("JoinTables", "dbo");
-            modelBuilder.Entity<JoinTabledetails>().ToTable("JoinTabledetails", "dbo");
+            modelBuilder.Entity<EntityMaster>().ToTable("EntityMaster", "dbo");
+            modelBuilder.Entity<RolePermission>().ToTable("RolePermission", "dbo");
         }
     }
 }

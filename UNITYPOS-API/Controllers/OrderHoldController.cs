@@ -69,7 +69,14 @@ namespace UNITYPOS_API.Controllers
             return Common.Utility.GetResult(result);
 
         }
+        [HttpDelete]
+        public string Deletepermanantly(long orderId)
+        {
+            string result = null;
+            result = JsonConvert.SerializeObject(_orderHoldService.Deletepermanantly(orderId));
+            return Common.Utility.GetResult(result);
 
+        }
 
         [HttpGet]
         public string GetAllHoldorderDetails(long orderId)

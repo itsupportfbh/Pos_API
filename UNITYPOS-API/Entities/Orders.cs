@@ -28,7 +28,7 @@ namespace UNITYPOS_API.Entities
         public decimal? TotalAmount { get; set; } = 0.00m;
         public string? CustomerName { get; set; }
         public string? ContactNumber { get; set; }
-
+        public string? Notes { get; set; }
         public int? ShiftId { get; set; }
         public int? CreatedBy { get; set; }
         public DateTime? CreatedDate { get; set; } = DateTime.Now;
@@ -42,6 +42,8 @@ namespace UNITYPOS_API.Entities
         public List<Orderitems>? Items { get; set; }
         [NotMapped]
         public int EntityNo { get; set; }
+        [NotMapped]
+        public int HoldOrderId { get; set; }
     }
 
 

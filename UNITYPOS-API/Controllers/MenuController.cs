@@ -23,11 +23,11 @@ namespace UNITYPOS_API.Controllers
         }
 
         [HttpGet]
-        public string GetAllMenuAndSubMenu()
+        public string GetAllMenuAndSubMenu(int OrgId, int RoleId)
         {
             string result = null;
 
-            result = JsonConvert.SerializeObject(_menuService.GetAllMenuAndSubMenu());
+            result = JsonConvert.SerializeObject(_menuService.GetAllMenuAndSubMenu(OrgId, RoleId));
 
             return Common.Utility.GetResult(result);
         }
