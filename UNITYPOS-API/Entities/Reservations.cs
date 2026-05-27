@@ -14,7 +14,7 @@ namespace UNITYPOS_API.Entities
         public TimeOnly Reservationtime { get; set; }
         public int ExpectedDuration { get; set; }
         public int Guestcount { get; set; }
-        public string Specialrequests { get; set; }
+        public string Specialrequests { get; set; } = string.Empty;
         public string Bookingsource { get; set; }
         public int OrgId { get; set; }
         [NotMapped]

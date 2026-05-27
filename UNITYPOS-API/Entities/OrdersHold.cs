@@ -38,7 +38,7 @@ namespace UNITYPOS_API.Entities
         public string? CustomerName { get; set; }
         public string? ContactNumber { get; set; }
         public int? Shiftid { get; set; }
-
+        public int? FloorId { get; set; }
         public int OrgId { get; set; }
         public int? CreatedBy { get; set; }
         public DateTime? CreatedDate { get; set; } = DateTime.Now;

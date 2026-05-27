@@ -25,15 +25,14 @@ namespace UNITYPOS_API.DAL.Services
 
 
 
-        public IEnumerable<object> GetAllOrderDetails(long orgId, long branchId)
+        public IEnumerable<object> GetAllOrderDetails(int orgId, int branchId)
         {
-            int org = Convert.ToInt32(orgId);
-            int branch = Convert.ToInt32(branchId);
+           
 
             var orderList = _uow.GenericRepository<Orders>().Table()
                 .Where(x => x.IsDeleted == false
-                         && x.OrgId == org
-                         && x.BranchId == branch)
+                         && x.OrgId == orgId
+                         && x.BranchId == branchId)
                 .OrderByDescending(x => x.Orderid)
                 .ToList();
 
@@ -41,15 +40,15 @@ namespace UNITYPOS_API.DAL.Services
 
             var itemList = _uow.GenericRepository<Orderitems>().Table()
                 .Where(x => x.IsDeleted == false
-                         && x.OrgId == org
+                         && x.OrgId == orgId
                          && orderIds.Contains(x.Orderid))
                 .ToList();
 
             // ✅ Dining table list
             var diningTables = _uow.GenericRepository<DiningTableMaster>().Table()
                 .Where(x => x.IsDeleted == false
-                         && x.OrgId == org
-                         && x.BranchId == branch)
+                         && x.OrgId == orgId
+                         && x.BranchId == branchId)
                 .ToList();
 
             var result = orderList.Select(ord =>
@@ -113,7 +112,7 @@ namespace UNITYPOS_API.DAL.Services
 
             return result;
         }
-        public Orders? GetById(long orderId)
+        public Orders? GetById(int orderId)
             {
                 var result = _uow.GenericRepository<Orders>()
                     .Table()
@@ -123,7 +122,7 @@ namespace UNITYPOS_API.DAL.Services
                 return result;
             }
 
-        public string Delete(long orderId)
+        public string Delete(int orderId)
             {
                 var result = _uow.GenericRepository<Orders>()
                     .Table()
@@ -140,42 +139,7 @@ namespace UNITYPOS_API.DAL.Services
                 return Convert.ToString(result?.Orderid ?? 0);
             }
 
-        public string GenerateOrderNumber(int orgId, int branchId)
-        {
-            var template = _uow.GenericRepository<CodeTemplate>().Table()
-                .Where(x => x.Name == "Order Screen"
-                         && x.IsActive == true
-                         && x.IsDeleted == false
-                         && x.OrgId == orgId
-                         && x.BranchId == branchId)
-                .OrderByDescending(x => x.Id)
-                .FirstOrDefault();
-
-            if (template == null)
-                throw new Exception("CodeTemplate not found for Order Screen");
-
-            int currentValue = template.CurrentValue;
-            int startValue = template.StartValue;
-
-            int nextValue = currentValue > 0
-                ? currentValue + 1
-                : startValue;
-
-            string prefix = template.Prefix ?? "";
-            string suffix = template.Suffix ?? "";
-            int noOfDigit = template.NoOfDigit;
-
-            string orderNo = prefix + nextValue.ToString().PadLeft(noOfDigit, '0') + suffix;
-
-            template.CurrentValue = nextValue;
-            //template.UpdatedBy = template.us
-            template.UpdatedDate = DateTime.Now;
-
-            _uow.GenericRepository<CodeTemplate>().Update(template);
-            _uow.Save();
-
-            return orderNo;
-        }
+      
 
 
         public async Task<string> Create(Orders order)
@@ -235,6 +199,7 @@ namespace UNITYPOS_API.DAL.Services
                 @Notes         = @Notes,
                 @OrderNumber     = @OrderNumber,
                 @TableId         = @TableId,
+                 @FloorId         = @FloorId,
                 @OrderType       = @OrderType,
                 @OrderStatus     = @OrderStatus,
                 @Itemcount       = @Itemcount,
@@ -254,6 +219,7 @@ namespace UNITYPOS_API.DAL.Services
                      new SqlParameter("@Notes", string.IsNullOrWhiteSpace(order.Notes) ? "----" : order.Notes),
                     new SqlParameter("@OrderNumber", string.IsNullOrWhiteSpace(order.OrderNumber) ? DBNull.Value : order.OrderNumber),
                     new SqlParameter("@TableId", order.TableId == 0 ? DBNull.Value : order.TableId),
+                    new SqlParameter("@FloorId", order.FloorId == 0 ? DBNull.Value : order.FloorId),
                     new SqlParameter("@OrderType", order.OrderType ?? (object)DBNull.Value),
                     new SqlParameter("@OrderStatus", string.IsNullOrWhiteSpace(order.OrderStatus) ? "In Kitchen" : order.OrderStatus),
                     new SqlParameter("@Itemcount", order.ItemCount == 0 ? order.Items.Count : order.ItemCount),
@@ -336,6 +302,7 @@ namespace UNITYPOS_API.DAL.Services
                     @"EXEC dbo.sp_Order_Update
                 @OrderId         = @OrderId,
                 @TableId         = @TableId,
+                @FloorId         = @FloorId,
                 @Notes         = @Notes,
                 @OrderType       = @OrderType,
                 @OrderStatus     = @OrderStatus,
@@ -354,6 +321,7 @@ namespace UNITYPOS_API.DAL.Services
                   
                     new SqlParameter("@OrderId", order.Orderid),
                     new SqlParameter("@TableId", order.TableId == 0 ? DBNull.Value : order.TableId),
+                    new SqlParameter("@FloorId", order.FloorId == 0 ? DBNull.Value : order.FloorId),
                     new SqlParameter("@OrderType", order.OrderType ?? (object)DBNull.Value),
                     new SqlParameter("@OrderStatus", string.IsNullOrWhiteSpace(order.OrderStatus) ? "In Kitchen" : order.OrderStatus),
                     new SqlParameter("@Notes", string.IsNullOrWhiteSpace(order.Notes) ? "----" : order.Notes),
