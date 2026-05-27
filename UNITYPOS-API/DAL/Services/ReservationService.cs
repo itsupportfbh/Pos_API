@@ -1,4 +1,5 @@
 ﻿using Azure.Core;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using UNITYPOS_API.DAL.Interfaces;
 using UNITYPOS_API.Data.ORM;
 using UNITYPOS_API.Entities;
@@ -189,59 +190,58 @@ namespace UNITYPOS_API.DAL.Services
                 _uow.GenericRepository<Reservations>().Update(existingRes);
                 _uow.Save();
 
-                return Convert.ToString(existingRes.Id);
-            }
+                var existingMappings = _uow.GenericRepository<ReservationTablesMapping>()
+        .Table()
+        .Where(x => x.ReservationId == existingRes.Id
+                 && x.OrgId == reservations.OrgId
+                 && x.IsDeleted == false)
+        .ToList();
 
-            var existingMappings = _uow.GenericRepository<ReservationTablesMapping>()
-    .Table()
-    .Where(x => x.ReservationId == existingRes.Id
-             && x.OrgId == reservations.OrgId
-             && x.IsDeleted == false)
-    .ToList();
+                var selectedTableIds = reservations.TableIds
+                    .Select(x => x.TableId)
+                    .ToList();
 
-            var selectedTableIds = reservations.TableIds
-                .Select(x => x.TableId)
-                .ToList();
 
-            
-            foreach (var map in existingMappings.Where(x => !selectedTableIds.Contains(x.TableId)))
-            {
-                map.IsDeleted = true;
-                _uow.GenericRepository<ReservationTablesMapping>().Update(map);
-
-                var table = _uow.GenericRepository<DiningTableMaster>()
-                    .Table()
-                    .FirstOrDefault(x => x.Id == map.TableId);
-
-                if (table != null)
+                foreach (var map in existingMappings.Where(x => !selectedTableIds.Contains(x.TableId)))
                 {
-                    table.IsOccupied = false;
-                    _uow.GenericRepository<DiningTableMaster>().Update(table);
-                }
-            }
-            
-            foreach (var tableId in selectedTableIds.Where(id => !existingMappings.Any(x => x.TableId == id)))
-            {
-                _uow.GenericRepository<ReservationTablesMapping>().Insert(
-                    new ReservationTablesMapping
+                    map.IsDeleted = true;
+                    _uow.GenericRepository<ReservationTablesMapping>().Update(map);
+
+                    var table = _uow.GenericRepository<DiningTableMaster>()
+                        .Table()
+                        .FirstOrDefault(x => x.Id == map.TableId);
+
+                    if (table != null)
                     {
-                        ReservationId = existingRes.Id,
-                        TableId = tableId,
-                        OrgId = reservations.OrgId,
-                        IsDeleted = false,
-                        CreatedBy = reservations.UpdatedBy,
-                        CreatedDate = DateTime.Now
-                    });
-
-                var table = _uow.GenericRepository<DiningTableMaster>()
-                    .Table()
-                    .FirstOrDefault(x => x.Id == tableId);
-
-                if (table != null)
-                {
-                    table.IsOccupied = true;
-                    _uow.GenericRepository<DiningTableMaster>().Update(table);
+                        table.IsOccupied = false;
+                        _uow.GenericRepository<DiningTableMaster>().Update(table);
+                    }
                 }
+
+                foreach (var tableId in selectedTableIds.Where(id => !existingMappings.Any(x => x.TableId == id)))
+                {
+                    _uow.GenericRepository<ReservationTablesMapping>().Insert(
+                        new ReservationTablesMapping
+                        {
+                            ReservationId = existingRes.Id,
+                            TableId = tableId,
+                            OrgId = reservations.OrgId,
+                            IsDeleted = false,
+                            CreatedBy = reservations.UpdatedBy,
+                            CreatedDate = DateTime.Now
+                        });
+
+                    var table = _uow.GenericRepository<DiningTableMaster>()
+                        .Table()
+                        .FirstOrDefault(x => x.Id == tableId);
+
+                    if (table != null)
+                    {
+                        table.IsOccupied = true;
+                        _uow.GenericRepository<DiningTableMaster>().Update(table);
+                    }
+                }
+                return Convert.ToString(existingRes.Id);
             }
 
             _uow.Save();
@@ -256,7 +256,6 @@ namespace UNITYPOS_API.DAL.Services
 
                 result.IsDeleted = true;
                 _uow.GenericRepository<Reservations>().Update(result);
-                _uow.Save();
             }
 
             var mappings = _uow.GenericRepository<ReservationTablesMapping>().Table().Where(x => x.ReservationId == id).ToList();
@@ -268,8 +267,21 @@ namespace UNITYPOS_API.DAL.Services
 
                     _uow.GenericRepository<ReservationTablesMapping>()
                         .Update(item);
+
+                    var table = _uow.GenericRepository<DiningTableMaster>().Table().FirstOrDefault(x => x.Id == item.TableId
+                      && x.OrgId == item.OrgId);
+
+                    if (table != null)
+                    {
+                        table.IsOccupied = false;
+
+                        _uow.GenericRepository<DiningTableMaster>()
+                            .Update(table);
+                    }
                 }
             }
+
+            _uow.Save();
 
             return Convert.ToString(result?.Id ?? 0);
 

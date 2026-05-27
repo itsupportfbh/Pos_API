@@ -41,10 +41,10 @@ namespace UNITYPOS_API.DAL.Services
                      Name = e.Name,
                      MobileNo = e.MobileNo,
                      EmailId = e.EmailId,
-                     Designation = e.Designation,
-                     Department = e.Department,
-                     DateOfJoining = e.DateOfJoining,
-                     BranchId = e.BranchId,
+                     DesignationId = e.DesignationId ?? 0,
+                     DepartmentId = e.DepartmentId ?? 0,
+                     DateOfJoining = e.DateOfJoining,       
+                     BranchId = e.BranchId ?? 0,
                      BranchName = b.Name,
                      Gender = e.Gender,
                      AddressLine1 = e.AddressLine1,
@@ -91,8 +91,8 @@ namespace UNITYPOS_API.DAL.Services
                 Name = employeeMaster.Name,
                 MobileNo = employeeMaster.MobileNo,
                 EmailId = employeeMaster.EmailId,
-                Designation = employeeMaster.Designation,
-                Department = employeeMaster.Department,
+                DesignationId = employeeMaster.DesignationId,
+                DepartmentId = employeeMaster.DepartmentId,
                 DateOfJoining = employeeMaster.DateOfJoining,
                 BranchId = employeeMaster.BranchId,
                 Gender = employeeMaster.Gender,
@@ -102,7 +102,7 @@ namespace UNITYPOS_API.DAL.Services
                 OrgId = employeeMaster.OrgId,
                 IsActive = true,
                 IsDeleted = false,
-                CreatedBy = employeeMaster.CreatedBy,
+                CreatedBy = 1,
                 CreatedDate = DateTime.Now
             };
 
@@ -139,8 +139,8 @@ namespace UNITYPOS_API.DAL.Services
                 existingEmployee.Name = employeeMaster.Name;
                 existingEmployee.MobileNo = employeeMaster.MobileNo;
                 existingEmployee.EmailId = employeeMaster.EmailId;
-                existingEmployee.Designation = employeeMaster.Designation;
-                existingEmployee.Department = employeeMaster.Department;
+                existingEmployee.DesignationId = employeeMaster.DesignationId;
+                existingEmployee.DepartmentId = employeeMaster.DepartmentId;
                 existingEmployee.DateOfJoining = employeeMaster.DateOfJoining;
                 existingEmployee.BranchId = employeeMaster.BranchId;
                 existingEmployee.Gender = employeeMaster.Gender;
