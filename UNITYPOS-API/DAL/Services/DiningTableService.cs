@@ -24,7 +24,8 @@ namespace UNITYPOS_API.DAL.Services
             string fileUploadPathView = _configuration["AppSettings:FileUploadPathView"] ?? string.Empty;
 
 
-            result = (from d in _uow.GenericRepository<DiningTableMaster>().Table()                      
+            result = (from d in _uow.GenericRepository<DiningTableMaster>().Table()
+                      where d.IsOccupied == false
                       join o in _uow.GenericRepository<Organization>().Table()
                         on d.OrgId equals o.Id
                       join b in _uow.GenericRepository<Branch>().Table()
