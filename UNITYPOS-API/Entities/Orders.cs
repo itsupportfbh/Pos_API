@@ -15,7 +15,7 @@ namespace UNITYPOS_API.Entities
 
         public string OrderType { get; set; } = string.Empty;
 
-        public string? OrderStatus { get; set; } 
+        public int? OrderStatus { get; set; } 
 
         public int? ItemCount { get; set; } = 1;
 

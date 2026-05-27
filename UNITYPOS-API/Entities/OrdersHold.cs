@@ -19,7 +19,7 @@ namespace UNITYPOS_API.Entities
         public string? Ordertype { get; set; } 
 
         
-        public string? Orderstatus { get; set; } 
+        public int? Orderstatus { get; set; } 
 
         public int? Itemcount { get; set; } = 1;
 
