@@ -26,7 +26,7 @@ namespace UNITYPOS_API.DAL.Services
                 DiscountAmount = item.DiscountAmount ?? 0,
                 TaxAmount = item.TaxAmount ?? 0,
                 Modifierdetails = item.Modifierdetails,
-                Itemstatus = string.IsNullOrWhiteSpace(item.Itemstatus) ? "OPEN" : item.Itemstatus,
+                Itemstatus =  item.Itemstatus,
                 Notes = item.Notes,
                 OrgId = item.OrgId,
 
@@ -60,7 +60,7 @@ namespace UNITYPOS_API.DAL.Services
             existingItem.DiscountAmount = item.DiscountAmount ?? 0;
             existingItem.TaxAmount = item.TaxAmount ?? 0;
             existingItem.Modifierdetails = item.Modifierdetails;
-            existingItem.Itemstatus = string.IsNullOrWhiteSpace(item.Itemstatus) ? "OPEN" : item.Itemstatus;
+            existingItem.Itemstatus =  item.Itemstatus;
             existingItem.Notes = item.Notes;
             existingItem.OrgId = item.OrgId;
 

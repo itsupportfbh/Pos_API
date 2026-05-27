@@ -2,6 +2,6 @@
 {
     public interface IMenuService
     {
-        public IEnumerable<object> GetAllMenuAndSubMenu();
+        public IEnumerable<object> GetAllMenuAndSubMenu(int OrgId, int RoleId);
     }
 }

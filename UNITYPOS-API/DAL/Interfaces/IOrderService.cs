@@ -4,13 +4,13 @@ namespace UNITYPOS_API.DAL.Interfaces
 {
     public interface IOrderService
     {
-        string Create(Orders order);
-        string Update(Orders order);
-     //   IEnumerable<object> GetAll(int orgid);
-        IEnumerable<object> GetAllOrderDetails(long orderId, long branchId);
-        Orders? GetById(long orderId);
-        string Delete(long orderId);
-
-        public string GenerateOrderNumber(int orgId, int branchId);
+        
+        IEnumerable<object> GetAllOrderDetails(int orderId, int branchId);
+        Orders? GetById(int orderId);
+        string Delete(int orderId);
+        public Task<string> Create(Orders orders);
+        public Task<string> Update(Orders orders);
+        public string StatusChange(Orders order);
+        public string KitchenItemStatusChange(Orderitems orderItem);
     }
 }

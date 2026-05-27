@@ -19,7 +19,7 @@ namespace UNITYPOS_API.Entities
         public string? Ordertype { get; set; } 
 
         
-        public string? Orderstatus { get; set; } 
+        public int? Orderstatus { get; set; } 
 
         public int? Itemcount { get; set; } = 1;
 
@@ -38,15 +38,15 @@ namespace UNITYPOS_API.Entities
         public string? CustomerName { get; set; }
         public string? ContactNumber { get; set; }
         public int? Shiftid { get; set; }
-
+        public int? FloorId { get; set; }
         public int OrgId { get; set; }
         public int? CreatedBy { get; set; }
         public DateTime? CreatedDate { get; set; } = DateTime.Now;
         public int? UpdatedBy { get; set; }
         public DateTime? UpdatedDate { get; set; }
-        public bool? IsDeleted { get; set; }
+        public bool IsDeleted { get; set; }
         public int BranchId { get; set; }
-
+        public string? Notes { get; set; }
         [NotMapped]
         public List<OrderHoldItems>? Items { get; set; }
 

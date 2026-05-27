@@ -16,9 +16,9 @@ namespace UNITYPOS_API.Entities
 
         public string EmailId { get; set; }
 
-        public string Designation { get; set; }
+        public int? DesignationId { get; set; }
 
-        public string Department { get; set; }
+        public int? DepartmentId { get; set; }
 
         public DateTime? DateOfJoining { get; set; }
 
@@ -26,9 +26,9 @@ namespace UNITYPOS_API.Entities
 
         public string Gender { get; set; }
 
-        public string AddressLine1 { get; set; }
+        public string? AddressLine1 { get; set; }
 
-        public string IdProofNo { get; set; }
+        public string? IdProofNo { get; set; }
 
         public string Remarks { get; set; }
 

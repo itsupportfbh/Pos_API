@@ -25,21 +25,7 @@ namespace UNITYPOS_API.Controllers
             _orderHoldService = orderHoldService;
         }
 
-
-
-
-
-        //[HttpPost]
-        //public string Create(OrdersHold ordershold)
-        //{
-        //    string result = null;
-        //    result = JsonConvert.SerializeObject(_orderHoldService.Create(ordershold));
-
-        //    return Common.Utility.GetResult(result);
-        //}
-
-
-        [AllowAnonymous]
+        
         [HttpPost]
         public async Task<string> Create( OrdersHold ordershold)
         {
@@ -56,14 +42,7 @@ namespace UNITYPOS_API.Controllers
         }
 
 
-        //[HttpPut]
-        //public string Update(OrdersHold ordershold)
-        //{
-        //    string result = null;
-        //    result = JsonConvert.SerializeObject(_orderHoldService.Update(ordershold));
-
-        //    return Common.Utility.GetResult(result);
-        //}
+        
 
         [HttpGet]
         public string GetAll(int orgid)
@@ -90,7 +69,14 @@ namespace UNITYPOS_API.Controllers
             return Common.Utility.GetResult(result);
 
         }
+        [HttpDelete]
+        public string Deletepermanantly(long orderId)
+        {
+            string result = null;
+            result = JsonConvert.SerializeObject(_orderHoldService.Deletepermanantly(orderId));
+            return Common.Utility.GetResult(result);
 
+        }
 
         [HttpGet]
         public string GetAllHoldorderDetails(long orderId)

@@ -15,7 +15,7 @@ namespace UNITYPOS_API.Entities
 
         public string OrderType { get; set; } = string.Empty;
 
-        public string? OrderStatus { get; set; } 
+        public int? OrderStatus { get; set; } 
 
         public int? ItemCount { get; set; } = 1;
 
@@ -28,8 +28,9 @@ namespace UNITYPOS_API.Entities
         public decimal? TotalAmount { get; set; } = 0.00m;
         public string? CustomerName { get; set; }
         public string? ContactNumber { get; set; }
-
+        public string? Notes { get; set; }
         public int? ShiftId { get; set; }
+        public int? FloorId { get; set; }
         public int? CreatedBy { get; set; }
         public DateTime? CreatedDate { get; set; } = DateTime.Now;
         public int? UpdatedBy { get; set; }
@@ -40,6 +41,10 @@ namespace UNITYPOS_API.Entities
 
       
         public List<Orderitems>? Items { get; set; }
+        [NotMapped]
+        public int EntityNo { get; set; }
+        [NotMapped]
+        public int HoldOrderId { get; set; }
     }
 
 

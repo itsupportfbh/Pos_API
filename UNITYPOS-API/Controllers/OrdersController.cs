@@ -25,28 +25,43 @@ namespace UNITYPOS_API.Controllers
 
 
 
-
         [HttpPost]
-        public string Create(Orders orders)
+        public async Task<string> Create(Orders order)
         {
-            string result = null;
-            result = JsonConvert.SerializeObject(_orderService.Create(orders));
+            var serviceResult = await _orderService.Create(order);
 
-            return Common.Utility.GetResult(result);
+            return Common.Utility.GetResult(serviceResult);
         }
+        [HttpPut]
+        public async Task<string> Update(Orders order)
+        {
+            var result = await _orderService.Update(order);
 
+            return Common.Utility.GetResult(JsonConvert.SerializeObject(result));
+        }
 
         [HttpPut]
-        public string Update(Orders orders)
+        public string KitchenStatusChange(Orders order)
         {
-            string result = null;
-            result = JsonConvert.SerializeObject(_orderService.Update(orders));
+            var result =  _orderService.StatusChange(order);
 
-            return Common.Utility.GetResult(result);
+            return Common.Utility.GetResult(JsonConvert.SerializeObject(result));
         }
 
+        [HttpPut]
+        public string KitchenItemStatusChange(Orderitems orderitems)
+        {
+            var result = _orderService.KitchenItemStatusChange(orderitems);
+
+            return Common.Utility.GetResult(JsonConvert.SerializeObject(result));
+        }
+
+
+
+
+
         [HttpGet]
-        public string GetAll(long orgid, long branchId)
+        public string GetAll(int orgid, int branchId)
         {
             string result = null;
 
@@ -72,12 +87,6 @@ namespace UNITYPOS_API.Controllers
         }
 
 
-        //[HttpGet]
-        //public string GetAllHoldorderDetails(long orderId)
-        //{
-        //    string result = null;
-        //    result = JsonConvert.SerializeObject(_orderService.GetAllHoldorderDetails(orderId));
-        //    return Common.Utility.GetResult(result);
-        //}
+        
     }
 }

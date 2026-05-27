@@ -10,5 +10,10 @@
         public bool Edit { get; set; }
         public bool Delete { get; set; }
         public bool View { get; set; }
+        public bool Print { get; set; }
+        public bool Download { get; set; }
+        public bool ActiveInActive { get; set; }
+        public int OrgId { get; set; }
+
     }
 }
