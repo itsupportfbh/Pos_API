@@ -61,7 +61,7 @@ namespace UNITYPOS_API.Controllers
 
 
         [HttpGet]
-        public string GetAll(long orgid, long branchId)
+        public string GetAll(int orgid, int branchId)
         {
             string result = null;
 
@@ -87,12 +87,6 @@ namespace UNITYPOS_API.Controllers
         }
 
 
-        //[HttpGet]
-        //public string GetAllHoldorderDetails(long orderId)
-        //{
-        //    string result = null;
-        //    result = JsonConvert.SerializeObject(_orderService.GetAllHoldorderDetails(orderId));
-        //    return Common.Utility.GetResult(result);
-        //}
+        
     }
 }

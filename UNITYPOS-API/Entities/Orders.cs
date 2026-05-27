@@ -30,6 +30,7 @@ namespace UNITYPOS_API.Entities
         public string? ContactNumber { get; set; }
         public string? Notes { get; set; }
         public int? ShiftId { get; set; }
+        public int? FloorId { get; set; }
         public int? CreatedBy { get; set; }
         public DateTime? CreatedDate { get; set; } = DateTime.Now;
         public int? UpdatedBy { get; set; }
