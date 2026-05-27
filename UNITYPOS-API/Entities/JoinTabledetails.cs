@@ -4,8 +4,8 @@ namespace UNITYPOS_API.Entities
 {
     public class JoinTabledetails
     {
-        public int Id { get; set; }
-        public string JoinNo { get; set; }
+        public long Id { get; set; }
+        public string JoinNo { get; set; } = string.Empty;
         public int TableId { get; set; }
         public int OrgId { get; set; }
         public int? CreatedBy { get; set; }

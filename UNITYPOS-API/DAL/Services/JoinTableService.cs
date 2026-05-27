@@ -20,6 +20,12 @@ namespace UNITYPOS_API.DAL.Services
                           join o in _uow.GenericRepository<Organization>().Table()
                           on b.OrgId equals o.Id
 
+                          join d in _uow.GenericRepository<DiningTableMaster>().Table()
+                          on b.PrimaryTable equals d.Id
+
+                          join e in _uow.GenericRepository<EmployeeMaster>().Table()
+                          on b.StewardId equals e.Id
+
                           where b.IsDeleted == false
                           && (orgid == 0 || b.OrgId == orgid)
 
@@ -29,8 +35,10 @@ namespace UNITYPOS_API.DAL.Services
                               joinno = b.JoinNo,
                               organizationname = o.Name,
                               primarytable = b.PrimaryTable,
+                              primaryname = d.Name,
                               guestcount = b.GuestCount,
                               stewardid = b.StewardId,
+                              stewardname = e.Name,
                               notes = b.Notes,
                               status = b.IsActive
                           }).ToList();

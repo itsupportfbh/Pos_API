@@ -4,7 +4,7 @@ namespace UNITYPOS_API.Entities
 {
     public class JoinTables
     {
-        public int Id { get; set; }
+        public long Id { get; set; }
         public string JoinNo {  get; set; }
         public int PrimaryTable {  get; set; }
         public int GuestCount { get; set; }

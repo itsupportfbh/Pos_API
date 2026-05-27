@@ -25,9 +25,7 @@ namespace UNITYPOS_API.Controllers
         public string GetAllJoinTables(int orgid)
         {
             string result = null;
-
             result = JsonConvert.SerializeObject(_Joinservice.GetAllJoinTable(orgid));
-
             return Common.Utility.GetResult(result);
         }
 
