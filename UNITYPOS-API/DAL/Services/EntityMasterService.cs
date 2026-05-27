@@ -119,5 +119,28 @@ namespace UNITYPOS_API.DAL.Services
 
             return "Success";
         }
+
+        public IEnumerable<object> GetRoleRightsByRoleId(int OrgId, int RoleId, int EntityNo)
+        {
+            var result = (
+                from rp in _uow.GenericRepository<RolePermission>().Table()
+                where rp.OrgId == OrgId && rp.RoleId == RoleId && rp.EntityNo == EntityNo
+                select new
+                {
+                    rp.OrgId,
+                    rp.RoleId,
+                    rp.EntityNo,
+                    rp.View,
+                    rp.Create,
+                    rp.Edit,
+                    rp.Delete,
+                    rp.ActiveInActive,
+                    rp.Print,
+                    rp.Download
+                }
+                ).ToList();
+
+            return result;
+        }
     }
 }
