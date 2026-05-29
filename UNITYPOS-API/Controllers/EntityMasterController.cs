@@ -36,5 +36,14 @@ namespace UNITYPOS_API.Controllers
             result = JsonConvert.SerializeObject(_entitymasterservice.SaveRolePermission(rolePermissions));
             return Common.Utility.GetResult(result);
         }
+
+        [HttpGet]
+        public string GetRoleRightsByRoleId(int OrgId, int RoleId, int EntityNo)
+        {
+            string result = null;
+
+            result = JsonConvert.SerializeObject(_entitymasterservice.GetRoleRightsByRoleId(OrgId, RoleId, EntityNo));
+            return Common.Utility.GetResult(result);
+        }
     }
 }

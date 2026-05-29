@@ -219,7 +219,7 @@ namespace UNITYPOS_API.DAL.Services
             itemsTable.Columns.Add("DiscountAmount", typeof(decimal));
             itemsTable.Columns.Add("TaxAmount", typeof(decimal));
             itemsTable.Columns.Add("Modifierdetails", typeof(string));
-            itemsTable.Columns.Add("Itemstatus", typeof(string));
+            itemsTable.Columns.Add("Itemstatus", typeof(int));
             itemsTable.Columns.Add("Notes", typeof(string));
 
             foreach (var item in ordershold.Items)
@@ -235,7 +235,7 @@ namespace UNITYPOS_API.DAL.Services
                     item.DiscountAmount ?? 0,
                     item.TaxAmount ?? 0,
                     item.Modifierdetails ?? "",
-                    item.Itemstatus ?? "",
+                    item.Itemstatus ??0,
                     item.Notes ?? ""
                 );
             }
@@ -329,7 +329,7 @@ namespace UNITYPOS_API.DAL.Services
             itemsTable.Columns.Add("DiscountAmount", typeof(decimal));
             itemsTable.Columns.Add("TaxAmount", typeof(decimal));
             itemsTable.Columns.Add("Modifierdetails", typeof(string));
-            itemsTable.Columns.Add("Itemstatus", typeof(string));
+            itemsTable.Columns.Add("Itemstatus", typeof(int));
             itemsTable.Columns.Add("Notes", typeof(string));
 
             foreach (var item in ordershold.Items)
@@ -345,7 +345,7 @@ namespace UNITYPOS_API.DAL.Services
                     item.DiscountAmount ?? 0,
                     item.TaxAmount ?? 0,
                     item.Modifierdetails ?? "",
-                    item.Itemstatus ?? "",
+                    item.Itemstatus ?? 0,
                     item.Notes ?? ""
                 );
             }
@@ -358,7 +358,7 @@ namespace UNITYPOS_API.DAL.Services
 
             var result = _context.Set<Response>()
                 .FromSqlRaw(
-                    @"EXEC dbo.sp_OrderHold_Update1
+                    @"EXEC dbo.sp_OrderHold_Update
                 @OrderId        = @OrderId,
                 @TableId        = @TableId,
                  @FloorId         = @FloorId,
@@ -379,7 +379,7 @@ namespace UNITYPOS_API.DAL.Services
                 @Items          = @Items",
                     new SqlParameter("@OrderId", ordershold.OrderId),
                     new SqlParameter("@TableId", ordershold.Tableid ?? (object)DBNull.Value),
-                    new SqlParameter("@FloorId", ordershold.FloorId == 0 ? DBNull.Value : ordershold.FloorId),
+                    new SqlParameter("@FloorId", ordershold.FloorId ?? (object)DBNull.Value),
                     new SqlParameter("@OrderType", ordershold.Ordertype ?? (object)DBNull.Value),
                     new SqlParameter("@OrderStatus", ordershold.Orderstatus ?? (object)DBNull.Value),
                      new SqlParameter("@Notes", string.IsNullOrWhiteSpace(ordershold.Notes) ? "----" : ordershold.Notes),

@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Razor.TagHelpers;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using System.Data;
 using UNITYPOS_API.Common;
 using UNITYPOS_API.DAL.Interfaces;
@@ -140,8 +141,6 @@ namespace UNITYPOS_API.DAL.Services
             }
 
       
-
-
         public async Task<string> Create(Orders order)
         {
             if (order == null)
@@ -180,7 +179,7 @@ namespace UNITYPOS_API.DAL.Services
                     item.DiscountAmount ?? 0,
                     item.TaxAmount ?? 0,
                     item.Modifierdetails ?? "",
-                    item.Itemstatus ?? "In Kitchen",
+                    item.Itemstatus ?? 0,
                     item.Notes ?? ""
                 );
             }
@@ -221,7 +220,7 @@ namespace UNITYPOS_API.DAL.Services
                     new SqlParameter("@TableId", order.TableId == 0 ? DBNull.Value : order.TableId),
                     new SqlParameter("@FloorId", order.FloorId == 0 ? DBNull.Value : order.FloorId),
                     new SqlParameter("@OrderType", order.OrderType ?? (object)DBNull.Value),
-                    new SqlParameter("@OrderStatus", string.IsNullOrWhiteSpace(order.OrderStatus) ? "In Kitchen" : order.OrderStatus),
+                    new SqlParameter("@OrderStatus",order.OrderStatus==0?DBNull.Value:order.OrderStatus),
                     new SqlParameter("@Itemcount", order.ItemCount == 0 ? order.Items.Count : order.ItemCount),
                     new SqlParameter("@SubtotalAmount", order.SubtotalAmount ?? 0),
                     new SqlParameter("@TaxAmount", order.TaxAmount ?? 0),
@@ -286,7 +285,7 @@ namespace UNITYPOS_API.DAL.Services
                     item.DiscountAmount ?? 0,
                     item.TaxAmount ?? 0,
                     item.Modifierdetails ?? "",
-                    item.Itemstatus ?? "In Kitchen",
+                    item.Itemstatus ?? 0,
                     item.Notes ?? ""
                 );
             }
@@ -323,7 +322,7 @@ namespace UNITYPOS_API.DAL.Services
                     new SqlParameter("@TableId", order.TableId == 0 ? DBNull.Value : order.TableId),
                     new SqlParameter("@FloorId", order.FloorId == 0 ? DBNull.Value : order.FloorId),
                     new SqlParameter("@OrderType", order.OrderType ?? (object)DBNull.Value),
-                    new SqlParameter("@OrderStatus", string.IsNullOrWhiteSpace(order.OrderStatus) ? "In Kitchen" : order.OrderStatus),
+                    new SqlParameter("@OrderStatus", order.OrderStatus == 0 ? DBNull.Value : order.OrderStatus),
                     new SqlParameter("@Notes", string.IsNullOrWhiteSpace(order.Notes) ? "----" : order.Notes),
                     new SqlParameter("@Itemcount", order.ItemCount == 0 ? order.Items.Count : order.ItemCount),
                     new SqlParameter("@SubtotalAmount", order.SubtotalAmount ?? 0),
@@ -351,10 +350,7 @@ namespace UNITYPOS_API.DAL.Services
                 : result.Result;
         }
 
-
-        
-        
-
+             
 
         public string StatusChange(Orders order)
         {
@@ -373,9 +369,7 @@ namespace UNITYPOS_API.DAL.Services
             if (existingOrder == null)
                 return "OrderNotFound";
 
-            var status = string.IsNullOrWhiteSpace(order.OrderStatus)
-                ? "In Kitchen"
-                : order.OrderStatus.Trim();
+            var status = order.OrderStatus;
 
             var updatedBy = order.UpdatedBy ?? order.CreatedBy ?? 0;
 
@@ -420,11 +414,12 @@ namespace UNITYPOS_API.DAL.Services
             if (orderItem.Itemid <= 0)
                 return "ItemIdRequired";
 
-            var status = string.IsNullOrWhiteSpace(orderItem.Itemstatus)
-                ? "Preparing"
-                : orderItem.Itemstatus.Trim();
+            int status = orderItem.Itemstatus ?? 0;
 
-            var updatedBy = orderItem.UpdatedBy ?? orderItem.CreatedBy ?? 0;
+            if (status <= 0)
+                return "StatusRequired";
+
+            int updatedBy = orderItem.UpdatedBy ?? orderItem.CreatedBy ?? 0;
 
             var existingItem = _uow.GenericRepository<Orderitems>()
                 .Table()
@@ -442,7 +437,6 @@ namespace UNITYPOS_API.DAL.Services
 
             _uow.GenericRepository<Orderitems>().Update(existingItem);
 
-            // ✅ Check all active items in this order
             var allItems = _uow.GenericRepository<Orderitems>()
                 .Table()
                 .Where(x =>
@@ -451,11 +445,7 @@ namespace UNITYPOS_API.DAL.Services
                 .ToList();
 
             bool allSameStatus = allItems.Any() &&
-                                 allItems.All(x =>
-                                     string.Equals(
-                                         x.Itemstatus?.Trim(),
-                                         status,
-                                         StringComparison.OrdinalIgnoreCase));
+                                 allItems.All(x => x.Itemstatus == status);
 
             if (allSameStatus)
             {

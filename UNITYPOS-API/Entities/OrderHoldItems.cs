@@ -38,7 +38,7 @@ namespace UNITYPOS_API.Entities
         public string? Modifierdetails { get; set; }
 
 
-        public string? Itemstatus { get; set; } 
+        public int? Itemstatus { get; set; } 
 
        
         public string? Notes { get; set; }
