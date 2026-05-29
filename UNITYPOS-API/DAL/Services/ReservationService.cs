@@ -34,7 +34,17 @@ namespace UNITYPOS_API.DAL.Services
                               CustomerMobile = b.CustomerMobile,
                               ReservationDate = b.ReservationDate,
                               Reservationtime = b.Reservationtime,
-                              Guestcount = b.Guestcount
+                              Guestcount = b.Guestcount,
+                              TableName = string.Join(", ",
+                                           (from rm in _uow.GenericRepository<ReservationTablesMapping>().Table()
+                                            join dt in _uow.GenericRepository<DiningTableMaster>().Table()
+                                            on rm.TableId equals dt.Id
+                                            where rm.ReservationId == b.Id
+                                            && rm.IsDeleted == false
+                                            && dt.IsDeleted == false
+
+                                            select dt.Name
+                                            ).ToList())
                           }).ToList();
 
             return result;
