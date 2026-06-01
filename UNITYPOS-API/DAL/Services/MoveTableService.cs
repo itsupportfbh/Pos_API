@@ -18,10 +18,7 @@ namespace UNITYPOS_API.DAL.Services
             var result = (from b in _uow.GenericRepository<MoveTables>().Table()
 
                           join o in _uow.GenericRepository<Organization>().Table()
-                          on b.OrgId equals o.Id
-
-                          join d in _uow.GenericRepository<DiningTableMaster>().Table()
-                          on b.FromTable equals d.Id
+                          on b.OrgId equals o.Id                          
 
                           join e in _uow.GenericRepository<EmployeeMaster>().Table()
                           on b.StewardId equals e.Id
@@ -32,15 +29,12 @@ namespace UNITYPOS_API.DAL.Services
                           select new
                           {
                               id = b.Id,
-                              joinno = b.MoveNo,
+                              moveno = b.MoveNo,
                               organizationname = o.Name,
-                              primarytable = b.FromTable,
-                              primaryname = d.Name,
                               guestcount = b.GuestCount,
                               stewardid = b.StewardId,
                               stewardname = e.Name,
-                              notes = b.Notes,
-                              status = b.IsActive
+                              movereason = b.MoveReason
                           }).ToList();
 
             return result;
@@ -55,21 +49,21 @@ namespace UNITYPOS_API.DAL.Services
                       select new
                       {
                           Id = b.Id,
-                          joinno = b.MoveNo,
-                          primarytable = b.FromTable,
+                          moveno = b.MoveNo,
                           guestcount = b.GuestCount,
                           stewardid = b.StewardId,
-                          notes = b.Notes,
+                          movereason = b.MoveReason,
                           status = b.IsActive,
                           TableIds = _uow
                           .GenericRepository<MoveTabledetails>()
                           .Table()
                           .Where(x =>
-                              x.JoinNo == b.MoveNo
+                              x.MoveNo == b.MoveNo
                               && x.IsDeleted == false)
                           .Select(x => new
                           {
-                              tableId = x.TableId
+                              fromTable = x.FromTable,
+                              ToTable = x.ToTable,
                           }).ToList()
                       }).ToList();
 
@@ -93,10 +87,9 @@ namespace UNITYPOS_API.DAL.Services
             var entity = new MoveTables
             {
                 MoveNo = table.MoveNo,
-                FromTable = table.FromTable,
                 GuestCount = table.GuestCount,
                 StewardId = table.StewardId,
-                Notes = table.Notes,
+                MoveReason = table.MoveReason,
                 IsActive = table.IsActive,
                 OrgId = table.OrgId,
                 IsDeleted = false,
@@ -107,14 +100,15 @@ namespace UNITYPOS_API.DAL.Services
             _uow.GenericRepository<MoveTables>().Insert(entity);
             _uow.Save();
 
-            if (table.TableIds != null && table.TableIds.Count > 0)
+            if (table.TableDetails != null && table.TableDetails.Count > 0)
             {
-                foreach (var tableId in table.TableIds)
+                foreach (var tableId in table.TableDetails)
                 {
                     var mapping = new MoveTabledetails
                     {
-                        JoinNo = entity.MoveNo,
-                        TableId = tableId.TableId,
+                        MoveNo = entity.MoveNo,
+                        FromTable = tableId.FromTable,
+                        ToTable = tableId.ToTable,
                         OrgId = table.OrgId,
                         IsDeleted = false,
                         CreatedBy = table.CreatedBy,
@@ -163,10 +157,9 @@ namespace UNITYPOS_API.DAL.Services
 
             if (existingtable != null)
             {
-                existingtable.FromTable = table.FromTable;
                 existingtable.GuestCount = table.GuestCount;
                 existingtable.StewardId = table.StewardId;
-                existingtable.Notes = table.Notes;
+                existingtable.MoveReason = table.MoveReason;
                 existingtable.IsActive = table.IsActive;
                 existingtable.OrgId = table.OrgId;
                 existingtable.IsDeleted = false;
@@ -174,6 +167,27 @@ namespace UNITYPOS_API.DAL.Services
                 existingtable.UpdatedDate = DateTime.Now;
 
                 _uow.GenericRepository<MoveTables>().Update(existingtable);
+
+                if (table.TableDetails != null && table.TableDetails.Count > 0)
+                {
+                    foreach (var tableId in table.TableDetails)
+                    {
+                        var mapping = new MoveTabledetails
+                        {
+                            MoveNo = table.MoveNo,
+                            FromTable = tableId.FromTable,
+                            ToTable = tableId.ToTable,
+                            OrgId = table.OrgId,
+                            IsDeleted = false,
+                            CreatedBy = table.CreatedBy,
+                            CreatedDate = DateTime.Now
+                        };
+
+                        _uow.GenericRepository<MoveTabledetails>()
+                            .Insert(mapping);
+                    }
+                }
+
                 _uow.Save();
 
                 return Convert.ToString(existingtable.Id);

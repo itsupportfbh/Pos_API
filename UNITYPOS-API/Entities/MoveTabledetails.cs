@@ -3,8 +3,9 @@
     public class MoveTabledetails
     {
         public long Id { get; set; }
-        public string JoinNo { get; set; } = string.Empty;
-        public int TableId { get; set; }
+        public string MoveNo { get; set; } = string.Empty;
+        public int FromTable { get; set; }
+        public int ToTable { get; set; }
         public int OrgId { get; set; }
         public int? CreatedBy { get; set; }
         public DateTime? CreatedDate { get; set; } = DateTime.Now;

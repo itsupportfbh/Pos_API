@@ -96,6 +96,8 @@ namespace UNITYPOS_API.Data.Context
             modelBuilder.Entity<RolePermission>().ToTable("RolePermission", "dbo");
             modelBuilder.Entity<JoinTables>().ToTable("JoinTables", "dbo");
             modelBuilder.Entity<JoinTabledetails>().ToTable("JoinTabledetails", "dbo");
+            modelBuilder.Entity<MoveTables>().ToTable("MoveTables", "dbo");
+            modelBuilder.Entity<MoveTabledetails>().ToTable("MoveTabledetails", "dbo");
         }
     }
 }

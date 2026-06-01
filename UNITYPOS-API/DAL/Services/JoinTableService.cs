@@ -39,8 +39,7 @@ namespace UNITYPOS_API.DAL.Services
                               guestcount = b.GuestCount,
                               stewardid = b.StewardId,
                               stewardname = e.Name,
-                              notes = b.Notes,
-                              status = b.IsActive
+                              notes = b.Notes
                           }).ToList();
 
             return result;
@@ -174,10 +173,30 @@ namespace UNITYPOS_API.DAL.Services
                 existingtable.UpdatedDate = DateTime.Now;
 
                 _uow.GenericRepository<JoinTables>().Update(existingtable);
+
+                if (table.TableIds != null && table.TableIds.Count > 0)
+                {
+                    foreach (var tableId in table.TableIds)
+                    {
+                        var mapping = new JoinTabledetails
+                        {
+                            JoinNo = table.JoinNo,
+                            TableId = tableId.TableId,
+                            OrgId = table.OrgId,
+                            IsDeleted = false,
+                            CreatedBy = table.CreatedBy,
+                            CreatedDate = DateTime.Now
+                        };
+
+                        _uow.GenericRepository<JoinTabledetails>()
+                            .Insert(mapping);
+                    }
+                }
+
                 _uow.Save();
 
                 return Convert.ToString(existingtable.Id);
-            }
+            }           
 
             return "0";
         }

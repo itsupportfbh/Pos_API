@@ -5,15 +5,14 @@ namespace UNITYPOS_API.Entities
     public class MoveTables
     {
         public long Id { get; set; }
-        public string MoveNo { get; set; }
-        public int FromTable { get; set; }
+        public string MoveNo { get; set; }        
         public int GuestCount { get; set; }
         public int StewardId { get; set; }
-        public string Notes { get; set; }
+        public string MoveReason { get; set; }
         public bool? IsActive { get; set; } = true;
         public int OrgId { get; set; }
         [NotMapped]
-        public List<MoveTabledetails> TableIds { get; set; }
+        public List<MoveTabledetails> TableDetails { get; set; }
         public int? CreatedBy { get; set; }
         public DateTime? CreatedDate { get; set; } = DateTime.Now;
         public int? UpdatedBy { get; set; }
