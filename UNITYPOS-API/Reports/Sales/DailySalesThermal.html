@@ -1,0 +1,142 @@
+<style>
+  .thermal-report {
+    color: #111827;
+    font-family: "Courier New", monospace;
+    font-size: 12px;
+    line-height: 1.35;
+    margin: 0 auto;
+    max-width: 76mm;
+    padding: 4mm 3mm 6mm;
+    width: 76mm;
+  }
+
+  .thermal-report .center {
+    text-align: center;
+  }
+
+  .thermal-report .title {
+    font-size: 15px;
+    font-weight: 700;
+    margin-bottom: 2px;
+  }
+
+  .thermal-report .subtitle,
+  .thermal-report .meta {
+    color: #374151;
+    font-size: 11px;
+  }
+
+  .thermal-report .section-gap {
+    margin-top: 8px;
+  }
+
+  .thermal-report .divider {
+    border-top: 1px dashed #6b7280;
+    margin: 7px 0;
+  }
+
+  .thermal-report .row {
+    align-items: flex-start;
+    display: flex;
+    gap: 8px;
+    justify-content: space-between;
+  }
+
+  .thermal-report .row strong {
+    font-weight: 700;
+  }
+
+  .thermal-report .totals .row {
+    margin-bottom: 3px;
+  }
+
+  .thermal-report .totals .grand-total {
+    border-top: 1px dashed #6b7280;
+    margin-top: 4px;
+    padding-top: 4px;
+  }
+
+  .thermal-report .item {
+    margin-bottom: 6px;
+  }
+
+  .thermal-report .item-main {
+    align-items: center;
+    display: flex;
+    gap: 8px;
+    justify-content: space-between;
+  }
+
+  .thermal-report .item-sub {
+    align-items: center;
+    color: #4b5563;
+    display: flex;
+    font-size: 11px;
+    gap: 8px;
+    justify-content: space-between;
+    margin-top: 2px;
+  }
+
+  .thermal-report .footer {
+    color: #4b5563;
+    font-size: 11px;
+    margin-top: 8px;
+    text-align: center;
+  }
+</style>
+
+<section class="thermal-report">
+  <div class="center">
+    <div class="title">{{report.DisplayName}}</div>
+    <div class="subtitle">{{report.Description}}</div>
+    <div class="meta section-gap">From: {{filter.FromDate|date}}</div>
+    <div class="meta">To: {{filter.ToDate|date}}</div>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="totals">
+    <div class="row">
+      <span>Total Bills</span>
+      <strong>{{count:BillNo|number}}</strong>
+    </div>
+    <div class="row">
+      <span>Gross Sales</span>
+      <strong>{{sum:GrossAmount|currency}}</strong>
+    </div>
+    <div class="row">
+      <span>Discount</span>
+      <strong>{{sum:DiscountAmount|currency}}</strong>
+    </div>
+    <div class="row">
+      <span>Tax</span>
+      <strong>{{sum:TaxAmount|currency}}</strong>
+    </div>
+    <div class="row grand-total">
+      <span>Net Sales</span>
+      <strong>{{sum:NetAmount|currency}}</strong>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  {{#rows}}
+  <div class="item">
+    <div class="item-main">
+      <strong>{{BillNo}}</strong>
+      <strong>{{NetAmount|currency}}</strong>
+    </div>
+    <div class="item-sub">
+      <span>{{PaymentMode}}</span>
+      <span>{{BillDate|datetime}}</span>
+    </div>
+  </div>
+  {{/rows}}
+
+  <div class="divider"></div>
+
+  <div class="footer">
+    <div>Rows: {{meta.RowCount|number}}</div>
+    <div>Printed: {{meta.ExecutedAt|datetime}}</div>
+  </div>
+</section>
