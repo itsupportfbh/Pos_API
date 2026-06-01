@@ -74,8 +74,19 @@ namespace UNITYPOS_API.DAL.Services
 
         public string Create(EmployeeMaster employeeMaster)
         {
+            var employeeCode = employeeMaster.Code?.Trim() ?? string.Empty;
+            var employeeName = employeeMaster.Name?.Trim() ?? string.Empty;
+
+            int codeCheck = _uow.GenericRepository<EmployeeMaster>().Table()
+                .Count(c => c.Code.Trim().ToLower() == employeeCode.ToLower());
+
+            if (codeCheck > 0)
+            {
+                return "AlreadyExists";
+            }
+
             int check = _uow.GenericRepository<EmployeeMaster>().Table()
-                .Count(c => c.Name.ToLower() == employeeMaster.Name.ToLower()
+                .Count(c => c.Name.Trim().ToLower() == employeeName.ToLower()
                          && c.OrgId == employeeMaster.OrgId
                          && c.BranchId == employeeMaster.BranchId
                          && c.IsDeleted == false);
@@ -87,8 +98,8 @@ namespace UNITYPOS_API.DAL.Services
 
             var entity = new EmployeeMaster
             {
-                Code = employeeMaster.Code,
-                Name = employeeMaster.Name,
+                Code = employeeCode,
+                Name = employeeName,
                 MobileNo = employeeMaster.MobileNo,
                 EmailId = employeeMaster.EmailId,
                 DesignationId = employeeMaster.DesignationId,
@@ -115,8 +126,20 @@ namespace UNITYPOS_API.DAL.Services
 
         public string Update(EmployeeMaster employeeMaster)
         {
+            var employeeCode = employeeMaster.Code?.Trim() ?? string.Empty;
+            var employeeName = employeeMaster.Name?.Trim() ?? string.Empty;
+
+            int codeCheck = _uow.GenericRepository<EmployeeMaster>().Table()
+                .Count(x => x.Code.Trim().ToLower() == employeeCode.ToLower()
+                         && x.Id != employeeMaster.Id);
+
+            if (codeCheck > 0)
+            {
+                return "AlreadyExists";
+            }
+
             int check = _uow.GenericRepository<EmployeeMaster>().Table()
-                .Count(x => x.Name.Trim().ToLower() == employeeMaster.Name.Trim().ToLower() &&
+                .Count(x => x.Name.Trim().ToLower() == employeeName.ToLower() &&
                     x.Id != employeeMaster.Id &&
                     x.OrgId == employeeMaster.OrgId &&
                     x.BranchId == employeeMaster.BranchId &&
@@ -135,8 +158,8 @@ namespace UNITYPOS_API.DAL.Services
 
             if (existingEmployee != null)
             {
-                existingEmployee.Code = employeeMaster.Code;
-                existingEmployee.Name = employeeMaster.Name;
+                existingEmployee.Code = employeeCode;
+                existingEmployee.Name = employeeName;
                 existingEmployee.MobileNo = employeeMaster.MobileNo;
                 existingEmployee.EmailId = employeeMaster.EmailId;
                 existingEmployee.DesignationId = employeeMaster.DesignationId;
