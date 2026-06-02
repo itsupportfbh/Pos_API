@@ -145,9 +145,7 @@ namespace UNITYPOS_API.DAL.Services
                                   .Where(x => x.OrgId == orgId && x.RoleId == roleId)
                               on report.Id equals permission.ReportId into permissionGroup
                           from permission in permissionGroup.DefaultIfEmpty()
-                          where report.OrgId == orgId
-                                && category.OrgId == orgId
-                                && report.IsDeleted == false
+                          where report.IsDeleted == false
                                 && report.IsActive == true
                                 && category.IsDeleted == false
                                 && category.IsActive == true
