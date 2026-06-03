@@ -11,12 +11,14 @@ namespace UNITYPOS_API.Entities
         public string CustomerMobile { get; set; }
         public string CustomerEmail { get; set; }
         public DateTime ReservationDate { get; set; }
-        public TimeOnly Reservationtime { get; set; }
+        public TimeOnly ReservationFromtime { get; set; }
+        public TimeOnly ReservationTotime { get; set; }
         public int ExpectedDuration { get; set; }
         public int Guestcount { get; set; }
         public string Specialrequests { get; set; } = string.Empty;
         public string Bookingsource { get; set; }
         public int OrgId { get; set; }
+        public int BranchId { get; set; }
         [NotMapped]
         public List<ReservationTablesMapping> TableIds {  get; set; }
         public int? CreatedBy { get; set; }
@@ -25,8 +27,6 @@ namespace UNITYPOS_API.Entities
         public DateTime? UpdatedDate { get; set; }
         public bool? IsDeleted { get; set; }
         [NotMapped]
-        public int EntityNo { get; set; }
-        [NotMapped]
-        public int branchId { get; set; }
+        public int EntityNo { get; set; }                
     }
 }

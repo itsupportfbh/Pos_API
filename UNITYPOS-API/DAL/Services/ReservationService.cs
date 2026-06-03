@@ -33,7 +33,8 @@ namespace UNITYPOS_API.DAL.Services
                               CustomerName = b.CustomerName,
                               CustomerMobile = b.CustomerMobile,
                               ReservationDate = b.ReservationDate,
-                              Reservationtime = b.Reservationtime,
+                              ReservationFromtime = b.ReservationFromtime,
+                              ReservationTotime = b.ReservationTotime,
                               Guestcount = b.Guestcount,
                               TableName = string.Join(", ",
                                            (from rm in _uow.GenericRepository<ReservationTablesMapping>().Table()
@@ -64,8 +65,10 @@ namespace UNITYPOS_API.DAL.Services
                           CustomerMobile = b.CustomerMobile,
                           CustomerEmail = b.CustomerEmail,
                           ReservationDate = b.ReservationDate,
-                          Reservationtime = b.Reservationtime,
+                          ReservationFromtime = b.ReservationFromtime,
+                          ReservationTotime = b.ReservationTotime,
                           Guestcount = b.Guestcount,
+                          Specialrequests = b.Specialrequests,
                           TableIds = _uow
                           .GenericRepository<ReservationTablesMapping>()
                           .Table()
@@ -102,12 +105,14 @@ namespace UNITYPOS_API.DAL.Services
                 CustomerMobile = Reservation.CustomerMobile,
                 CustomerEmail = Reservation.CustomerEmail,
                 ReservationDate = Reservation.ReservationDate,
-                Reservationtime = Reservation.Reservationtime,
+                ReservationFromtime = Reservation.ReservationFromtime,
+                ReservationTotime = Reservation.ReservationTotime,
                 ExpectedDuration = Reservation.ExpectedDuration,
                 Guestcount = Reservation.Guestcount,
                 Specialrequests = Reservation.Specialrequests,
                 Bookingsource = Reservation.Bookingsource,
                 OrgId = Reservation.OrgId,
+                BranchId = Reservation.BranchId,
                 IsDeleted = false,
                 CreatedBy = Reservation.CreatedBy,
                 CreatedDate = DateTime.Now
@@ -124,7 +129,9 @@ namespace UNITYPOS_API.DAL.Services
                     {
                         ReservationId = entity.Id,
                         TableId = tableId.TableId,
+                        IsReserved = true,
                         OrgId = Reservation.OrgId,
+                        BranchId = Reservation.BranchId,
                         IsDeleted = false,
                         CreatedBy = Reservation.CreatedBy,
                         CreatedDate = DateTime.Now
@@ -134,7 +141,7 @@ namespace UNITYPOS_API.DAL.Services
                         .Insert(mapping);
 
                     var table = _uow.GenericRepository<DiningTableMaster>().Table().FirstOrDefault(x => x.Id == tableId.TableId
-                      && x.OrgId == Reservation.OrgId && x.BranchId == Reservation.branchId);
+                      && x.OrgId == Reservation.OrgId && x.BranchId == Reservation.BranchId);
 
                     if (table != null)
                     {
@@ -149,7 +156,7 @@ namespace UNITYPOS_API.DAL.Services
             var codeTemplate = _uow.GenericRepository<CodeTemplate>().Table()
                                .FirstOrDefault(x => x.EntityNo == Reservation.EntityNo
                                                  && x.OrgId == Reservation.OrgId
-                                                 && x.BranchId == Reservation.branchId
+                                                 && x.BranchId == Reservation.BranchId
                                                  );
 
             if (codeTemplate != null)
@@ -188,11 +195,13 @@ namespace UNITYPOS_API.DAL.Services
                 existingRes.CustomerEmail = reservations.CustomerEmail;
                 existingRes.ReservationDate = reservations.ReservationDate;
                 existingRes.ExpectedDuration = reservations.ExpectedDuration;
-                existingRes.Reservationtime = reservations.Reservationtime;
+                existingRes.ReservationFromtime = reservations.ReservationFromtime;
+                existingRes.ReservationTotime  = reservations.ReservationTotime;
                 existingRes.Guestcount = reservations.Guestcount;
                 existingRes.Specialrequests = reservations.Specialrequests;
                 existingRes.Bookingsource = reservations.Bookingsource;
                 existingRes.OrgId = reservations.OrgId;
+                existingRes.BranchId = reservations.BranchId;
                 existingRes.IsDeleted = false;
                 existingRes.UpdatedBy = reservations.UpdatedBy;
                 existingRes.UpdatedDate = DateTime.Now;
@@ -235,6 +244,7 @@ namespace UNITYPOS_API.DAL.Services
                         {
                             ReservationId = existingRes.Id,
                             TableId = tableId,
+                            IsReserved = true,
                             OrgId = reservations.OrgId,
                             IsDeleted = false,
                             CreatedBy = reservations.UpdatedBy,
