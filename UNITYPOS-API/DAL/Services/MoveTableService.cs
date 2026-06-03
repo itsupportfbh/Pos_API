@@ -5,23 +5,20 @@ using UNITYPOS_API.Entities.Master;
 
 namespace UNITYPOS_API.DAL.Services
 {
-    public class JoinTableService : IJoinTables
+    public class MoveTableService : IMoveTable
     {
         private readonly IUnitOfWork _uow;
-        public JoinTableService(IUnitOfWork uow)
-        {
+        public MoveTableService(IUnitOfWork uow)
+        { 
             _uow = uow ?? throw new ArgumentNullException(nameof(uow));
         }
 
-        public IEnumerable<object> GetAllJoinTable(int orgid)
+        public IEnumerable<object> GetAllMoveTable(int orgid)
         {
-            var result = (from b in _uow.GenericRepository<JoinTables>().Table()
+            var result = (from b in _uow.GenericRepository<MoveTables>().Table()
 
                           join o in _uow.GenericRepository<Organization>().Table()
-                          on b.OrgId equals o.Id
-
-                          join d in _uow.GenericRepository<DiningTableMaster>().Table()
-                          on b.PrimaryTable equals d.Id
+                          on b.OrgId equals o.Id                          
 
                           join e in _uow.GenericRepository<EmployeeMaster>().Table()
                           on b.StewardId equals e.Id
@@ -32,43 +29,41 @@ namespace UNITYPOS_API.DAL.Services
                           select new
                           {
                               id = b.Id,
-                              joinno = b.JoinNo,
+                              moveno = b.MoveNo,
                               organizationname = o.Name,
-                              primarytable = b.PrimaryTable,
-                              primaryname = d.Name,
                               guestcount = b.GuestCount,
                               stewardid = b.StewardId,
                               stewardname = e.Name,
-                              notes = b.Notes
+                              movereason = b.MoveReason
                           }).ToList();
 
             return result;
         }
 
-        public IEnumerable<Object> GetJoinTablebyId(int id)
+        public IEnumerable<Object> GetMoveTablebyId(int id)
         {
             IEnumerable<Object> result = null;
 
-            result = (from b in _uow.GenericRepository<JoinTables>().Table()
+            result = (from b in _uow.GenericRepository<MoveTables>().Table()
                       where b.IsDeleted == false && b.Id == id
                       select new
                       {
                           Id = b.Id,
-                          joinno = b.JoinNo,
-                          primarytable = b.PrimaryTable,
+                          moveno = b.MoveNo,
                           guestcount = b.GuestCount,
                           stewardid = b.StewardId,
-                          notes = b.Notes,
+                          movereason = b.MoveReason,
                           status = b.IsActive,
                           TableIds = _uow
-                          .GenericRepository<JoinTabledetails>()
+                          .GenericRepository<MoveTabledetails>()
                           .Table()
                           .Where(x =>
-                              x.JoinNo == b.JoinNo
+                              x.MoveNo == b.MoveNo
                               && x.IsDeleted == false)
                           .Select(x => new
                           {
-                              tableId = x.TableId
+                              fromTable = x.FromTable,
+                              ToTable = x.ToTable,
                           }).ToList()
                       }).ToList();
 
@@ -77,10 +72,10 @@ namespace UNITYPOS_API.DAL.Services
         }
 
 
-        public string Create(JoinTables table)
+        public string Create(MoveTables table)
         {
-            int check = _uow.GenericRepository<JoinTables>().Table()
-                .Count(b => b.JoinNo.Trim().ToLower() == table.JoinNo.Trim().ToLower()
+            int check = _uow.GenericRepository<MoveTables>().Table()
+                .Count(b => b.MoveNo.Trim().ToLower() == table.MoveNo.Trim().ToLower()
                          && b.OrgId == table.OrgId
                          && b.IsDeleted == false);
 
@@ -89,38 +84,38 @@ namespace UNITYPOS_API.DAL.Services
                 return "AlreadyExists";
             }
 
-            var entity = new JoinTables
+            var entity = new MoveTables
             {
-                JoinNo = table.JoinNo,
-                PrimaryTable = table.PrimaryTable,
+                MoveNo = table.MoveNo,
                 GuestCount = table.GuestCount,
                 StewardId = table.StewardId,
-                Notes = table.Notes,
-                IsActive = table.IsActive, 
+                MoveReason = table.MoveReason,
+                IsActive = table.IsActive,
                 OrgId = table.OrgId,
                 IsDeleted = false,
                 CreatedBy = table.CreatedBy,
                 CreatedDate = DateTime.Now
             };
 
-            _uow.GenericRepository<JoinTables>().Insert(entity);
+            _uow.GenericRepository<MoveTables>().Insert(entity);
             _uow.Save();
 
-            if (table.TableIds != null && table.TableIds.Count > 0)
+            if (table.TableDetails != null && table.TableDetails.Count > 0)
             {
-                foreach (var tableId in table.TableIds)
+                foreach (var tableId in table.TableDetails)
                 {
-                    var mapping = new JoinTabledetails
+                    var mapping = new MoveTabledetails
                     {
-                        JoinNo = entity.JoinNo,
-                        TableId = tableId.TableId,
+                        MoveNo = entity.MoveNo,
+                        FromTable = tableId.FromTable,
+                        ToTable = tableId.ToTable,
                         OrgId = table.OrgId,
                         IsDeleted = false,
                         CreatedBy = table.CreatedBy,
                         CreatedDate = DateTime.Now
                     };
 
-                    _uow.GenericRepository<JoinTabledetails>()
+                    _uow.GenericRepository<MoveTabledetails>()
                         .Insert(mapping);
                 }
             }
@@ -142,10 +137,10 @@ namespace UNITYPOS_API.DAL.Services
             return Convert.ToString(entity.Id);
         }
 
-        public string Update(JoinTables table)
+        public string Update(MoveTables table)
         {
-            int check = _uow.GenericRepository<JoinTables>().Table()
-                .Count(b => (b.JoinNo.Trim().ToLower() == table.JoinNo.Trim().ToLower())
+            int check = _uow.GenericRepository<MoveTables>().Table()
+                .Count(b => (b.MoveNo.Trim().ToLower() == table.MoveNo.Trim().ToLower())
                          && b.Id != table.Id
                          && b.OrgId == table.OrgId
                          && b.IsDeleted == false);
@@ -155,40 +150,40 @@ namespace UNITYPOS_API.DAL.Services
                 return "AlreadyExists";
             }
 
-            var existingtable = _uow.GenericRepository<JoinTables>().Table()
+            var existingtable = _uow.GenericRepository<MoveTables>().Table()
                 .FirstOrDefault(x => x.Id == table.Id
                                   && x.OrgId == table.OrgId
                                   && x.IsDeleted == false);
 
             if (existingtable != null)
             {
-                existingtable.PrimaryTable = table.PrimaryTable;
                 existingtable.GuestCount = table.GuestCount;
                 existingtable.StewardId = table.StewardId;
-                existingtable.Notes = table.Notes;
+                existingtable.MoveReason = table.MoveReason;
                 existingtable.IsActive = table.IsActive;
                 existingtable.OrgId = table.OrgId;
                 existingtable.IsDeleted = false;
                 existingtable.UpdatedBy = table.UpdatedBy;
                 existingtable.UpdatedDate = DateTime.Now;
 
-                _uow.GenericRepository<JoinTables>().Update(existingtable);
+                _uow.GenericRepository<MoveTables>().Update(existingtable);
 
-                if (table.TableIds != null && table.TableIds.Count > 0)
+                if (table.TableDetails != null && table.TableDetails.Count > 0)
                 {
-                    foreach (var tableId in table.TableIds)
+                    foreach (var tableId in table.TableDetails)
                     {
-                        var mapping = new JoinTabledetails
+                        var mapping = new MoveTabledetails
                         {
-                            JoinNo = table.JoinNo,
-                            TableId = tableId.TableId,
+                            MoveNo = table.MoveNo,
+                            FromTable = tableId.FromTable,
+                            ToTable = tableId.ToTable,
                             OrgId = table.OrgId,
                             IsDeleted = false,
                             CreatedBy = table.CreatedBy,
                             CreatedDate = DateTime.Now
                         };
 
-                        _uow.GenericRepository<JoinTabledetails>()
+                        _uow.GenericRepository<MoveTabledetails>()
                             .Insert(mapping);
                     }
                 }
@@ -196,29 +191,29 @@ namespace UNITYPOS_API.DAL.Services
                 _uow.Save();
 
                 return Convert.ToString(existingtable.Id);
-            }           
+            }
 
             return "0";
         }
         public string DeleteById(int id)
         {
-            var result = _uow.GenericRepository<JoinTables>().Table().Where(x => x.Id == id).FirstOrDefault();
+            var result = _uow.GenericRepository<MoveTables>().Table().Where(x => x.Id == id).FirstOrDefault();
             if (result != null)
             {
 
                 result.IsDeleted = true;
-                _uow.GenericRepository<JoinTables>().Update(result);
+                _uow.GenericRepository<MoveTables>().Update(result);
                 _uow.Save();
             }
 
-            var mappings = _uow.GenericRepository<JoinTabledetails>().Table().Where(x => x.Id == id).ToList();
+            var mappings = _uow.GenericRepository<MoveTabledetails>().Table().Where(x => x.Id == id).ToList();
             if (mappings != null && mappings.Count > 0)
             {
                 foreach (var item in mappings)
                 {
                     item.IsDeleted = true;
 
-                    _uow.GenericRepository<JoinTabledetails>()
+                    _uow.GenericRepository<MoveTabledetails>()
                         .Update(item);
                 }
             }
@@ -228,12 +223,12 @@ namespace UNITYPOS_API.DAL.Services
 
         public string ActiveInActive(int id, bool isActive)
         {
-            var result = _uow.GenericRepository<JoinTables>().Table().Where(x => x.Id == id).FirstOrDefault();
+            var result = _uow.GenericRepository<MoveTables>().Table().Where(x => x.Id == id).FirstOrDefault();
             if (result != null)
             {
 
                 //result.Status = "isActive";
-                _uow.GenericRepository<JoinTables>().Update(result);
+                _uow.GenericRepository<MoveTables>().Update(result);
                 _uow.Save();
             }
 

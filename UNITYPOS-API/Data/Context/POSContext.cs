@@ -104,6 +104,8 @@ namespace UNITYPOS_API.Data.Context
             modelBuilder.Entity<ReportMaster>().ToTable("ReportMaster", "dbo");
             modelBuilder.Entity<ReportFilter>().ToTable("ReportFilters", "dbo");
             modelBuilder.Entity<ReportPermission>().ToTable("ReportPermission", "dbo");
+            modelBuilder.Entity<MoveTables>().ToTable("MoveTables", "dbo");
+            modelBuilder.Entity<MoveTabledetails>().ToTable("MoveTabledetails", "dbo");
         }
     }
 }
