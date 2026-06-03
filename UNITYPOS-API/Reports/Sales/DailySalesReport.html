@@ -1,0 +1,346 @@
+<style>
+  .daily-sales-report {
+    color: #2f241b;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    font-family: "Segoe UI", Arial, sans-serif;
+  }
+
+  .daily-sales-report .hero {
+    background: linear-gradient(135deg, #ef6c57, #f7b267);
+    border-radius: 1rem;
+    color: #fff;
+    padding: 1.4rem 1.5rem;
+  }
+
+  .daily-sales-report .hero-kicker {
+    display: inline-block;
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    margin-bottom: 0.8rem;
+    text-transform: uppercase;
+  }
+
+  .daily-sales-report .hero-row {
+    align-items: end;
+    display: flex;
+    gap: 1rem;
+    justify-content: space-between;
+  }
+
+  .daily-sales-report .hero h1,
+  .daily-sales-report .hero p,
+  .daily-sales-report .hero h2,
+  .daily-sales-report .hero h3 {
+    margin: 0;
+  }
+
+  .daily-sales-report .hero h1 {
+    font-size: 2rem;
+    margin-bottom: 0.25rem;
+  }
+
+  .daily-sales-report .hero p {
+    color: rgba(255, 255, 255, 0.9);
+    max-width: 42rem;
+  }
+
+  .daily-sales-report .hero-meta {
+    align-items: end;
+    display: flex;
+    flex-direction: column;
+    font-size: 0.9rem;
+    font-weight: 700;
+    gap: 0.3rem;
+    white-space: nowrap;
+  }
+
+  .daily-sales-report .panel {
+    background: #fff;
+    border: 1px solid rgba(239, 108, 87, 0.14);
+    border-radius: 1rem;
+    padding: 1.25rem;
+  }
+
+  .daily-sales-report .panel-header {
+    margin-bottom: 0.9rem;
+  }
+
+  .daily-sales-report .panel-header h2,
+  .daily-sales-report .panel-header p {
+    margin: 0;
+  }
+
+  .daily-sales-report .panel-header p {
+    color: #7b6555;
+    margin-top: 0.25rem;
+  }
+
+  .daily-sales-report .summary-grid {
+    display: grid;
+    gap: 0.9rem;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .daily-sales-report .summary-tile {
+    border: 1px solid rgba(239, 108, 87, 0.12);
+    border-radius: 0.9rem;
+    padding: 0.95rem 1rem;
+  }
+
+  .daily-sales-report .summary-tile span {
+    color: #7b6555;
+    display: block;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.35rem;
+    text-transform: uppercase;
+  }
+
+  .daily-sales-report .summary-tile strong {
+    font-size: 1.15rem;
+  }
+
+  .daily-sales-report .info-row {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: minmax(0, 1fr) 19rem;
+  }
+
+  .daily-sales-report .meta-list {
+    display: grid;
+    gap: 0.75rem;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .daily-sales-report .meta-chip {
+    background: #fcf7f1;
+    border-radius: 0.85rem;
+    padding: 0.85rem 0.95rem;
+  }
+
+  .daily-sales-report .meta-chip label {
+    color: #7b6555;
+    display: block;
+    font-size: 0.76rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.3rem;
+    text-transform: uppercase;
+  }
+
+  .daily-sales-report .totals-card {
+    background: linear-gradient(180deg, #fff, #fff6ef);
+  }
+
+  .daily-sales-report .totals-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+  }
+
+  .daily-sales-report .totals-row {
+    align-items: center;
+    display: flex;
+    justify-content: space-between;
+    gap: 0.75rem;
+  }
+
+  .daily-sales-report .totals-row span {
+    color: #7b6555;
+    font-weight: 600;
+  }
+
+  .daily-sales-report .totals-row strong {
+    font-size: 0.98rem;
+  }
+
+  .daily-sales-report .totals-row.is-grand {
+    border-top: 1px dashed rgba(239, 108, 87, 0.25);
+    margin-top: 0.15rem;
+    padding-top: 0.7rem;
+  }
+
+  .daily-sales-report .totals-row.is-grand strong {
+    font-size: 1.1rem;
+  }
+
+  .daily-sales-report .table-shell {
+    overflow-x: auto;
+  }
+
+  .daily-sales-report .data-table {
+    border-collapse: collapse;
+    width: 100%;
+  }
+
+  .daily-sales-report .data-table th,
+  .daily-sales-report .data-table td {
+    border-bottom: 1px solid rgba(239, 108, 87, 0.1);
+    padding: 0.72rem 0.75rem;
+    text-align: left;
+  }
+
+  .daily-sales-report .data-table th {
+    background: #fff6ef;
+    font-size: 0.8rem;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  .daily-sales-report .data-table tbody tr:nth-child(even) td {
+    background: rgba(255, 248, 241, 0.72);
+  }
+
+  .daily-sales-report .text-end {
+    text-align: right !important;
+  }
+
+  @media (max-width: 900px) {
+    .daily-sales-report .hero-row,
+    .daily-sales-report .info-row {
+      grid-template-columns: 1fr;
+      display: grid;
+    }
+
+    .daily-sales-report .hero-meta {
+      align-items: start;
+      white-space: normal;
+    }
+
+    .daily-sales-report .summary-grid,
+    .daily-sales-report .meta-list {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+
+<section class="daily-sales-report">
+  <section class="hero">
+    <span class="hero-kicker">Sales Pulse</span>
+    <div class="hero-row">
+      <div>
+        <h1>{{report.DisplayName}}</h1>
+        <p>{{report.Description}}</p>
+      </div>
+      <div class="hero-meta">
+        <span>{{meta.RowCount|number}} rows</span>
+        <span>{{meta.ExecutedAt|datetime}}</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="panel">
+    <div class="panel-header">
+      <h2>Sales Summary</h2>
+      <p>This layout is fully driven by the HTML file in the Reports folder.</p>
+    </div>
+    <div class="summary-grid">
+      <article class="summary-tile">
+        <span>Total Sales</span>
+        <strong>{{sum:NetAmount|currency}}</strong>
+      </article>
+      <article class="summary-tile">
+        <span>Gross Sales</span>
+        <strong>{{sum:GrossAmount|currency}}</strong>
+      </article>
+      <article class="summary-tile">
+        <span>Average Bill</span>
+        <strong>{{avg:NetAmount|currency}}</strong>
+      </article>
+    </div>
+  </section>
+
+  <section class="info-row">
+    <section class="panel">
+      <div class="panel-header">
+        <h2>Execution Details</h2>
+        <p>Optional information can be included only if this report needs it.</p>
+      </div>
+      <div class="meta-list">
+        <div class="meta-chip">
+          <label>From Date</label>
+          <div>{{filter.FromDate|date}}</div>
+        </div>
+        <div class="meta-chip">
+          <label>To Date</label>
+          <div>{{filter.ToDate|date}}</div>
+        </div>
+        <div class="meta-chip">
+          <label>Branch</label>
+          <div>{{filter.BranchId}}</div>
+        </div>
+        <div class="meta-chip">
+          <label>Generated At</label>
+          <div>{{meta.ExecutedAt|datetime}}</div>
+        </div>
+      </div>
+    </section>
+
+    <aside class="panel totals-card">
+      <div class="panel-header">
+        <h2>Totals</h2>
+        <p>This side block exists only because this file asks for it.</p>
+      </div>
+      <div class="totals-list">
+        <div class="totals-row">
+          <span>Bills Count</span>
+          <strong>{{count:BillNo|number}}</strong>
+        </div>
+        <div class="totals-row">
+          <span>Discount</span>
+          <strong>{{sum:DiscountAmount|currency}}</strong>
+        </div>
+        <div class="totals-row">
+          <span>Tax</span>
+          <strong>{{sum:TaxAmount|currency}}</strong>
+        </div>
+        <div class="totals-row is-grand">
+          <span>Net Sales</span>
+          <strong>{{sum:NetAmount|currency}}</strong>
+        </div>
+      </div>
+    </aside>
+  </section>
+
+  <section class="panel">
+    <div class="panel-header">
+      <h2>Bill-wise Detail</h2>
+      <p>You can completely redesign this table section per report file.</p>
+    </div>
+    <div class="table-shell">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Bill No</th>
+            <th>Bill Date</th>
+            <th>Payment Mode</th>
+            <th class="text-end">Gross</th>
+            <th class="text-end">Discount</th>
+            <th class="text-end">Tax</th>
+            <th class="text-end">Net</th>
+          </tr>
+        </thead>
+        <tbody>
+          {{#rows}}
+          <tr>
+            <td>{{rowIndex}}</td>
+            <td>{{BillNo}}</td>
+            <td>{{BillDate|datetime}}</td>
+            <td>{{PaymentMode}}</td>
+            <td class="text-end">{{GrossAmount|currency}}</td>
+            <td class="text-end">{{DiscountAmount|currency}}</td>
+            <td class="text-end">{{TaxAmount|currency}}</td>
+            <td class="text-end">{{NetAmount|currency}}</td>
+          </tr>
+          {{/rows}}
+        </tbody>
+      </table>
+    </div>
+  </section>
+</section>
