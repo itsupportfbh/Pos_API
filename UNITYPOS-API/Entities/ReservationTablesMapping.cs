@@ -9,6 +9,8 @@ namespace UNITYPOS_API.Entities
         public long ReservationId { get; set; }
         public int TableId { get; set; }
         public int OrgId { get; set; }
+        public int BranchId { get; set; }     
+        public bool? IsReserved { get; set; } = true;
         public int? CreatedBy { get; set; }
         public DateTime? CreatedDate { get; set; } = DateTime.Now;
         public int? UpdatedBy { get; set; }

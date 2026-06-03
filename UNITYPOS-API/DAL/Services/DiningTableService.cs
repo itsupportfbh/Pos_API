@@ -25,7 +25,7 @@ namespace UNITYPOS_API.DAL.Services
 
 
             result = (from d in _uow.GenericRepository<DiningTableMaster>().Table()
-                      where d.IsOccupied == false
+                      //where d.IsOccupied == false
                       join o in _uow.GenericRepository<Organization>().Table()
                         on d.OrgId equals o.Id
                       join b in _uow.GenericRepository<Branch>().Table()
