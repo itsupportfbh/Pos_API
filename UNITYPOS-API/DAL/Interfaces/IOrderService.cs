@@ -12,5 +12,8 @@ namespace UNITYPOS_API.DAL.Interfaces
         public Task<string> Update(Orders orders);
         public string StatusChange(Orders order);
         public string KitchenItemStatusChange(Orderitems orderItem);
+        public IEnumerable<Object> GetAllDiningTable(int orgid, int branchid);
+        public IEnumerable<object> GetTopSixMenuAndComboMenu(int orgid, int branchid);
+        public Task<IEnumerable<object>> GetAllMenuAndComboMenu(int orgid, int branchid, int? categoryId, int? subCategoryId, string? searchKey);
     }
 }

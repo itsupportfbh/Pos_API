@@ -1,8 +1,11 @@
-﻿using Microsoft.AspNetCore.Razor.TagHelpers;
+﻿using Dapper;
+using Microsoft.AspNetCore.Razor.TagHelpers;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using System.Data;
+using System.Linq;
 using UNITYPOS_API.Common;
 using UNITYPOS_API.DAL.Interfaces;
 using UNITYPOS_API.Data.Context;
@@ -18,10 +21,12 @@ namespace UNITYPOS_API.DAL.Services
        
             private readonly IUnitOfWork _uow;
         private readonly POSContext _context;
-        public OrderService(IUnitOfWork uow, POSContext poscontext)
+        private readonly IConfiguration _configuration;
+        public OrderService(IUnitOfWork uow, POSContext poscontext,IConfiguration configuration)
             {
                 _uow = uow ?? throw new ArgumentNullException(nameof(uow));
             _context = poscontext;
+            _configuration = configuration;
         }
 
 
@@ -612,6 +617,253 @@ namespace UNITYPOS_API.DAL.Services
             _uow.Save();
 
             return existingItem.Itemid.ToString();
+        }
+
+
+
+        public IEnumerable<object> GetAllDiningTable(int orgid, int branchid)
+        {
+            string fileUploadPathView = _configuration["AppSettings:FileUploadPathView"] ?? string.Empty;
+            DateTime today = DateTime.Today;
+
+            var diningTables =
+                (from d in _uow.GenericRepository<DiningTableMaster>().Table()
+                 join o in _uow.GenericRepository<Organization>().Table()
+                     on d.OrgId equals o.Id
+                 join b in _uow.GenericRepository<Branch>().Table()
+                     on d.BranchId equals b.Id
+                 join f in _uow.GenericRepository<FloorMaster>().Table()
+                     on d.FloorId equals f.Id
+
+                 where d.IsDeleted == false
+                    && d.IsActive == true
+                    && d.IsOccupied == false
+                    && (orgid == 0 || d.OrgId == orgid)
+                    && (branchid == 0 || d.BranchId == branchid)
+
+                 orderby d.DisplayOrder
+
+                 select new
+                 {
+                     id = d.Id,
+                     organizationname = o.Name,
+                     name = d.Name,
+                     code = d.Code,
+                     branchid = d.BranchId,
+                     floorid = d.FloorId,
+                     displayorder = d.DisplayOrder,
+                     branchname = b.Name,
+                     floorname = f.Name,
+                     seatingsize = d.SeatingSize,
+                     occupied = d.IsOccupied,
+                     remarks = d.Remarks,
+                     isactive = d.IsActive,
+
+                     isreserved =
+                         (from rtm in _uow.GenericRepository<ReservationTablesMapping>().Table()
+                          join r in _uow.GenericRepository<Reservations>().Table()
+                              on rtm.ReservationId equals r.Id
+                          where rtm.TableId == d.Id
+                             && rtm.IsDeleted == false
+                             && r.IsDeleted == false
+                             && r.ReservationDate.Date == today
+                          select rtm.Id).Any(),
+
+                     image = string.IsNullOrWhiteSpace(d.Image)
+                         ? d.Image
+                         : fileUploadPathView + "DiningTable/" + d.Image
+                 }).ToList();
+
+            return diningTables;
+        }
+
+
+        public IEnumerable<object> GetTopSixMenuAndComboMenu(int orgid, int branchid)
+        {
+            var today = DateTime.Today;
+            var tomorrow = today.AddDays(1);
+
+            var categories = _uow.GenericRepository<FoodMenuCategory>().Table()
+                .Where(x => x.IsActive == true)
+                .ToList();
+
+            var subCategories = _uow.GenericRepository<FoodMenuSubCategory>().Table()
+                .Where(x => x.IsActive == true)
+                .ToList();
+
+            var foodMenusRaw = _uow.GenericRepository<FoodMenu>().Table()
+                .Where(x => x.IsDeleted == false
+                         && x.IsActive == true
+                         && x.OrgId == orgid)
+                .ToList();
+
+            var comboMenusRaw = _uow.GenericRepository<ComboMenu>().Table()
+                .Where(x => x.IsDeleted == false
+                         && x.IsActive == true
+                         && x.OrgId == orgid
+                         && x.BranchId == branchid)
+                .ToList();
+
+            var comboMenuItems = _uow.GenericRepository<ComboMenuItem>().Table()
+                .Where(x => x.IsDeleted == false && x.IsActive == true)
+                .ToList();
+
+            var todayOrderIds = _uow.GenericRepository<Orders>().Table()
+                .Where(o => o.IsDeleted == false
+                    && o.CreatedDate >= today
+                    && o.CreatedDate < tomorrow
+                    && (orgid == 0 || o.OrgId == orgid)
+                    && (branchid == 0 || o.BranchId == branchid))
+                .Select(o => o.Orderid)
+                .ToList();
+
+            var orderItems = _uow.GenericRepository<Orderitems>().Table()
+                .Where(oi => todayOrderIds.Contains(oi.Orderid))
+                .ToList();
+
+            var topMenuIds = orderItems
+                .Where(x => x.Menuitemid != null && x.Menuitemid > 0)
+                .GroupBy(x => x.Menuitemid)
+                .Select(g => new
+                {
+                    MenuId = g.Key.Value,
+                    Qty = g.Sum(x => x.Quantity)
+                })
+                .OrderByDescending(x => x.Qty)
+                .Take(6)
+                .Select(x => x.MenuId)
+                .ToList();
+
+            var topComboIds = orderItems
+                .Where(x => x.ComboMenuItemId != null && x.ComboMenuItemId > 0)
+                .GroupBy(x => x.ComboMenuItemId)
+                .Select(g => new
+                {
+                    ComboMenuId = g.Key.Value,
+                    Qty = g.Sum(x => x.Quantity)
+                })
+                .OrderByDescending(x => x.Qty)
+                .Take(6)
+                .Select(x => x.ComboMenuId)
+                .ToList();
+
+            var result = new List<object>();
+
+            var foodMenus = foodMenusRaw
+                .Where(x => topMenuIds.Contains(x.Id))
+                .Select(x => new
+                {
+                    id = x.Id,
+                    code = x.Code,
+                    name = x.Name,
+                    price = x.Price,
+                    orgid = x.OrgId,
+                    branchid = branchid,
+                    categoryId = x.CategoryId,
+                    categoryName = categories.FirstOrDefault(c => c.Id == x.CategoryId)?.Name ?? "",
+                    subCategoryId = x.SubCategoryId,
+                    subCategoryName = subCategories.FirstOrDefault(sc => sc.Id == x.SubCategoryId)?.Name ?? "",
+                    isactive = x.IsActive,
+                    type = "Menu",
+                    comboMenuItems = new List<object>(),
+                    itemsCount = 0
+                })
+                .Cast<object>()
+                .ToList();
+
+            var comboMenus = comboMenusRaw
+                .Where(x => topComboIds.Contains(x.Id))
+                .Select(x => new
+                {
+                    id = x.Id,
+                    code = x.Code,
+                    name = x.Name,
+                    price = x.Price,
+                    orgid = x.OrgId,
+                    branchid = x.BranchId,
+                    categoryId = x.CategoryId,
+                    categoryName = categories.FirstOrDefault(c => c.Id == x.CategoryId)?.Name ?? "",
+                    subCategoryId = x.SubCategoryId,
+                    subCategoryName = subCategories.FirstOrDefault(sc => sc.Id == x.SubCategoryId)?.Name ?? "",
+                    isactive = x.IsActive,
+                    type = "ComboMenu",
+                    comboMenuItems = comboMenuItems
+                        .Where(i => i.ComboMenuId == x.Id)
+                        .Select(i => new
+                        {
+                            id = i.Id,
+                            comboMenuId = i.ComboMenuId,
+                            foodMenuId = i.FoodMenuId,
+                            foodMenuName = foodMenusRaw.FirstOrDefault(f => f.Id == i.FoodMenuId)?.Name ?? "",
+                            qty = i.Qty,
+                            isactive = i.IsActive
+                        })
+                        .Cast<object>()
+                        .ToList(),
+                    itemsCount = comboMenuItems.Count(i => i.ComboMenuId == x.Id)
+                })
+                .Cast<object>()
+                .ToList();
+
+            result.AddRange(foodMenus);
+            result.AddRange(comboMenus);
+
+            result = result.Take(6).ToList();
+
+            if (result.Count < 6)
+            {
+                var alreadyMenuIds = topMenuIds.ToList();
+                var needCount = 6 - result.Count;
+
+                var defaultMenus = foodMenusRaw
+                    .Where(x => !alreadyMenuIds.Contains(x.Id))
+                    .OrderBy(x => x.Id)
+                    .Take(needCount)
+                    .Select(x => new
+                    {
+                        id = x.Id,
+                        code = x.Code,
+                        name = x.Name,
+                        price = x.Price,
+                        orgid = x.OrgId,
+                        branchid = branchid,
+                        categoryId = x.CategoryId,
+                        categoryName = categories.FirstOrDefault(c => c.Id == x.CategoryId)?.Name ?? "",
+                        subCategoryId = x.SubCategoryId,
+                        subCategoryName = subCategories.FirstOrDefault(sc => sc.Id == x.SubCategoryId)?.Name ?? "",
+                        isactive = x.IsActive,
+                        type = "Menu",
+                        comboMenuItems = new List<object>(),
+                        itemsCount = 0
+                    })
+                    .Cast<object>()
+                    .ToList();
+
+                result.AddRange(defaultMenus);
+            }
+
+            return result.Take(6).ToList();
+        }
+
+        public async Task<IEnumerable<object>> GetAllMenuAndComboMenu(  int orgid, int branchid,int? categoryId, int? subCategoryId,string? searchKey)
+        {
+            using var connection = new SqlConnection(
+                _configuration.GetConnectionString("DefaultConnection"));
+
+            var result = await connection.QueryAsync<object>(
+                "dbo.sp_GetAllMenuAndComboMenu",
+                new
+                {
+                    OrgId = orgid,
+                    BranchId = branchid,
+                    CategoryId = categoryId,
+                    SubCategoryId = subCategoryId,
+                    SearchKey = searchKey ?? ""
+                },
+                commandType: CommandType.StoredProcedure
+            );
+
+            return result;
         }
     }
 }

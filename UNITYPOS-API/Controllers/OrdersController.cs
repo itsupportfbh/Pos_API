@@ -11,7 +11,7 @@ namespace UNITYPOS_API.Controllers
 {
     [Route("[controller]/[action]")]
     [ApiController]
-    [Authorize]
+  //  [Authorize]
     public class OrdersController : ControllerBase
     {
 
@@ -85,8 +85,40 @@ namespace UNITYPOS_API.Controllers
             return Common.Utility.GetResult(result);
 
         }
+        [HttpGet]
+        public string GetAllTable(int orgid ,int branchid)
+        {
+            string result = null;
+
+            result = JsonConvert.SerializeObject(_orderService.GetAllDiningTable(orgid,branchid));
+
+            return Common.Utility.GetResult(result);
+        }
+
+        [HttpGet]
+        public string GetTopSixMenuAndComboMenu(int orgid, int branchid)
+        {
+            string result = null;
+
+            result = JsonConvert.SerializeObject(_orderService.GetTopSixMenuAndComboMenu(orgid, branchid));
+
+            return Common.Utility.GetResult(result);
+        }
 
 
-        
+
+
+
+        [HttpGet]
+
+        public async Task<string> GetAllMenuAndComboMenu(int orgid,int branchid, int? categoryId,int? subCategoryId, string? searchKey = "")
+        {
+            var data = await _orderService.GetAllMenuAndComboMenu(orgid, branchid, categoryId, subCategoryId,searchKey);
+
+            var result = JsonConvert.SerializeObject(data);
+
+            return Common.Utility.GetResult(result);
+        }
+
     }
 }
