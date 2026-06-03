@@ -21,6 +21,26 @@ namespace UNITYPOS_API.DAL.Services
             _configuration = configuration;
         }
 
+        public IEnumerable<Object> GetLanguage()
+        {
+            IEnumerable<Object> result = null;
+
+            result = (from x in _uow.GenericRepository<LanguageMaster>().Table()
+                      where x.IsActive == true && x.IsDeleted == false
+                      orderby x.IsDefault descending, x.Name ascending
+                      select new
+                      {
+                          x.Id,
+                          x.Code,
+                          x.Name,
+                          x.NativeName,
+                          x.IsDefault
+                      }).AsNoTracking()
+                        .ToList();
+
+            return result;
+        }
+
         public IEnumerable<Object> GetCountry()
         {
             IEnumerable<Object> result = null;

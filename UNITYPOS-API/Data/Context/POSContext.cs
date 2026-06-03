@@ -3,6 +3,7 @@ using System.Security.Claims;
 using UNITYPOS_API.Entities;
 using UNITYPOS_API.Entities.DBLog;
 using UNITYPOS_API.Entities.Master;
+using UNITYPOS_API.Entities.Reports;
 using UNITYPOS_API.Common;
 
 
@@ -77,6 +78,9 @@ namespace UNITYPOS_API.Data.Context
             modelBuilder.Entity<FoodMenuSubCategory>().ToTable("FoodMenuSubcategory", "dbo");
             modelBuilder.Entity<StateMaster>().ToTable("StateMaster", "dbo");
             modelBuilder.Entity<CityMaster>().ToTable("CityMaster", "dbo");
+            modelBuilder.Entity<LanguageMaster>().ToTable("LanguageMaster", "dbo");
+            modelBuilder.Entity<TranslationMaster>().ToTable("TranslationMaster", "dbo");
+            modelBuilder.Entity<TranslationDetail>().ToTable("TranslationDetail", "dbo");
             modelBuilder.Entity<Tax>().ToTable("Tax", "dbo");
             modelBuilder.Entity<CustomerMaster>().ToTable("CustomerMaster", "dbo");
             modelBuilder.Entity<FloorMaster>().ToTable("FloorMaster", "dbo");
@@ -96,6 +100,10 @@ namespace UNITYPOS_API.Data.Context
             modelBuilder.Entity<RolePermission>().ToTable("RolePermission", "dbo");
             modelBuilder.Entity<JoinTables>().ToTable("JoinTables", "dbo");
             modelBuilder.Entity<JoinTabledetails>().ToTable("JoinTabledetails", "dbo");
+            modelBuilder.Entity<ReportCategory>().ToTable("ReportCategory", "dbo");
+            modelBuilder.Entity<ReportMaster>().ToTable("ReportMaster", "dbo");
+            modelBuilder.Entity<ReportFilter>().ToTable("ReportFilters", "dbo");
+            modelBuilder.Entity<ReportPermission>().ToTable("ReportPermission", "dbo");
             modelBuilder.Entity<MoveTables>().ToTable("MoveTables", "dbo");
             modelBuilder.Entity<MoveTabledetails>().ToTable("MoveTabledetails", "dbo");
         }

@@ -31,6 +31,9 @@ namespace UNITYPOS_API.Injectors
             _ = services.AddScoped<IComboMenu, ComboMenuService>();
             _ = services.AddScoped<IEmployeeMasterService, EmployeeMasterService>();
             _ = services.AddScoped<IEntityMasterService, EntityMasterService>();
+            _ = services.AddScoped<IReportCatalogService, ReportCatalogService>();
+            _ = services.AddScoped<IReportRuntimeService, ReportRuntimeService>();
+            _ = services.AddScoped<ITranslationService, TranslationService>();
         }
     }
 }

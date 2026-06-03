@@ -23,25 +23,30 @@ namespace UNITYPOS_API.Data.ORM
             if (user == null)
                 throw new ArgumentNullException(nameof(user));
 
+            var issuer = _jwtSettings.Issuer ?? throw new InvalidOperationException("JWT Issuer is not configured.");
+            var audience = _jwtSettings.Audience ?? throw new InvalidOperationException("JWT Audience is not configured.");
+
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.Key));
             var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
             var expiration = DateTime.UtcNow.AddMinutes(_jwtSettings.DurationInMinutes);
+            var userId = user.Id?.ToString() ?? "0";
+            var isAdmin = user.IsAdmin?.ToString() ?? bool.FalseString;
 
             var claims = new List<Claim>
             {
-                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                new Claim(ClaimTypes.NameIdentifier, userId),
                 new Claim(ClaimTypes.Name, user.Name ?? string.Empty),
                 new Claim(ClaimTypes.Email, user.Email ?? string.Empty),
-                new Claim("UserId", user.Id.ToString()),
+                new Claim("UserId", userId),
                 new Claim("Code", user.Code ?? string.Empty),
                 new Claim("EmpCode", user.EmpCode ?? string.Empty),
-                new Claim("IsAdmin", user.IsAdmin.ToString())
+                new Claim("IsAdmin", isAdmin)
             };
 
             var tokenDescriptor = new JwtSecurityToken(
-                issuer: _jwtSettings.Issuer,
-                audience: _jwtSettings.Audience,
+                issuer: issuer,
+                audience: audience,
                 claims: claims,
                 expires: expiration,
                 signingCredentials: credentials

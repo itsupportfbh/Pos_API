@@ -31,7 +31,7 @@ namespace UNITYPOS_API.DAL.Services
 
                  where e.IsDeleted == false
                        && (orgId == 0 || e.OrgId == orgId)
-                       && (BranchIds.Contains((int)e.BranchId) || branchId == "0")
+                       && (branchId == "0" || (e.BranchId.HasValue && BranchIds.Contains(e.BranchId.Value)))
 
                  select new
                  {
