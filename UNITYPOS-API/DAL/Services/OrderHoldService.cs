@@ -28,10 +28,13 @@ namespace UNITYPOS_API.DAL.Services
             _context = poscontext;
         }
 
-       
+
 
         public IEnumerable<object> GetAll(int orgid)
         {
+            var today = DateTime.Today;
+            var tomorrow = today.AddDays(1);
+
             return (from oh in _uow.GenericRepository<OrdersHold>().Table()
                     join o in _uow.GenericRepository<Organization>().Table()
                         on oh.OrgId equals o.Id
@@ -40,6 +43,8 @@ namespace UNITYPOS_API.DAL.Services
                     from dt in tableJoin.DefaultIfEmpty()
                     where oh.IsDeleted != true
                        && (orgid == 0 || oh.OrgId == orgid)
+                       && oh.CreatedDate >= today
+                       && oh.CreatedDate < tomorrow
                     orderby oh.OrderId descending
                     select new
                     {
@@ -56,10 +61,11 @@ namespace UNITYPOS_API.DAL.Services
                         oh.DiscountAmount,
                         oh.TotalAmount,
                         oh.Shiftid,
-                        CustomerName=oh.CustomerName,
-                        Notes=oh.Notes,
+                        CustomerName = oh.CustomerName,
+                        Notes = oh.Notes,
                         OrganizationId = oh.OrgId,
                         OrganizationName = o.Name,
+
                         Items = _uow.GenericRepository<OrderHoldItems>().Table()
                             .Where(x => x.Orderid == oh.OrderId && x.IsDeleted != true)
                             .Select(x => new
