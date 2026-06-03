@@ -28,6 +28,16 @@ namespace UNITYPOS_API.Controllers
         }
 
         [HttpGet]
+        public string GetLanguage()
+        {
+            string result = null;
+
+            result = JsonConvert.SerializeObject(_commonService.GetLanguage());
+
+            return Common.Utility.GetResult(result);
+        }
+
+        [HttpGet]
         public string GetCountry()
         {
             string result = null;

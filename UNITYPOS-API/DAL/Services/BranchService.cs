@@ -34,6 +34,7 @@ namespace UNITYPOS_API.DAL.Services
                           b.Name,
                           b.Code,
                           b.OrgId,
+                          b.LanguageCode,
                           OrganizationName = o.Name,
                           b.IsActive,
                       }).ToList();
@@ -81,6 +82,7 @@ namespace UNITYPOS_API.DAL.Services
                 State = branch.State,
                 PostalCode = branch.PostalCode,
                 Country = branch.Country,
+                LanguageCode = branch.LanguageCode,
                 Remarks = branch.Remarks,
                 OrgId = branch.OrgId,
                 IsActive = true,
@@ -142,6 +144,7 @@ namespace UNITYPOS_API.DAL.Services
                 existingBranch.State = branch.State;
                 existingBranch.PostalCode = branch.PostalCode;
                 existingBranch.Country = branch.Country;
+                existingBranch.LanguageCode = branch.LanguageCode;
                 existingBranch.Remarks = branch.Remarks;
                 existingBranch.OrgId = branch.OrgId;
                 existingBranch.IsActive = true;

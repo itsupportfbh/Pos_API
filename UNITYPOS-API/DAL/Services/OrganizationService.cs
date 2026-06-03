@@ -54,6 +54,7 @@ namespace UNITYPOS_API.DAL.Services
                 State = Organization.State,
                 PostalCode = Organization.PostalCode,
                 Country = Organization.Country,
+                LanguageCode = Organization.LanguageCode,
                 Remarks = Organization.Remarks,
                 IsActive = true,
                 IsDeleted = false,
@@ -111,6 +112,7 @@ namespace UNITYPOS_API.DAL.Services
                 ExistingOrg.State = Organization.State;
                 ExistingOrg.PostalCode = Organization.PostalCode;
                 ExistingOrg.Country = Organization.Country;
+                ExistingOrg.LanguageCode = Organization.LanguageCode;
                 ExistingOrg.Remarks = Organization.Remarks;
                 ExistingOrg.IsActive = true;
                 ExistingOrg.UpdatedBy = Organization.UpdatedBy;
@@ -146,6 +148,7 @@ namespace UNITYPOS_API.DAL.Services
                           o.Website,
                           o.Email,
                           o.Phone,
+                          o.LanguageCode,
                           o.IsActive,
                           Image = fileUploadPathView + "Organization/" + oc.Image
                       })

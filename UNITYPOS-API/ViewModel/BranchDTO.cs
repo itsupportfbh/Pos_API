@@ -22,6 +22,7 @@ namespace UNITYPOS_API.ViewModel
         public int? State { get; set; }
         public int? PostalCode { get; set; }
         public int? Country { get; set; }
+        public string? LanguageCode { get; set; }
         public string? Remarks { get; set; }
     }
 }
