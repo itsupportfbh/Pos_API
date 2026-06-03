@@ -13,6 +13,7 @@ namespace UNITYPOS_API.Injectors
             _ = services.AddScoped<IReservation, ReservationService>();
             _ = services.AddScoped<IOrderService, OrderService>();
             _ = services.AddScoped<IJoinTables, JoinTableService>();
+            _ = services.AddScoped<IMoveTable, MoveTableService>();
         }
     }
 }

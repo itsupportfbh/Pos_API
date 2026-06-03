@@ -1,16 +1,12 @@
-﻿using System.Numerics;
-using UNITYPOS_API.Entities.Master;
-
-namespace UNITYPOS_API.Entities
+﻿namespace UNITYPOS_API.Entities
 {
-    public class ReservationTablesMapping
+    public class MoveTabledetails
     {
         public long Id { get; set; }
-        public long ReservationId { get; set; }
-        public int TableId { get; set; }
+        public string MoveNo { get; set; } = string.Empty;
+        public int FromTable { get; set; }
+        public int ToTable { get; set; }
         public int OrgId { get; set; }
-        public int BranchId { get; set; }     
-        public bool? IsReserved { get; set; } = true;
         public int? CreatedBy { get; set; }
         public DateTime? CreatedDate { get; set; } = DateTime.Now;
         public int? UpdatedBy { get; set; }

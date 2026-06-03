@@ -122,6 +122,7 @@ namespace UNITYPOS_API.DAL.Services
                     x.SubCategoryId,
                     x.Price,
                     x.OrgId,
+                    x.BranchId,
                     x.IsActive
                 })
                 .FirstOrDefault();
@@ -178,6 +179,7 @@ namespace UNITYPOS_API.DAL.Services
                 SubCategoryId = comboMenu.SubCategoryId, // this is correct
                 Price = comboMenu.Price,
                 OrgId = comboMenu.OrgId,
+                BranchId=comboMenu.BranchId,
                 IsActive = true,
                 IsDeleted = false,
                 CreatedBy = comboMenu.CreatedBy,
