@@ -320,7 +320,7 @@ namespace UNITYPOS_API.DAL.Services
                     .FirstOrDefault(x => x.EntityNo == order.EntityNo
                                       && x.OrgId == order.OrgId
                                       && x.BranchId == order.BranchId
-                                      && x.IsMaster == true);
+                                      &&x.IsMaster==false);
 
                 if (codeTemplate != null)
                 {
