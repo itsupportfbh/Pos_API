@@ -197,11 +197,19 @@ namespace UNITYPOS_API.DAL.Services
             result = (from x in _uow.GenericRepository<UserBranchMapping>().Table()
                       join u in _uow.GenericRepository<Branch>().Table()
                         on x.BranchId equals u.Id
-                      where x.UserId == Userid && x.IsDeleted == false
+                      where x.UserId == Userid && x.IsDeleted == false && u.IsDeleted == false
                       select new
                       {
-                          x.Id,
-                          u.Name
+                          Id = u.Id,
+                          MappingId = x.Id,
+                          u.OrgId,
+                          u.Code,
+                          u.Name,
+                          u.Country,
+                          u.State,
+                          u.City,
+                          u.LanguageCode,
+                          u.IsActive
                       }).ToList();
 
             return result;
