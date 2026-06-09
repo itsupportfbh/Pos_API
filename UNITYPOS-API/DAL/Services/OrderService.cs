@@ -107,7 +107,8 @@ namespace UNITYPOS_API.DAL.Services
                             Modifierdetails = item.Modifierdetails,
                             Itemstatus = item.Itemstatus,
                             Notes = item.Notes,
-                            OrgId = item.OrgId
+                            OrgId = item.OrgId,
+                            BranchId = item.BranchId
                         })
                         .ToList()
                 };

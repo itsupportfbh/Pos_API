@@ -106,6 +106,13 @@ namespace UNITYPOS_API.Data.Context
             modelBuilder.Entity<ReportPermission>().ToTable("ReportPermission", "dbo");
             modelBuilder.Entity<MoveTables>().ToTable("MoveTables", "dbo");
             modelBuilder.Entity<MoveTabledetails>().ToTable("MoveTabledetails", "dbo");
+            modelBuilder.Entity<Billing>().ToTable("Billing", "dbo");
+            modelBuilder.Entity<BillingDetails>().ToTable("BillingDetails", "dbo");
+            modelBuilder.Entity<BillingOrders>().ToTable("BillingOrders", "dbo");
+            //modelBuilder.Entity<Orderpayments>().ToTable("Orderpayments", "dbo");
+            //modelBuilder.Entity<OrderPaymentDetails>().ToTable("OrderPaymentDetails", "dbo");
+            //modelBuilder.Entity<Orderpayments>() .HasMany(x => x.PaymentDetails) .WithOne(x => x.Orderpayments).HasForeignKey(x => x.PaymentId).HasPrincipalKey(x => x.Id);
+
         }
     }
 }
