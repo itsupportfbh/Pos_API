@@ -85,6 +85,7 @@ namespace UNITYPOS_API.Data.Context
             modelBuilder.Entity<CustomerMaster>().ToTable("CustomerMaster", "dbo");
             modelBuilder.Entity<FloorMaster>().ToTable("FloorMaster", "dbo");
             modelBuilder.Entity<PaymodeMaster>().ToTable("PaymodeMaster", "dbo");
+            modelBuilder.Entity<DualDisplayProfile>().ToTable("DualDisplayProfile", "dbo");
             modelBuilder.Entity<OrganizationConfig>().ToTable("OrganizationConfig", "dbo");
             modelBuilder.Entity<OrdersHold>().ToTable("OrdersHold", "dbo");
             modelBuilder.Entity<OrderHoldItems>().ToTable("OrderHoldItems", "dbo");
