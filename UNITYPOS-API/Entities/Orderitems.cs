@@ -10,7 +10,7 @@ namespace UNITYPOS_API.Entities
         [Key]
         public long Itemid { get; set; }
 
-        public long Orderid { get; set; }
+        public int Orderid { get; set; }
         
         public int? Menuitemid { get; set; }
 
@@ -40,7 +40,7 @@ namespace UNITYPOS_API.Entities
         public string? Notes { get; set; }
 
         public int OrgId { get; set; }
-
+        public int BranchId { get; set; }
         public int? CreatedBy { get; set; }
         public DateTime? CreatedDate { get; set; } = DateTime.Now;
         public int? UpdatedBy { get; set; }
