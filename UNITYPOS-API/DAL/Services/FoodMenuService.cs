@@ -31,19 +31,16 @@ namespace UNITYPOS_API.DAL.Services
                           select new
                           {
                               id = b.Id,
-
                               organizationname = o.Name,
-
                               name = b.Name,
                               code = b.Code,
                               price = b.Price,
-
+                              preparationtime = b.PreparationTime,
+                              servicecharges = b.Servicecharge,
                               categoryId = c.Id,
                               categoryname = c.Name,
-
                               subCategoryId = sc.Id,
                               subCategoryName = sc.Name,
-
                               isactive = b.IsActive,
                           }).ToList();
 
@@ -62,6 +59,8 @@ namespace UNITYPOS_API.DAL.Services
                           code = b.Code,
                           categoryId = b.CategoryId,
                           price = b.Price,
+                          preparationtime = b.PreparationTime,
+                          servicecharge = b.Servicecharge,
                           isactive = b.IsActive,
                       }).ToList();
 
@@ -89,6 +88,8 @@ namespace UNITYPOS_API.DAL.Services
                 CategoryId = foodmenu.CategoryId,
                 SubCategoryId = foodmenu.SubCategoryId,
                 Price = foodmenu.Price,
+                PreparationTime = foodmenu.PreparationTime,
+                Servicecharge = foodmenu.Servicecharge,
                 OrgId = foodmenu.OrgId,
                 IsActive = true,
                 IsDeleted = false,
@@ -140,6 +141,8 @@ namespace UNITYPOS_API.DAL.Services
                 existingMenu.Name = foodmenu.Name;
                 existingMenu.Price = foodmenu.Price;
                 existingMenu.CategoryId = foodmenu.CategoryId;
+                existingMenu.PreparationTime = foodmenu.PreparationTime;
+                existingMenu.Servicecharge = foodmenu.Servicecharge;
                 existingMenu.OrgId = foodmenu.OrgId;
                 existingMenu.SubCategoryId = foodmenu.SubCategoryId;
                 existingMenu.IsActive = true;
