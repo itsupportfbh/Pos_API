@@ -15,6 +15,7 @@ namespace UNITYPOS_API.Injectors
             _ = services.AddScoped<IJoinTables, JoinTableService>();
             _ = services.AddScoped<IMoveTable, MoveTableService>();
             _ = services.AddScoped<IBillingService, BillingService>();
+            _ = services.AddScoped<ISyncService, SyncService>();
         }
     }
 }
