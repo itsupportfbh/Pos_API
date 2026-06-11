@@ -7,7 +7,7 @@ namespace UNITYPOS_API.Entities
     public class Orders 
     {
         [Key]
-        public long Orderid { get; set; }
+        public int Orderid { get; set; }
 
         public string? OrderNumber { get; set; } 
 

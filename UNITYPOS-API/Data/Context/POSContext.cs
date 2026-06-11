@@ -85,6 +85,7 @@ namespace UNITYPOS_API.Data.Context
             modelBuilder.Entity<CustomerMaster>().ToTable("CustomerMaster", "dbo");
             modelBuilder.Entity<FloorMaster>().ToTable("FloorMaster", "dbo");
             modelBuilder.Entity<PaymodeMaster>().ToTable("PaymodeMaster", "dbo");
+            modelBuilder.Entity<DualDisplayProfile>().ToTable("DualDisplayProfile", "dbo");
             modelBuilder.Entity<OrganizationConfig>().ToTable("OrganizationConfig", "dbo");
             modelBuilder.Entity<OrdersHold>().ToTable("OrdersHold", "dbo");
             modelBuilder.Entity<OrderHoldItems>().ToTable("OrderHoldItems", "dbo");
@@ -106,6 +107,17 @@ namespace UNITYPOS_API.Data.Context
             modelBuilder.Entity<ReportPermission>().ToTable("ReportPermission", "dbo");
             modelBuilder.Entity<MoveTables>().ToTable("MoveTables", "dbo");
             modelBuilder.Entity<MoveTabledetails>().ToTable("MoveTabledetails", "dbo");
+            modelBuilder.Entity<Billing>().ToTable("Billing", "dbo");
+            modelBuilder.Entity<BillingDetails>().ToTable("BillingDetails", "dbo");
+            modelBuilder.Entity<BillingOrders>().ToTable("BillingOrders", "dbo");
+            //modelBuilder.Entity<Orderpayments>().ToTable("Orderpayments", "dbo");
+            //modelBuilder.Entity<OrderPaymentDetails>().ToTable("OrderPaymentDetails", "dbo");
+            //modelBuilder.Entity<Orderpayments>() .HasMany(x => x.PaymentDetails) .WithOne(x => x.Orderpayments).HasForeignKey(x => x.PaymentId).HasPrincipalKey(x => x.Id);
+
+            modelBuilder.Entity<ReportCategory>().ToTable("ReportCategory", "dbo");
+            modelBuilder.Entity<ReportMaster>().ToTable("ReportMaster", "dbo");
+            modelBuilder.Entity<ReportFilter>().ToTable("ReportFilters", "dbo");
+            modelBuilder.Entity<ReportPermission>().ToTable("ReportPermission", "dbo");
         }
     }
 }
