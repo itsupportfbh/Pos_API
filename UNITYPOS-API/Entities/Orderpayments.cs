@@ -6,26 +6,47 @@ namespace UNITYPOS_API.Entities
 {
     public class Orderpayments:CommonClass
     {
-
         [Key]
-        public long PaymentId { get; set; }
+        public long Id { get; set; }
+        public string Code { get; set; }
 
         public long OrderId { get; set; }
-               
-        public string Paymenttype { get; set; } 
 
-       
-        public decimal Amount { get; set; }
+        // Customer
+        public int? CustomerId { get; set; }
 
-        
-        public string? Referenceno { get; set; }
+        // Bill Values
+        public decimal SubTotal { get; set; }
+        public decimal DiscountAmount { get; set; }
+        public decimal ServiceCharge { get; set; }
+        public decimal TaxAmount { get; set; }
+        public decimal TipAmount { get; set; }
 
-       
-        public string? Paymentstatus { get; set; } 
+        public decimal GrandTotal { get; set; }
+
+        // Payment Summary
+        public decimal ReceivedAmount { get; set; }
+        public decimal BalanceAmount { get; set; }
+        public decimal ChangeAmount { get; set; }
+
+        // Billing /Take Away/DinIn
+        public string BillMode { get; set; }
+
+        // Paid / Partial / Pending / Refunded
+        public string PaymentStatus { get; set; } 
+
+        // Cash / Card / Multi Payment
+        public string PaymentType { get; set; }
+
+        public string? Remarks { get; set; }
 
         public int OrgId { get; set; }
-                 
+        public int BranchId { get; set; }
 
-        public Orders? Order { get; set; }
+        public bool IsDeleted { get; set; }
+        public List<OrderPaymentDetails>? PaymentDetails { get; set; }
+
+        [NotMapped]
+        public int EntityNo { get; set; }
     }
 }

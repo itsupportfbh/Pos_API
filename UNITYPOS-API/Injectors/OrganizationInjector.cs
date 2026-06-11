@@ -20,6 +20,7 @@ namespace UNITYPOS_API.Injectors
             _ = services.AddScoped<ICommonService, CommonService>();
             _ = services.AddScoped<ITax, TaxService>();
             _ = services.AddScoped<IRoleMasterService, RoleMasterService>();
+            _ = services.AddScoped<IDualDisplayService, DualDisplayService>();
             _ = services.AddScoped<IUserMasterService, UserMasterService>();
             _ = services.AddScoped<IUserBranchMappingService, UserBranchMappingService>();
             _ = services.AddScoped<IUserRoleMappingService, UserRoleMappingService>();

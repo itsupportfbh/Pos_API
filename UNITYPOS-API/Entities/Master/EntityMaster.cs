@@ -17,6 +17,7 @@
         public string MenuName { get; set; }
         public int SubMenuId { get; set; }
         public string SubMenuName { get; set; }
+        public int MenuScope { get; set; }
         public int EntityNo { get; set; }
         public string EntityName { get; set; }
         public bool Create { get; set; }

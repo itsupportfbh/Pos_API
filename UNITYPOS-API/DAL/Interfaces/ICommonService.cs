@@ -12,7 +12,7 @@ namespace UNITYPOS_API.DAL.Interfaces
         public IEnumerable<Object> GetStateByCountryId(int CountryId);
         public IEnumerable<Object> GetCityByStateId(int StateId);
         public Task<FileUploadResult> FileUpload(IFormFile postedFile, string folderName);
-        public IEnumerable<Object> GetBranchByUserId(int StateId);
+        public IEnumerable<Object> GetBranchByUserId(int UserId);
         public Task SendEmail(string toEmail, string? ccEmail, string subject, string body, byte[]? fileBytes = null, string? fileName = null, string? contentType = null);
 
     }

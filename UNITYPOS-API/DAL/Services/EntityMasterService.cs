@@ -42,6 +42,7 @@ namespace UNITYPOS_API.DAL.Services
                     MenuName = menu.Name,
                     SubMenuId = subMenu.Id,
                     SubMenuName = subMenu.Name,
+                    MenuScope = subMenu.Menuscope,
                     EntityNo = entity.EntityNo,
                     EntityName = entity.Name,
                     Create = permission != null && permission.Create,
